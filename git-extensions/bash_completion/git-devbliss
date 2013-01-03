@@ -16,7 +16,7 @@ _git_devbliss ()
             COMPREPLY=( $(compgen -W "$(git tag --column)" -- $cur) )
         ;;
         *)
-            if [ ${#COMP_WORDS[@]} -gt 2 ]; then
+            if [ ${#COMP_WORDS[@]} -gt 3 ]; then
                 COMPREPLY=()
             fi
         ;;
@@ -25,4 +25,5 @@ _git_devbliss ()
 }
 
 complete -F _git_devbliss git-devbliss
+complete -F _git_devbliss "git devbliss"
 
