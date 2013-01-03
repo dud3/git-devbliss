@@ -1,0 +1,130 @@
+#!/bin/bash
+
+set -eu
+
+# normal branches
+branches=(feature bug refactor)
+
+function help {
+    echo 'Usage:'
+    echo '    git devbliss ['`echo "${branches[@]}" | sed 's/ / \| /g'`'] DESCRIPTION'
+    echo '    git devbliss hotfix VERSION DESCRIPTION'
+    echo '    git devbliss finish'
+    echo '    git devbliss release VERSION'
+    echo '    git devbliss delete [-f]'
+    echo
+    echo 'Commands:'
+    echo '    '`echo "${branches[@]}" | sed 's/ /, /g'`':'
+    echo '              Branch from master (normal branches)'
+    echo '    hotfix:   Branch from a tag (fix a bug in an already released version)'
+    echo '    finish:   Open a pull request for the current branch'
+    echo '    release:  Create a new tag, commit and push'
+    echo '    delete:   Discard the current branch and delete the remote branch'
+}
+
+function isBranchCommand {
+    local e
+    for e in "${branches[@]}"; do [[ "$e" == "$1" ]] && return 0; done
+    return 1
+}
+
+function hotfix {
+    if git tag | grep $1; then
+        git fetch origin
+        git checkout --quiet $1
+        git checkout --quiet -b hotfix/$2 &> /dev/null
+        git checkout --quiet hotfix/$2 &> /dev/null
+    else
+        echo "No such tag: $1" > /dev/stderr
+        echo "Available tags:" > /dev/stderr
+        git tag | awk '{print "    "$1}'
+        exit 2
+    fi
+}
+
+function branch {
+    git checkout --quiet master
+    git pull --quiet origin master
+    git checkout --quiet -b $1/$2 &> /dev/null
+    git checkout --quiet $1/$2 &> /dev/null
+}
+
+function release {
+    echo "Have these changes been reviewed?"
+    echo "[enter / ctrl+c to cancel]"
+    read
+    git commit --allow-empty -m "Release: $1"
+    git tag $1
+    git push origin $1
+}
+
+function finish {
+    local branch=`git rev-parse --abbrev-ref HEAD`
+    git push origin $branch
+    hub pull-request
+}
+
+function delete {
+    if [[ $1 != "-f" ]]; then
+        echo -n "Really delete the remote branch? [y/N] "
+        read a
+        if [[ $a == "y" || $a == "Y" ]]; then
+            local branch=`git rev-parse --abbrev-ref HEAD`
+            git push origin :$branch
+            echo 'To restore the remote branch, type'
+            echo '    git push --set-upstream origin '$branch
+            echo 'To delete your local branch, type'
+            echo '    git checkout master && git branch -d '$branch
+        else
+            echo "Fatal: user interrupt" > /dev/stderr
+            exit 2
+        fi
+    fi
+}
+
+# make sure that hub is installed
+if [ ! `which hub` ]; then
+    echo "Fatal: hub is not installed" > /dev/stderr
+    echo "       see <https://github.com/defunkt/hub>"
+    exit 1
+fi
+
+# check whether the pwd is a git repository
+git rev-parse --abbrev-ref HEAD > /dev/null || exit 1
+
+if [[ $# == 3 ]]; then
+    if [[ $1 == "hotfix" ]]; then
+        hotfix $2 $3
+    else
+        help
+    fi
+elif [[ $# == 2 ]]; then
+    if isBranchCommand $1; then
+        branch $1 $2
+    elif [[ $1 == "release" ]]; then
+        if echo $2 | grep "^\d\+\.\d\+\.\d\+$"; then
+            release $2
+        else
+            echo "Invalid version number" > /dev/stderr
+            exit 2
+        fi
+    elif [[ $1 == "delete" ]]; then
+        if [[ $2 == "-f" ]]; then
+            delete $2
+        else
+            help
+        fi
+    else
+        help
+    fi
+elif [[ $# == 1 ]]; then
+    if [[ $1 == "finish" ]]; then
+        finish
+    elif [[ $1 == "delete" ]]; then
+        delete ""
+    else
+        help
+    fi
+else
+    help
+fi
