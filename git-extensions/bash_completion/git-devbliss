@@ -1,0 +1,28 @@
+# bash completion for git devbliss
+
+_git_devbliss ()
+{
+    local cur prev subcmds
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    subcmds="feature bug refactor hotfix finish release delete"
+    COMPREPLY=( $(compgen -W "$subcmds" -- $cur) )
+    case "${prev}" in
+        hotfix)
+            COMPREPLY=( $(compgen -W "$(git tag --column)" -- $cur) )
+        ;;
+        release)
+            COMPREPLY=( $(compgen -W "$(git tag --column)" -- $cur) )
+        ;;
+        *)
+            if [ ${#COMP_WORDS[@]} -gt 2 ]; then
+                COMPREPLY=()
+            fi
+        ;;
+    esac
+    return
+}
+
+complete -F _git_devbliss git-devbliss
+
