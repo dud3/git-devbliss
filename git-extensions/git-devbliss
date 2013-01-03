@@ -102,7 +102,7 @@ elif [[ $# == 2 ]]; then
     if isBranchCommand $1; then
         branch $1 $2
     elif [[ $1 == "release" ]]; then
-        if echo $2 | grep "^\d\+\.\d\+\.\d\+$"; then
+        if echo $2 | grep -E '^[0-9]+\.[0-9]+(-[1-9][0-9]*)?$'; then
             release $2
         else
             echo "Invalid version number" > /dev/stderr
