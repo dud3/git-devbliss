@@ -153,7 +153,7 @@ changelog and define the new version number.
 ## Naming
 
 Python and Ruby extension modules have a prefix of `python-` and
-`-ruby` respectively. This does not mean that every project written
+`ruby-` respectively. This does not mean that every project written
 in Python needs to have this prefix, but pure extension modules
 should do.
 
