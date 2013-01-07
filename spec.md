@@ -49,22 +49,22 @@ In addition to master, there are three branches in this example:
    from master, after the branch has been merged. Tags only point
    to commits, it does not matter on what branch they're created.
 
-       git checkout master
-       git checkout -b feature/1
-       ...
-       git tag 1.1
-       git checkout master
-       git merge feature/1
+        git checkout master
+        git checkout -b feature/1
+        ...
+        git tag 1.1
+        git checkout master
+        git merge feature/1
 
  - `hotfix/1` fixes a bug in version 1.1 (consequently, the release
    that will eventually be made on it is `1.1-1`).
 
-       git checkout 1.1
-       git checkout -b hotfix/1
-       ...
-       git tag 1.1-1
-       git checkout master
-       git merge hotfix/1
+        git checkout 1.1
+        git checkout -b hotfix/1
+        ...
+        git tag 1.1-1
+        git checkout master
+        git merge hotfix/1
 
  - `hotfix/2` is the same as `hotfix/1`, but it is never merged
    back into master. One important difference here is that this
