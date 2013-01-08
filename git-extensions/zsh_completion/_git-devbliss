@@ -1,0 +1,31 @@
+#compdef git-extentions
+
+_git-devbliss() {
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+
+    _arguments \
+        '1: :->commands'\
+        '*: :->tags'
+
+    case $state in
+    commands)
+        _arguments '1:Commands:(feature bug refactor hotfix finish release delete)'
+    ;;
+    *)
+        case $words[2] in
+        hotfix)
+            if git branch >& /dev/null; then
+                compadd "$@" $(git tag --column)
+            fi
+        ;;
+        release)
+            if git branch >& /dev/null; then
+                compadd "$@" $(git tag --column)
+            fi
+        ;;
+        esac
+    esac
+}
+_git-devbliss "@"
+
