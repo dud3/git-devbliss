@@ -25,6 +25,7 @@ _git-devbliss() {
             fi
         ;;
         esac
+    ;;
     esac
 }
 _git-devbliss "@"
