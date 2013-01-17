@@ -96,6 +96,11 @@ Valid version numbers match this expression:
     2.9
     2.10
 
+As an aside: the debian packaging system uses the same convention
+for patches, i.e. adding `-1` to any debian package, and incrementing
+that number for each patch that ships with the packaging. We override
+this when adding version numbers with a patch level.
+
 ## Major Version
 
 The major version indicates API compatibility. Users of
