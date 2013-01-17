@@ -25,7 +25,7 @@ developed in branches prefixed by
 The commit from which this branch stems is always one that has
 a tag pointing to it, and the version number of the subsequent
 release made on this branch is the same, with a patch level
-added or incremented (see below).
+incremented (see below).
     
 ## Example
                                           [1.1-1]
@@ -56,8 +56,8 @@ In addition to master, there are three branches in this example:
         git checkout master
         git merge feature/1
 
- - `hotfix/1` fixes a bug in version 1.1 (consequently, the release
-   that will eventually be made on it is `1.1-1`).
+ - `hotfix/1` fixes a bug in version 1.1.0 (consequently, the release
+   that will eventually be made on it is `1.1.1`).
 
         git checkout 1.1
         git checkout -b hotfix/1
@@ -85,21 +85,23 @@ former two parts.
 
 Valid version numbers match this expression:
 
-    ^[0-9]+\.[0-9]+(-[1-9][0-9]*)?$
+    ^[0-9]+\.[0-9]+\.[0-9]+$
 
 ### Examples
 
-    0.0
-    1.0
-    1.0-1
-    1.0-2
-    2.9
-    2.10
+    0.0.0
+    1.0.0
+    1.0.1
+    1.0.2
+    2.9.0
+    2.10.0
 
-As an aside: the debian packaging system uses the same convention
-for patches, i.e. adding `-1` to any debian package, and incrementing
-that number for each patch that ships with the packaging. We override
-this when adding version numbers with a patch level.
+As an aside: the debian packaging system will add another
+number to the end of the version, describing its own patch
+level. The package with the version number "1.0.1-2", as
+reported by the debian devtools, has had one hotfix and two
+packaging specific patches (the first one being the packaging
+itself). Do not change this number.
 
 ## Major Version
 
@@ -125,12 +127,12 @@ Once a release of the software is made, that release can
 never be changed. If it becomes necessary to make changes
 to an existing release, the patch level must be incremented.
 
-For instance: when fixing a bug in version `1.2`, when the
-current version might be `2.4`, a new release is made and
-its version number is `1.2-1`. The fix may be back-ported
-to the current development version, but not to version `2.4`.
-If the bug fix is ported to version 2.4, its version number
-is changed to `2.4-1` as well.
+For instance: when fixing a bug in version `1.2.0`, when the
+current version might be `2.4.0`, a new release is made and
+its version number is `1.2.1`. The fix may be back-ported
+to the current development version, but not to version `2.4.0`.
+If the bug fix is ported to version `2.4.0`, its version number
+is changed to `2.4.1` as well.
 
 We call this kind of release a "hot fix".
 
