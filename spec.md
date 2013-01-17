@@ -127,7 +127,7 @@ Once a release of the software is made, that release can
 never be changed. If it becomes necessary to make changes
 to an existing release, the patch level must be incremented.
 
-For instance: when fixing a bug in version `1.2.0`, when the
+For instance: when fixing a bug in release `1.2.0`, when the
 current version might be `2.4.0`, a new release is made and
 its version number is `1.2.1`. The fix may be back-ported
 to the current development version, but not to version `2.4.0`.
