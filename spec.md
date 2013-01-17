@@ -73,6 +73,10 @@ In addition to master, there are three branches in this example:
    and the git garbage collector would destroy them. For this reason,
    you may wish to always merge into master.
 
+Note: after the code has been reviewed and merged, the branch should be
+deleted by the reviewer. You may re-use old local branches, but should
+always expect the remote branch to be deleted. Because the branch can
+be restored by checking out the merge-commit, no information is lost.
 
 # Version Numbers
 
