@@ -4,5 +4,10 @@ build:
 
 install:
 	@cp git-devbliss /usr/bin/
+	@mkdir -p /etc/bash_completion.d/
 	@cp bash_completion/git-devbliss /etc/bash_completion.d/
-	@echo Done. To enable bash completion, source '/etc/bash_completion.d/git-devbliss'
+	@echo To enable bash completion, source '/etc/bash_completion.d/git-devbliss':
+	@echo
+	@echo "    echo \"source /etc/bash_completion.d/git-devbliss\" >> ~/.profile"
+	@echo
+	@echo done
