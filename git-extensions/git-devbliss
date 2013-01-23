@@ -48,7 +48,7 @@ function branch {
     git pull --quiet origin master
     git checkout --quiet -b $1/$2 &> /dev/null
     git checkout --quiet $1/$2 &> /dev/null
-    git push --set-upstream origin $1/$1
+    git push --set-upstream origin $1/$2
 }
 
 function release {
