@@ -34,6 +34,7 @@ function hotfix {
         git checkout --quiet $1
         git checkout --quiet -b hotfix/$2 &> /dev/null
         git checkout --quiet hotfix/$2 &> /dev/null
+        git push --set-upstream origin hotfix/$2
     else
         echo "No such tag: $1" > /dev/stderr
         echo "Available tags:" > /dev/stderr
@@ -47,6 +48,7 @@ function branch {
     git pull --quiet origin master
     git checkout --quiet -b $1/$2 &> /dev/null
     git checkout --quiet $1/$2 &> /dev/null
+    git push --set-upstream origin $1/$1
 }
 
 function release {
