@@ -178,3 +178,11 @@ implementing the at least the following commands:
 
 The `make test` command should run the entire test suite. The `make`
 command should result in debian source- and binary packages being built.
+
+The following targets might be used by the devbliss git extensions:
+
+    make test
+    make clean
+    make deb
+    make changes
+    make version
