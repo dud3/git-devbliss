@@ -22,6 +22,18 @@ function help {
     echo '    delete:   Discard the current branch and delete the remote branch'
 }
 
+function makefile_hooks {
+    # reasonable targets are: changes, version, test (see: README.md)
+    if [ ! -f Makefile ]; then
+        echo "WARNING: No Makefile found. All make hooks have been skipped." >> /dev/stderr
+        return
+    fi
+    make $1
+    if [ $? -ne 0 ]; then
+        echo "WARNING: Makefile has no target named \"$1\". Please implement." >> /dev/stderr
+    fi
+}
+
 function isBranchCommand {
     local e
     for e in "${branches[@]}"; do [[ "$e" == "$1" ]] && return 0; done
@@ -59,12 +71,15 @@ function release {
     echo "Have these changes been reviewed?"
     echo "[enter / ctrl+c to cancel]"
     read
+    makefile_hooks test
     git commit --allow-empty -m "Release: $1"
     git tag $1
     git push origin $1
 }
 
 function finish {
+    makefile_hooks version
+    makefile_hooks changes
     local branch=`git rev-parse --abbrev-ref HEAD`
     git push origin $branch
     hub pull-request
