@@ -44,6 +44,10 @@ function hotfix {
 }
 
 function branch {
+    if [ $2 = "finish" ]; then
+        echo "You are creating a branch \"$1/$2\", did you mean to type \"git devbliss finish\"?"
+        echo "You can delete this branch with \"git push --delete $1/$2\""
+    fi
     git checkout --quiet master
     git pull --quiet origin master
     git checkout --quiet -b $1/$2 &> /dev/null
