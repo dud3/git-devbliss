@@ -23,7 +23,7 @@ function help {
 }
 
 function is_repository_clean {
-    if [ $(git diff | wc -l) -eq 0 ]; then
+    if [ $(git diff | wc -l) == "0" ]; then
         return 0
     else
         return 1
@@ -31,7 +31,7 @@ function is_repository_clean {
 }
 
 function makefile_hooks {
-    # reasonable targets are: changes, version, test (see: README.md)
+    # reasonable targets are: changelog, version, test (see: README.md)
     if [ ! -f Makefile ]; then
         echo "Warning: No Makefile found. All make hooks have been skipped." >> /dev/stderr
         return
@@ -78,7 +78,7 @@ function release {
     echo "[enter / ctrl+c to cancel]"
     read || exit 1
     makefile_hooks version
-    if is_repository_clean; then :; else
+    if ! is_repository_clean; then
         git commit -am "version increment"
     fi
     makefile_hooks test
@@ -89,8 +89,11 @@ function release {
 }
 
 function finish {
-    is_repository_clean || echo "Error: Repository is not clean. Aborting ..." >> /dev/stderr && exit 1
-    makefile_hooks changes
+    if ! is_repository_clean; then
+        echo "Error: Repository is not clean. Aborting ..." >> /dev/stderr
+        exit 1
+    fi
+    makefile_hooks changelog
     if ! is_repository_clean; then
         git commit -am "Ran git devbliss changelog hook"
     fi
