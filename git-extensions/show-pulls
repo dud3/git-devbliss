@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+function auth {  # authenticate with github (sets $TOKEN)
+    TOKEN=`cat ~/.gh-TOKEN 2>/dev/null`
+    if [ -z $TOKEN ]; then
+        echo -n "Enter host username for 'github.com': "
+        read username
+        TOKEN=$(curl --data '{"note": "git-devbliss", "scopes": ["repo"]}' \
+            https://api.github.com/authorizations -s --user $username | grep "\"token\": " | cut -d\" -f4)
+        if [ -z $TOKEN ]; then
+            echo 'Fatal: bad credentials'
+            exit 2
+        fi
+        echo $TOKEN > ~/.gh-token
+    fi
+}
+
+function repo {  # resolve current git repo url (sets $REPO)
+    REPO=`git remote -v | grep github.com | head -n 1 | cut -d\: -f2 | cut -d\. -f1`
+    [ -z $REPO ] && exit 2
+}
+
+auth
+repo
+pulls=$(curl -s -H "Authorization: bearer $TOKEN" https://api.github.com/repos/$REPO/pulls \
+    | grep "\"url\":\ .*pulls\/[0-9]\+\",\?" | cut -d\" -f4)
+if [ ! -z $pulls ]; then
+    echo
+    echo "Open pull requests on $REPO:"
+    echo $pulls | awk '{print "    "$0}'
+    echo
+fi
