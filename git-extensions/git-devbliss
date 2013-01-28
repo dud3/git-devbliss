@@ -85,6 +85,7 @@ function release {
     git commit --allow-empty -m "Release: $1"
     git tag $1
     git push origin $1
+    git push --tags origin $1
 }
 
 function finish {
