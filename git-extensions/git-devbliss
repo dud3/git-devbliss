@@ -22,7 +22,24 @@ function help {
     echo '    delete:   Discard the current branch and delete the remote branch'
 }
 
-function isBranchCommand {
+function is_repository_clean {
+    if [ $(git diff | wc -l) -eq 0 ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+function makefile_hooks {
+    # reasonable targets are: changes, version, test (see: README.md)
+    if [ ! -f Makefile ]; then
+        echo "Warning: No Makefile found. All make hooks have been skipped." >> /dev/stderr
+        return
+    fi
+    make $1 || echo "Warning: Makefile has no target named \"$1\"." >> /dev/stderr
+}
+
+function is_branch_command {
     local e
     for e in "${branches[@]}"; do [[ "$e" == "$1" ]] && return 0; done
     return 1
@@ -56,15 +73,26 @@ function branch {
 }
 
 function release {
+    is_repository_clean || echo "Error: Repository is not clean. Aborting ..." >> /dev/stderr && exit 1
     echo "Have these changes been reviewed?"
     echo "[enter / ctrl+c to cancel]"
     read || exit 1
+    makefile_hooks version
+    if is_repository_clean; then :; else
+        git commit -am "version increment"
+    fi
+    makefile_hooks test
     git commit --allow-empty -m "Release: $1"
     git tag $1
     git push origin $1
 }
 
 function finish {
+    is_repository_clean || echo "Error: Repository is not clean. Aborting ..." >> /dev/stderr && exit 1
+    makefile_hooks changes
+    if ! is_repository_clean; then
+        git commit -am "Ran git devbliss changelog hook"
+    fi
     local branch=`git rev-parse --abbrev-ref HEAD`
     git push origin $branch
     echo
@@ -113,10 +141,10 @@ if [[ $# == 3 ]]; then
         help
     fi
 elif [[ $# == 2 ]]; then
-    if isBranchCommand $1; then
+    if is_branch_command $1; then
         branch $1 $2
     elif [[ $1 == "release" ]]; then
-        if echo $2 | grep -E '^[0-9]+\.[0-9]+(-[1-9][0-9]*)?$'; then
+        if echo $2 | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
             release $2
         else
             echo "Invalid version number" > /dev/stderr
