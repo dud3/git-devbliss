@@ -27,6 +27,6 @@ pulls=$(curl -s -H "Authorization: bearer $TOKEN" https://api.github.com/repos/$
 if [ ! -z "$pulls" ]; then
     echo
     echo "Open pull requests on $REPO:"
-    echo $pulls | tr ' ' '\n' | awk '{print "    "$0}'
+    echo $pulls | tr ' ' '\n' | sed 's#^\(.*\)api\.\(github\.com\)/repos/\(.*\)/pulls/\(.*\)#    \1\2/\3/pull/\4#'
     echo
 fi
