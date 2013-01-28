@@ -77,6 +77,13 @@ function release {
     echo "Have these changes been reviewed?"
     echo "[enter / ctrl+c to cancel]"
     read || exit 1
+    local branch=`git rev-parse --abbrev-ref HEAD`
+    if [[ "$branch" != "master" ]]; then
+        echo "WARNING: You are currently not on master branch. Releasing from feature branches is discouraged."
+        echo "You are currently on branch: $branch"
+        echo "[enter / ctrl+c to cancel]"
+        read || exit 1
+    fi
     makefile_hooks version
     if is_repository_clean; then :; else
         git commit -am "version increment"
