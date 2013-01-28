@@ -171,7 +171,7 @@ should do.
 # Makefiles
 
 Each project needs to provide a `Makefile` in its top-level directory,
-implementing the at least the following commands:
+implementing at least the following commands:
 
     make test
     make
