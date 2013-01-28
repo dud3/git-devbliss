@@ -90,7 +90,9 @@ function release {
 function finish {
     is_repository_clean || echo "Error: Repository is not clean. Aborting ..." >> /dev/stderr && exit 1
     makefile_hooks changes
-    if is_repository_clean; then :; else
+    if is_repository_clean; then
+        : # shell scripts suck. Is there a better syntax for 'if not function()'?
+    else
         git commit -am "changelog"
     fi
     local branch=`git rev-parse --abbrev-ref HEAD`
