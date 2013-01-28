@@ -11,3 +11,11 @@ install:
 	@echo "    echo \"source /etc/bash_completion.d/git-devbliss\" >> ~/.profile"
 	@echo
 	@echo done
+
+.PHONY : version
+version:
+	$(eval VAR1 := $(shell date))
+	@sleep 5
+	$(eval VAR2 := $(shell date))
+	@echo $(VAR1)
+	@echo $(VAR2)

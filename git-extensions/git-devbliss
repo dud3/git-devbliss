@@ -58,7 +58,7 @@ function branch {
 function release {
     echo "Have these changes been reviewed?"
     echo "[enter / ctrl+c to cancel]"
-    read
+    read || exit 1
     git commit --allow-empty -m "Release: $1"
     git tag $1
     git push origin $1
