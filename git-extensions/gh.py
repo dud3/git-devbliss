@@ -51,6 +51,7 @@ def main(token):
     gh = github.GitHub(token)
     user, repo = get_current_repository()
     repo = gh.repo(user, repo)
+    help(repo.issues().get_url())
     issues = [i for i in repo.issues().get() if i.get("pull_request")]
     if issues:
         print()
