@@ -74,3 +74,31 @@ The best thing you can do here is to open a text editor and get used to write th
 of finishing your task. This way you will never forget to remark your changes.
 - **version**: Make sure your projects version number has been incremented (will be run when called 'git devbliss finish')  
 Implement that similar to the changes target.
+
+## make target snippets
+
+This section contains some snippets for the use in conjuction with the recomended make targets. You can copy/paste from here or even better add your own snippets for the benefit of others.
+
+### open changelog in the default editor
+
+    define changelog_cmd
+        changelog="CHANGES.md"
+        echo $$EDITOR
+        if [ -z $$EDITOR ]; then
+            EDITOR=vi
+        fi
+        ch_hash=$$(sha1sum $$changelog)
+        $$EDITOR $$changelog
+        ch_hash_new=$$(sha1sum $$changelog)
+        echo $$ch_hash
+        echo $$ch_hash_new
+        if [ $$ch_hash == $$ch_hash_new ]; then
+            echo "Operation aborted due to missing changelog entry" > /dev/stderr
+            exit 1
+        fi
+    endef
+    export changelog_cmd
+    .PHONY : changelog
+    changelog:
+        @bash -c "$$changelog_cmd"
+
