@@ -50,7 +50,7 @@ The fpath should be set before the compinit.
 
 ## Makefile hooks
 
-You are strongly encouraged to include a Makefile in project which defines entry points
+You need to include a Makefile in your project, which defines entry points
 for common tasks. The Makefile works like an abstraktion layer which has mainly four
 advantages:
 

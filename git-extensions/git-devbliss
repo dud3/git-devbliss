@@ -33,10 +33,10 @@ function is_repository_clean {
 function makefile_hooks {
     # reasonable targets are: changes, version, test (see: README.md)
     if [ ! -f Makefile ]; then
-        echo "WARNING: No Makefile found. All make hooks have been skipped." >> /dev/stderr
+        echo "Warning: No Makefile found. All make hooks have been skipped." >> /dev/stderr
         return
     fi
-    make $1 || echo "WARNING: Makefile has no target named \"$1\". Please implement." >> /dev/stderr
+    make $1 || echo "Warning: Makefile has no target named \"$1\"." >> /dev/stderr
 }
 
 function is_branch_command {
@@ -90,10 +90,8 @@ function release {
 function finish {
     is_repository_clean || echo "Error: Repository is not clean. Aborting ..." >> /dev/stderr && exit 1
     makefile_hooks changes
-    if is_repository_clean; then
-        : # shell scripts suck. Is there a better syntax for 'if not function()'?
-    else
-        git commit -am "changelog"
+    if ! is_repository_clean; then
+        git commit -am "Ran git devbliss changelog hook"
     fi
     local branch=`git rev-parse --abbrev-ref HEAD`
     git push origin $branch
