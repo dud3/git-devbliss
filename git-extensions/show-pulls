@@ -20,6 +20,10 @@ function repo {  # resolve current git repo url (sets $REPO)
     [ -z $REPO ] && exit 2
 }
 
+if ! which curl > /dev/null; then
+    echo "Fatal: curl is not installed" > /dev/stderr
+    exit
+fi
 auth
 repo
 pulls=$(curl -s -H "Authorization: bearer $TOKEN" https://api.github.com/repos/$REPO/pulls \
