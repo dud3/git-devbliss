@@ -101,7 +101,7 @@ function finish {
     hub pull-request
     echo
     git checkout master
-    show-pulls
+    show-pulls || true
 }
 
 function delete {
