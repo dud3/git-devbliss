@@ -24,9 +24,9 @@ auth
 repo
 pulls=$(curl -s -H "Authorization: bearer $TOKEN" https://api.github.com/repos/$REPO/pulls \
     | grep "\"url\":\ .*pulls\/[0-9]\+\",\?" | cut -d\" -f4)
-if [ ! -z $pulls ]; then
+if [ ! -z "$pulls" ]; then
     echo
     echo "Open pull requests on $REPO:"
-    echo $pulls | awk '{print "    "$0}'
+    echo $pulls | tr ' ' '\n' | awk '{print "    "$0}'
     echo
 fi
