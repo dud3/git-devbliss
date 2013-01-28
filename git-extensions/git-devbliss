@@ -74,12 +74,16 @@ function finish {
 }
 
 function delete {
+    local branch=`git rev-parse --abbrev-ref HEAD`
+    if [[ "$branch" == "master" ]]; then
+        echo "Won't delete master branch. Aborting ..." > /dev/stderr
+        exit 1
+    fi
     if [[ $1 != "-f" ]]; then
         echo -n "Really delete the remote branch? [y/N] "
         read a
         if [[ $a == "y" || $a == "Y" ]]; then
-            local branch=`git rev-parse --abbrev-ref HEAD`
-            git push origin :$branch
+            git push --delete origin $branch
             echo 'To restore the remote branch, type'
             echo '    git push --set-upstream origin '$branch
             echo 'To delete your local branch, type'
