@@ -11,7 +11,7 @@ or using wget:
     wget -O - https://raw.github.com/devbliss/workflow/master/install | sh
 
 
-## Installation
+## 'Manual' Installation
 
     git clone git@github.com:devbliss/workflow.git
     cd workflow/git-extensions/
