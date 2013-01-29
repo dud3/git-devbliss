@@ -23,7 +23,7 @@ function help {
 }
 
 function is_repository_clean {
-    if [ "`git status -s --untracked-files=no | wc -l`" != "0" ]; then
+    if [ "`git status --short --untracked-files=no | wc -l`" != "0" ]; then
         return 1
     fi
     return 0
