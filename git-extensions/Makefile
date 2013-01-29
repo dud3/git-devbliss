@@ -37,3 +37,7 @@ export changelog_cmd
 .PHONY : changelog
 changelog:
 	@bash -c "$$changelog_cmd"
+
+.PHONY : version
+version:
+	@bash -c "$$changelog_cmd"
