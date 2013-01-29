@@ -72,7 +72,10 @@ function branch {
 }
 
 function release {
-    is_repository_clean || echo "Error: Repository is not clean. Aborting ..." >> /dev/stderr && exit 1
+    if ! is_repository_clean; then
+        echo "Error: Repository is not clean. Aborting." >> /dev/stderr
+        exit 1
+    fi
     echo "Have these changes been reviewed?"
     echo "[enter / ctrl+c to cancel]"
     read || exit 1
