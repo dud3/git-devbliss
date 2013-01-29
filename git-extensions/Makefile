@@ -22,16 +22,13 @@ uninstall:
 
 define changelog_cmd
 	changelog="CHANGES.md"
-	echo $$EDITOR
-	if [ -z $$EDITOR ]; then
+	if [ -z "$$EDITOR" ]; then
 		EDITOR=vi
 	fi
 	ch_hash=$$(sha1sum $$changelog)
 	$$EDITOR $$changelog
 	ch_hash_new=$$(sha1sum $$changelog)
-	echo $$ch_hash
-	echo $$ch_hash_new
-	if [ $$ch_hash == $$ch_hash_new ]; then
+	if [ "$$ch_hash" == "$$ch_hash_new" ]; then
 		echo "Operation aborted due to missing changelog entry" > /dev/stderr
 		exit 1
 	fi
