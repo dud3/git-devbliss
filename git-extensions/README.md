@@ -1,5 +1,16 @@
 # devbliss git extensions
 
+## Easy web-based Installation
+
+using curl:
+
+    curl -L https://raw.github.com/devbliss/workflow/master/install | sh
+
+or using wget:
+
+    wget -O - https://raw.github.com/devbliss/workflow/master/install | sh
+
+
 ## Installation
 
     git clone git@github.com:devbliss/workflow.git
