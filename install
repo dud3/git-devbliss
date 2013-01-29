@@ -2,5 +2,16 @@
 
 set -e
 
-cd git-extensions/
+REPO=workflow
+CURR_DIR=$(basename $(pwd) )
+
+if [ "$REPO" == "$CURR_DIR" ]; then
+    cd git-extensions/
+else
+    git clone git@github.com:devbliss/${REPO}.git
+    cd workflow/git-extensions/
+fi
+
+echo
+echo "installing system wide..."
 sudo make install
