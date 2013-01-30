@@ -137,8 +137,6 @@ function delete {
     fi
 }
 
-# make sure that hub is installed
-
 # check whether the pwd is a git repository
 git rev-parse --abbrev-ref HEAD > /dev/null || exit 1
 
