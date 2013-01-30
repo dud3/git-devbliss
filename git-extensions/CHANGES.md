@@ -2,6 +2,7 @@
 
 ## 0.1.0
 
+ - finish now checks if current branch contains master
  - create, finish and delete branches and hotfixes
  - create and list pullrequests
  - make releases
