@@ -20,7 +20,10 @@ comletion file in the zsh_completion/ subdirectory an put it in some place in yo
 
     mkdir ~/.zsh_completion
     echo "fpath=(~/.zsh_completion $fpath)" >> ~/.zshrc
+    echo "source ~/.zsh_completion/hack-git-completion" >> ~/.zshrc
     cp zsh_completion/_git-devbliss ~/.zsh_completion/
+    cp zsh_completion/hack-git-completion ~/.zsh_completion/
+
 
 You might already have an fpath vaiable set in your `.zshrc`. In this case you better
 just append the ~/.zsh_completion/.
