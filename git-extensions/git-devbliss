@@ -88,10 +88,10 @@ function release {
     fi
     makefile_hooks version
     if ! is_repository_clean; then
-        git commit -am "version increment"
+        git commit --quiet -am "Ran git devbliss version hook"
     fi
     makefile_hooks test
-    git commit --allow-empty -m "Release: $1"
+    git commit --quiet --allow-empty -m "Release: $1"
     git tag $1
     git push origin $1
     git push --tags origin $1
@@ -104,7 +104,7 @@ function finish {
     fi
     makefile_hooks changelog
     if ! is_repository_clean; then
-        git commit -am "Ran git devbliss changelog hook"
+        git commit --quiet -am "Ran git devbliss changelog hook"
     fi
     local branch=`git rev-parse --abbrev-ref HEAD`
     git push origin $branch
