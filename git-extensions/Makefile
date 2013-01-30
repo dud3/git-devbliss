@@ -2,6 +2,7 @@
 build:
 	@echo nothing to do
 
+.PHONY : install
 install:
 	@cp git-devbliss /usr/bin/
 	@cp show-pulls /usr/bin/show-pulls
