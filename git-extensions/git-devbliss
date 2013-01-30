@@ -111,7 +111,9 @@ function finish {
     echo
     hub pull-request
     echo
-    git checkout master
+    if [[ ! "$branch" =~ ^hotfix ]]; then
+        git checkout master
+    fi
     show-pulls || true
 }
 
