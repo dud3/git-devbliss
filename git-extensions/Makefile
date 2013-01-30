@@ -25,13 +25,7 @@ define changelog_cmd
 	if [ -z "$$EDITOR" ]; then
 		EDITOR=vi
 	fi
-	ch_hash=$$(sha1sum $$changelog)
 	$$EDITOR $$changelog
-	ch_hash_new=$$(sha1sum $$changelog)
-	if [ "$$ch_hash" == "$$ch_hash_new" ]; then
-		echo "Operation aborted due to missing changelog entry" > /dev/stderr
-		exit 1
-	fi
 endef
 export changelog_cmd
 .PHONY : changelog
