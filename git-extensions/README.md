@@ -14,19 +14,13 @@ append the following line to your `.profile` (or `.bashrc`) file:
 
 ### Zsh Completion
 
-Zsh has no proper default location for custom completion scripts. So just grep the
-comletion file in the zsh_completion/ subdirectory an put it in some place in your
-`$fpath`. Here is a useful example which employs a completion directory in your `~`:
+Just put the following in your .zshrc:
 
-    mkdir ~/.zsh_completion
-    echo "fpath=(~/.zsh_completion $fpath)" >> ~/.zshrc
-    echo "source ~/.zsh_completion/hack-git-completion" >> ~/.zshrc
-    cp zsh_completion/_git-devbliss ~/.zsh_completion/
-    cp zsh_completion/hack-git-completion ~/.zsh_completion/
+    fpath=(<path-to-workflow>/git-extensions/zsh_completion $fpath)
+    zstyle ':completion:*:*:git:*' user-commands \
+        devbliss:'devbliss git workflow' \
 
 
-You might already have an fpath vaiable set in your `.zshrc`. In this case you better
-just append the ~/.zsh_completion/.
 To make completion work at all you have to load zsh's completion module like this:
 
     autoload -Uz compinit
