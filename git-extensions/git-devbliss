@@ -138,11 +138,6 @@ function delete {
 }
 
 # make sure that hub is installed
-if [ ! `which hub` ]; then
-    echo "Fatal: hub is not installed" > /dev/stderr
-    echo "       see <https://github.com/defunkt/hub>"
-    exit 1
-fi
 
 # check whether the pwd is a git repository
 git rev-parse --abbrev-ref HEAD > /dev/null || exit 1
