@@ -103,7 +103,7 @@ function finish {
         echo "Error: Repository is not clean. Aborting." >> /dev/stderr
         exit 1
     fi
-    if git branch --no-merged master | grep "$branch"; then
+    if git branch --no-merged master | grep "$branch" > /dev/null; then
         echo "Error: Won't finish. Master is not merged into the current branch." > /dev/stderr
         echo "Please do 'git pull origin master', make sure all conflicts are merged and try again." > /dev/stderr
         exit 1
