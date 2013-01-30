@@ -3,7 +3,7 @@
 set -eu
 
 # normal branches
-branches=(feature bug refactor)
+branches=(feature bug refactor research)
 
 function help {
     echo 'Usage:'
