@@ -116,3 +116,14 @@ def pull_request():
         sys.exit(1)
     print(req["html_url"])
     sys.exit(0)
+
+
+def main(args):
+    if args[:1] == ["pull-request"]:
+        pull_request()
+    print(usage)
+    sys.exit(2)
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

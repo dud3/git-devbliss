@@ -109,7 +109,7 @@ function finish {
     local branch=`git rev-parse --abbrev-ref HEAD`
     git push origin $branch
     echo
-    hub pull-request
+    github-devbliss pull-request
     echo
     git checkout master
     show-pulls || true
