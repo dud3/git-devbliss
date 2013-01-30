@@ -80,7 +80,7 @@ function release {
     echo "[enter / ctrl+c to cancel]"
     read || exit 1
     local branch=`git rev-parse --abbrev-ref HEAD`
-    if [[ "$branch" != "master" ]]; then
+    if [[ ! "$branch" =~ ^hotfix && "$branch" != 'master' ]]; then
         echo "Warning: You are not currently on the master branch. Releasing from feature branches is discouraged."
         echo "Currently on branch $branch"
         echo "[enter / ctrl+c to cancel]"
