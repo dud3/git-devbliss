@@ -37,8 +37,8 @@
 
 ## Make a hot fix in release 1.0
 
-    git devbliss hotfix 1.0 executable
-    emacs hello.py  # shebang
+    git devbliss hotfix 1.0.0 executable
+    emacs hello.py  # add '#!/usr/bin/env python3'
     chmod a+x hello.py
     git commit -am "made the script executable"
     git devbliss finish
