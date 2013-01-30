@@ -37,7 +37,7 @@ The fpath should be set before the compinit.
 ## Overview
 
     Usage:
-        git devbliss [feature | bug | refactor] DESCRIPTION
+        git devbliss [feature | bug | refactor | research] DESCRIPTION
         git devbliss hotfix VERSION DESCRIPTION
         git devbliss finish
         git devbliss release VERSION
