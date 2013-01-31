@@ -1,6 +1,7 @@
 # git devbliss changelog
 
 ## 0.1.0
+ - added native github client (python)
  - add research command to git devbliss
  - create, finish and delete branches and hotfixes
  - create and list pullrequests
