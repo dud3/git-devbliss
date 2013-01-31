@@ -80,7 +80,7 @@ function release {
     echo "[enter / ctrl+c to cancel]"
     read || exit 1
     local branch=`git rev-parse --abbrev-ref HEAD`
-    if [[ "$branch" != "master" ]]; then
+    if [[ ! "$branch" =~ ^hotfix && "$branch" != 'master' ]]; then
         echo "Warning: You are not currently on the master branch. Releasing from feature branches is discouraged."
         echo "Currently on branch $branch"
         echo "[enter / ctrl+c to cancel]"
@@ -88,30 +88,37 @@ function release {
     fi
     makefile_hooks version
     if ! is_repository_clean; then
-        git commit -am "version increment"
+        git commit --quiet -am "Ran git devbliss version hook"
     fi
     makefile_hooks test
-    git commit --allow-empty -m "Release: $1"
+    git commit --quiet --allow-empty -m "Release: $1"
     git tag $1
     git push origin $1
     git push --tags origin $1
 }
 
 function finish {
+    local branch=`git rev-parse --abbrev-ref HEAD`
     if ! is_repository_clean; then
         echo "Error: Repository is not clean. Aborting." >> /dev/stderr
         exit 1
     fi
+    if ! git branch --contains master | grep "$branch" > /dev/null; then
+        echo "Error: Won't finish. Master is not merged into the current branch." > /dev/stderr
+        echo "Please do 'git pull origin master', make sure all conflicts are merged and try again." > /dev/stderr
+        exit 1
+    fi
     makefile_hooks changelog
     if ! is_repository_clean; then
-        git commit -am "Ran git devbliss changelog hook"
+        git commit --quiet -am "Ran git devbliss changelog hook"
     fi
-    local branch=`git rev-parse --abbrev-ref HEAD`
     git push origin $branch
     echo
     github-devbliss pull-request
     echo
-    git checkout master
+    if [[ ! "$branch" =~ ^hotfix ]]; then
+        git checkout master
+    fi
     show-pulls || true
 }
 

@@ -14,19 +14,13 @@ append the following line to your `.profile` (or `.bashrc`) file:
 
 ### Zsh Completion
 
-Zsh has no proper default location for custom completion scripts. So just grep the
-comletion file in the zsh_completion/ subdirectory an put it in some place in your
-`$fpath`. Here is a useful example which employs a completion directory in your `~`:
+Just put the following in your .zshrc:
 
-    mkdir ~/.zsh_completion
-    echo "fpath=(~/.zsh_completion $fpath)" >> ~/.zshrc
-    echo "source ~/.zsh_completion/hack-git-completion" >> ~/.zshrc
-    cp zsh_completion/_git-devbliss ~/.zsh_completion/
-    cp zsh_completion/hack-git-completion ~/.zsh_completion/
+    fpath=(<path-to-workflow>/git-extensions/zsh_completion $fpath)
+    zstyle ':completion:*:*:git:*' user-commands \
+        devbliss:'devbliss git workflow' \
 
 
-You might already have an fpath vaiable set in your `.zshrc`. In this case you better
-just append the ~/.zsh_completion/.
 To make completion work at all you have to load zsh's completion module like this:
 
     autoload -Uz compinit
@@ -82,23 +76,32 @@ Implement that similar to the changes target.
 
 This section contains some snippets for the use in conjuction with the recomended make targets. You can copy/paste from here or even better add your own snippets for the benefit of others.
 
-### open changelog in the default editor
+### Open changelog in the default editor
 
     define changelog_cmd
-        changelog="CHANGES.md"
-        if [ -z "$$EDITOR" ]; then
-            EDITOR=vi
-        fi
-        ch_hash=$$(sha1sum $$changelog)
-        $$EDITOR $$changelog
-        ch_hash_new=$$(sha1sum $$changelog)
-        if [ "$$ch_hash" == "$$ch_hash_new" ]; then
-            echo "Operation aborted due to missing changelog entry" > /dev/stderr
-            exit 1
-        fi
+    	changelog="CHANGES.md"
+    	if [ -z "$$EDITOR" ]; then
+    	    EDITOR=vi
+    	fi
+    	$$EDITOR $$changelog
     endef
     export changelog_cmd
     .PHONY : changelog
     changelog:
-        @bash -c "$$changelog_cmd"
+    	@bash -c "$$changelog_cmd"
+
+
+### Typical maven delegation
+
+    build:
+    	mvn gwt:compile
+
+    changelog:
+    	@bash -c "$$changelog_cmd"
+
+    test:
+    	mvn test
+
+    clean:
+    	mvn clean
 
