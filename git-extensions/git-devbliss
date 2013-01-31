@@ -3,7 +3,7 @@
 set -eu
 
 # normal branches
-branches=(feature bug refactor)
+branches=(feature bug refactor research)
 
 function help {
     echo 'Usage:'
@@ -80,7 +80,7 @@ function release {
     echo "[enter / ctrl+c to cancel]"
     read || exit 1
     local branch=`git rev-parse --abbrev-ref HEAD`
-    if [[ "$branch" != "master" ]]; then
+    if [[ ! "$branch" =~ ^hotfix && "$branch" != 'master' ]]; then
         echo "Warning: You are not currently on the master branch. Releasing from feature branches is discouraged."
         echo "Currently on branch $branch"
         echo "[enter / ctrl+c to cancel]"
@@ -88,10 +88,10 @@ function release {
     fi
     makefile_hooks version
     if ! is_repository_clean; then
-        git commit -am "version increment"
+        git commit --quiet -am "Ran git devbliss version hook"
     fi
     makefile_hooks test
-    git commit --allow-empty -m "Release: $1"
+    git commit --quiet --allow-empty -m "Release: $1"
     git tag $1
     git push origin $1
     git push --tags origin $1
@@ -110,13 +110,15 @@ function finish {
     fi
     makefile_hooks changelog
     if ! is_repository_clean; then
-        git commit -am "Ran git devbliss changelog hook"
+        git commit --quiet -am "Ran git devbliss changelog hook"
     fi
     git push origin $branch
     echo
     hub pull-request
     echo
-    git checkout master
+    if [[ ! "$branch" =~ ^hotfix ]]; then
+        git checkout master
+    fi
     show-pulls || true
 }
 
