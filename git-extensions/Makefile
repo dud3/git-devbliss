@@ -22,6 +22,7 @@ uninstall:
 	@rm -f /usr/bin/git-devbliss
 	@rm -f /usr/bin/show-pulls
 	@rm -f /etc/bash_completion.d/git-devbliss
+	@rm -f /usr/bin/github-devbliss
 
 define changelog_cmd
 	changelog="CHANGES.md"
