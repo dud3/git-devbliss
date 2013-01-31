@@ -119,6 +119,14 @@ def pull_request():
 
 
 def main(args):
+    usage = """Devbliss Github Client
+
+Usage:
+    {} [pull-request]
+
+Options:
+    pull-request    Start a new pull request from the
+                    current branch to master""".format(sys.argv[0])
     if args[:1] == ["pull-request"]:
         pull_request()
     print(usage)
