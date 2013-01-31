@@ -79,20 +79,14 @@ This section contains some snippets for the use in conjuction with the recomende
 ### open changelog in the default editor
 
     define changelog_cmd
-        changelog="CHANGES.md"
-        if [ -z "$$EDITOR" ]; then
-            EDITOR=vi
-        fi
-        ch_hash=$$(sha1sum $$changelog)
-        $$EDITOR $$changelog
-        ch_hash_new=$$(sha1sum $$changelog)
-        if [ "$$ch_hash" == "$$ch_hash_new" ]; then
-            echo "Operation aborted due to missing changelog entry" > /dev/stderr
-            exit 1
-        fi
+    	changelog="CHANGES.md"
+    	if [ -z "$$EDITOR" ]; then
+    	    EDITOR=vi
+    	fi
+    	$$EDITOR $$changelog
     endef
     export changelog_cmd
     .PHONY : changelog
     changelog:
-        @bash -c "$$changelog_cmd"
+    	@bash -c "$$changelog_cmd"
 
