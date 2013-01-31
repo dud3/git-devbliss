@@ -28,7 +28,7 @@ class GitHub (object):
             "User-Agent": "git-devbliss/ng",  # TODO
             "Content-Type": "application/json", "Content-Length": str(len(body)),
             "Authorization": "basic " + base64.encodestring(
-                    ":".join((username, password))), })
+                    ":".join((username, password))).strip(), })
         resp = conn.getresponse()
         if resp.status == 401:
             raise ValueError("Bad credentials")
