@@ -88,5 +88,5 @@ This section contains some snippets for the use in conjuction with the recomende
     export changelog_cmd
     .PHONY : changelog
     changelog:
-    	@bash -c "$$changelog_cmd"
+        @bash -c "$$changelog_cmd"
 
