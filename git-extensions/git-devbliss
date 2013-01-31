@@ -114,7 +114,7 @@ function finish {
     fi
     git push origin $branch
     echo
-    hub pull-request
+    github-devbliss pull-request
     echo
     if [[ ! "$branch" =~ ^hotfix ]]; then
         git checkout master
@@ -143,13 +143,6 @@ function delete {
         fi
     fi
 }
-
-# make sure that hub is installed
-if [ ! `which hub` ]; then
-    echo "Fatal: hub is not installed" > /dev/stderr
-    echo "       see <https://github.com/defunkt/hub>"
-    exit 1
-fi
 
 # check whether the pwd is a git repository
 git rev-parse --abbrev-ref HEAD > /dev/null || exit 1
