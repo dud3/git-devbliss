@@ -49,7 +49,7 @@ class GitHub (object):
     def _request(self, method, path, body=None, host="api.github.com"):
         conn = httplib.HTTPSConnection(host)
         conn.request(method, path, body, headers={
-            "Authorization": "bearer 0c0258d313269f390797ac406e16ac0c3e96354f",
+            "Authorization": "bearer " + self.token,
             "User-Agent": "git-devbliss/ng",  # TODO
         })
         resp = conn.getresponse()
