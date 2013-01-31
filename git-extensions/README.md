@@ -76,7 +76,7 @@ Implement that similar to the changes target.
 
 This section contains some snippets for the use in conjuction with the recomended make targets. You can copy/paste from here or even better add your own snippets for the benefit of others.
 
-### open changelog in the default editor
+### Open changelog in the default editor
 
     define changelog_cmd
     	changelog="CHANGES.md"
@@ -91,7 +91,7 @@ This section contains some snippets for the use in conjuction with the recomende
     	@bash -c "$$changelog_cmd"
 
 
-### typical maven delegation
+### Typical maven delegation
 
     build:
     	mvn gwt:compile
