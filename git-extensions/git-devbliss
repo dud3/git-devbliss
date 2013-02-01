@@ -11,6 +11,7 @@ function help {
     echo '    git devbliss hotfix VERSION DESCRIPTION'
     echo '    git devbliss finish'
     echo '    git devbliss release VERSION'
+    echo '    git devbliss status'
     echo '    git devbliss delete [-f]'
     echo
     echo 'Commands:'
@@ -19,6 +20,7 @@ function help {
     echo '    hotfix:   Branch from a tag (fix a bug in an already released version)'
     echo '    finish:   Open a pull request for the current branch'
     echo '    release:  Create a new tag, commit and push'
+    echo '    status:   List branches, pull requests, and issues'
     echo '    delete:   Discard the current branch and delete the remote branch'
 }
 
@@ -183,6 +185,8 @@ elif [[ $# == 1 ]]; then
         finish
     elif [[ $1 == "delete" ]]; then
         delete ""
+    elif [[ $1 == "status" ]]; then
+        github-devbliss status
     else
         help
     fi
