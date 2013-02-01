@@ -13,6 +13,7 @@ function help {
     echo '    git devbliss release VERSION'
     echo '    git devbliss status'
     echo '    git devbliss delete [-f]'
+    echo '    git devbliss version'
     echo
     echo 'Commands:'
     echo '    '`echo "${branches[@]}" | sed 's/ /, /g'`':'
@@ -40,6 +41,7 @@ function update_check {
     if [[ $latest_remote > $local_version ]]; then
         echo "New version ($latest_remote) of git devbliss available. Your version is $local_version"
         echo "Please go to your local copy of git devbliss (workflow) and enter './update'"
+        echo
     fi
 }
 
@@ -210,6 +212,7 @@ elif [[ $# == 1 ]]; then
         version
     elif [[ $1 == "status" ]]; then
         github-devbliss status
+        update_check
     else
         help
     fi
