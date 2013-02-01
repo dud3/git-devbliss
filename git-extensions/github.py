@@ -147,14 +147,15 @@ def status():
         print()
         print("Pull Requests:")
     for i in pulls:
-        print("    {} <{}>".format(i["title"], i["html_url"]))
+        print("    #{}: {} <{}>".format(i["number"], i["title"], i["html_url"]))
     issues = [i for i in github.issues(owner, repository)
         if not i["pull_request"]["diff_url"]]
     if issues:
         print()
         print("Issues:")
         for i in issues:
-            print("    {} <{}>".format(i["title"], i["html_url"]))
+            print()
+            print("    #{}: {} <{}>".format(i["number"], i["title"], i["html_url"]))
     print()
 
 
