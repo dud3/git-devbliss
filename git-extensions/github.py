@@ -100,13 +100,7 @@ class GitHub (object):
 
 def tags():
     github = GitHub()
-    try:
-        owner, repository = github.get_current_repo()
-    except subprocess.CalledProcessError as e:
-        sys.exit(1)
-    except ValueError:
-        print("Fatal: " + str(e), file=sys.stderr)
-        sys.exit(1)
+    owner, repository = get_repository()
     try:
         req = github.tags(owner, repository)
     except http.HTTPException as e:
