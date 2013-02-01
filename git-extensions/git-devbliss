@@ -21,7 +21,7 @@ function help {
     echo '    finish:   Open a pull request for the current branch'
     echo '    release:  Create a new tag, commit and push'
     echo '    status:   List branches, pull requests, and issues'
-    echo '    delete:   Discard the current branch and delete the remote branch'
+    echo '    delete:   Delete the current branch on github.com'
     echo '    version:  Print version number'
 }
 
