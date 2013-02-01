@@ -120,6 +120,7 @@ function finish {
     echo
     if [[ ! "$branch" =~ ^hotfix ]]; then
         git checkout master
+        git pull
     fi
     show-pulls || true
 }
