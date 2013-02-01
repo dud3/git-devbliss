@@ -124,7 +124,7 @@ def tags():
 
 
 
-def pull_request():
+def get_repository():
     github = GitHub()
     try:
         owner, repository = github.get_current_repo()
@@ -133,6 +133,12 @@ def pull_request():
     except ValueError:
         print("Fatal: " + str(e), file=sys.stderr)
         sys.exit(1)
+    return owner, repository
+
+
+def pull_request():
+    github = GitHub()
+    owner, repository = get_repository()
     try:
         req = github.pull_request(owner, repository, github.get_current_branch())
     except httplib.HTTPException as e:
@@ -144,7 +150,34 @@ def pull_request():
             print("Fatal:", status, reason)
         sys.exit(1)
     print(req["html_url"])
-    sys.exit(0)
+
+
+def status():
+    github = GitHub()
+    owner, repository = get_repository()
+    branches = github.branches(owner, repository)
+    print()
+    print("Tracking {}/{} <https://github.com/{}/{}>".format(owner, repository, owner, repository))
+    print()
+    print("Branches:")
+    for i in branches:
+        url = "https://github.com/{}/{}/tree/{}".format(
+            owner, repository, i["name"])
+        print("    {} <{}>".format(i["name"], url))
+    pulls = github.pulls(owner, repository)
+    if pulls:
+        print()
+        print("Pull Requests:")
+    for i in pulls:
+        print("    {} <{}>".format(i["title"], i["html_url"]))
+    issues = [i for i in github.issues(owner, repository)
+        if not i["pull_request"]["diff_url"]]
+    if issues:
+        print()
+        print("Issues:")
+        for i in issues:
+            print("    {} <{}>".format(i["title"], i["html_url"]))
+    print()
 
 
 def main(args):
@@ -161,8 +194,13 @@ Options:
     """.format(sys.argv[0])
     if args[:1] == ["pull-request"]:
         pull_request()
+        sys.exit(0)
     if args[:1] == ["tags"]:
         tags()
+        sys.exit(0)
+    if args[:1] == ["status"]:
+        status()
+        sys.exit(0)
     print(usage)
     sys.exit(2)
 
