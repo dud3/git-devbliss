@@ -10,6 +10,7 @@ install:
 	@chmod a+x /usr/bin/show-pulls
 	@chmod a+x /usr/bin/github-devbliss
 	@mkdir -p /etc/bash_completion.d/
+	@git config --global alias.de devbliss
 	@cp bash_completion/git-devbliss /etc/bash_completion.d/
 	@echo To enable bash completion, source '/etc/bash_completion.d/git-devbliss':
 	@echo
