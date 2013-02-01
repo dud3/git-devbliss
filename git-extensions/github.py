@@ -105,25 +105,6 @@ class GitHub (object):
         return subprocess.check_output("git rev-parse "
             "--abbrev-ref HEAD", shell=True).strip()
 
-def tags():
-    github = GitHub()
-    owner, repository = get_repository()
-    try:
-        req = github.tags(owner, repository)
-    except http.HTTPException as e:
-        status, reason, body = e.args
-        if status == 404:
-            for i in (j for j in json.loads(body)["errors"] if j.get("message")):
-                print("Fatal: " + str(i.get("message") or i))
-        else:
-            print("Fatal:", status, reason)
-        sys.exit(1)
-    tags = [tag['name'] for tag in req]
-    tags.sort()
-    print("\n".join(tags))
-    sys.exit(0)
-
-
 
 def get_repository():
     github = GitHub()
@@ -135,6 +116,22 @@ def get_repository():
         print("Fatal: " + str(e), file=sys.stderr)
         sys.exit(1)
     return owner, repository
+
+
+def tags():
+    github = GitHub()
+    if len(sys.argv) == 3:
+        owner, repository = sys.argv[-1].split("/")
+    else:
+        owner, repository = get_repository()
+    try:
+        req = github.tags(owner, repository)
+    except httplib.HTTPException as e:
+        status, reason, body = e.args
+        print("Fatal:", status, reason)
+        sys.exit(1)
+    print("\n".join(sorted(tag["name"] for tag in req)))
+    sys.exit(0)
 
 
 def pull_request():
@@ -214,7 +211,7 @@ Usage:
     {name} pull-request
     {name} status
     {name} issue [TITLE]
-    {name} tags
+    {name} tags [REPOSITORY]
 
 Options:
     pull-request    Start a new pull request from the
@@ -226,6 +223,9 @@ Options:
         pull_request()
         sys.exit(0)
     if args[:1] == ["tags"] and len(args) == 1:
+        tags()
+        sys.exit(0)
+    if args[:1] == ["tags"] and len(args) == 2 and "/" in args[-1]:
         tags()
         sys.exit(0)
     if args[:1] == ["status"] and len(args) == 1:

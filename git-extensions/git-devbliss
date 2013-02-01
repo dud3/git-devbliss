@@ -34,7 +34,7 @@ function version {
 }
 
 function update_check {
-    local latest_remote=$(github-devbliss tags | rev | cut -d' ' -f1 | rev)
+    local latest_remote=$(github-devbliss tags devbliss/workflow | tail -n1)
     if [ -z $latest_remote ]; then
         return 0
     fi
