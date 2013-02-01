@@ -180,6 +180,8 @@ elif [[ $# == 2 ]]; then
         else
             help
         fi
+    elif [[ $1 == "issue" ]]; then
+        github-devbliss issue $2
     else
         help
     fi
@@ -190,6 +192,8 @@ elif [[ $# == 1 ]]; then
         delete ""
     elif [[ $1 == "status" ]]; then
         github-devbliss status
+    elif [[ $1 == "issue" ]]; then
+        github-devbliss issue
     else
         help
     fi
