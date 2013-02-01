@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -eu
+
+latest_remote=$(github-devbliss tags | tail -n1)
+cd git-extensions/
+git fetch origin --quiet
+git checkout --quiet $latest_remote
+sudo make install
+cd ..
+echo
+echo "Update successful. You're now on version $latest_remote"
+echo
+#What's new?
+changelog="/usr/share/doc/git-devbliss/CHANGES.md"
+perl -pe '/^##/ && $entry++; if ($entry > 1) {exit};' $changelog
+

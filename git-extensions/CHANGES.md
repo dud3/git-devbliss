@@ -3,6 +3,10 @@
 ## 0.1.0
 
  - new 'issue' command
+ - added uninstall script
+ - added update script
+ - update check
+ - added manpage
  - added 'status' command
  - aliased git devbliss to git de
  - added native github client (python)
