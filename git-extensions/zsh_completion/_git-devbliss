@@ -10,7 +10,7 @@ _git-devbliss() {
 
     case $state in
     commands)
-        _arguments '1:Commands:(feature bug refactor hotfix finish release delete)'
+        _arguments '1:Commands:(feature bug refactor research hotfix finish release delete version)'
     ;;
     *)
         case $words[2] in

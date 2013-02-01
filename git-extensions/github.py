@@ -67,7 +67,11 @@ class GitHub (object):
 
     def branches(self, owner, repository):
         return self._request("GET", "/repos/"
-            "{}/{}/issues".format(owner, repository))
+            "{}/{}/branches".format(owner, repository))
+
+    def tags(self, owner, repository):
+        return self._request("GET", "/repos/"
+            "{}/{}/tags".format(owner, repository))
 
     def orgs(self, org):
         return self._request("GET", "/orgs/{}".format(org))
@@ -93,6 +97,31 @@ class GitHub (object):
     def get_current_branch(self):
         return subprocess.check_output("git rev-parse "
             "--abbrev-ref HEAD", shell=True).strip()
+
+def tags():
+    github = GitHub()
+    try:
+        owner, repository = github.get_current_repo()
+    except subprocess.CalledProcessError as e:
+        sys.exit(1)
+    except ValueError:
+        print("Fatal: " + str(e), file=sys.stderr)
+        sys.exit(1)
+    try:
+        req = github.tags(owner, repository)
+    except http.HTTPException as e:
+        status, reason, body = e.args
+        if status == 404:
+            for i in (j for j in json.loads(body)["errors"] if j.get("message")):
+                print("Fatal: " + str(i.get("message") or i))
+        else:
+            print("Fatal:", status, reason)
+        sys.exit(1)
+    tags = [tag['name'] for tag in req]
+    tags.sort()
+    print(" ".join(tags))
+    sys.exit(0)
+
 
 
 def pull_request():
@@ -126,9 +155,14 @@ Usage:
 
 Options:
     pull-request    Start a new pull request from the
-                    current branch to master""".format(sys.argv[0])
+                    current branch to master
+
+    tags            list current repositories tags
+    """.format(sys.argv[0])
     if args[:1] == ["pull-request"]:
         pull_request()
+    if args[:1] == ["tags"]:
+        tags()
     print(usage)
     sys.exit(2)
 

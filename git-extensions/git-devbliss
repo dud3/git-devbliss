@@ -20,6 +20,25 @@ function help {
     echo '    finish:   Open a pull request for the current branch'
     echo '    release:  Create a new tag, commit and push'
     echo '    delete:   Discard the current branch and delete the remote branch'
+    echo '    version:  Print version number'
+}
+
+function version {
+    changelog="/usr/share/doc/git-devbliss/CHANGES.md"
+    local local_version=$(perl -ne '/^##/ && s/^## +(\d\.\d\.\d)/$1/ && print && exit 0' $changelog)
+    echo $local_version
+}
+
+function update_check {
+    local latest_remote=$(github-devbliss tags | rev | cut -d' ' -f1 | rev)
+    if [ -z $latest_remote ]; then
+        return 0
+    fi
+    local local_version=$(version)
+    if [[ $latest_remote > $local_version ]]; then
+        echo "New version ($latest_remote) of git devbliss available. Your version is $local_version"
+        echo "Please go to your local copy of git devbliss (workflow) and enter 'sudo ./update'"
+    fi
 }
 
 function is_repository_clean {
@@ -120,6 +139,7 @@ function finish {
         git checkout master
     fi
     show-pulls || true
+    update_check
 }
 
 function delete {
@@ -183,9 +203,12 @@ elif [[ $# == 1 ]]; then
         finish
     elif [[ $1 == "delete" ]]; then
         delete ""
+    elif [[ $1 == "version" ]]; then
+        version
     else
         help
     fi
 else
     help
 fi
+
