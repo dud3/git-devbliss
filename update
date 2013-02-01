@@ -13,5 +13,5 @@ echo "Update successful. You're now on version $latest_remote"
 echo
 #What's new?
 changelog="/usr/share/doc/git-devbliss/CHANGES.md"
-perl -pe '/^##/ && $entry++; if ($entry > 1) {exit};' $changelog
+perl -pe '/^## +\d\.\d\.\d/ && $entry++; if ($entry > 1) {exit};' $changelog
 
