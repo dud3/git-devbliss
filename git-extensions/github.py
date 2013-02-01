@@ -65,6 +65,13 @@ class GitHub (object):
         return self._request("GET", "/repos/"
             "{}/{}/issues".format(owner, repository))
 
+    def issue(self, owner, repository, title, body):
+        return self._request("POST", "/repos/"
+            "{}/{}/issues".format(owner, repository), json.dumps({
+                "title": title,
+                "body": body or None,
+            }))
+
     def branches(self, owner, repository):
         return self._request("GET", "/repos/"
             "{}/{}/branches".format(owner, repository))
@@ -151,6 +158,19 @@ def status():
     print()
 
 
+def issue():
+    github = GitHub()
+    owner, repository = get_repository()
+    try:
+        title = raw_input("Title: ") if len(sys.argv) == 2 else sys.argv[-1]
+        req = github.issue(owner, repository, title, None)
+    except httplib.HTTPException as e:
+        status, reason, body = e.args
+        print("Fatal:", status, reason)
+        sys.exit(1)
+    print(req["html_url"])
+
+
 def main(args):
     usage = """Devbliss Github Client
 
@@ -163,8 +183,11 @@ Options:
     if args[:1] == ["pull-request"]:
         pull_request()
         sys.exit(0)
-    if args[:1] == ["status"]:
+    if args[:1] == ["status"] and len(args) == 1:
         status()
+        sys.exit(0)
+    if args[:1] == ["issue"] and len(args) in (1, 2):
+        issue()
         sys.exit(0)
     print(usage)
     sys.exit(2)
