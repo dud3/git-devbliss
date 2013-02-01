@@ -6,7 +6,7 @@ latest_remote=$(github-devbliss tags | tail -n1)
 cd git-extensions/
 git fetch origin --quiet
 #git checkout --quiet $latest_remote
-make install
+sudo make install
 cd ..
 echo
 echo "Update successful. You're now on version $latest_remote"
