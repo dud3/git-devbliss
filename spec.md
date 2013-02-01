@@ -53,17 +53,17 @@ In addition to master, there are three branches in this example:
         git checkout master
         git checkout -b feature/1
         ...
-        git tag 1.1
+        git tag 1.1.0
         git checkout master
         git merge feature/1
 
  - `hotfix/1` fixes a bug in version 1.1.0 (consequently, the release
    that will eventually be made on it is `1.1.1`).
 
-        git checkout 1.1
+        git checkout 1.1.0
         git checkout -b hotfix/1
         ...
-        git tag 1.1-1
+        git tag 1.1.1
         git checkout master
         git merge hotfix/1
 
@@ -185,5 +185,10 @@ The following targets might be used by the devbliss git extensions:
     make test
     make clean
     make deb
-    make changes
+    make changelog
     make version
+
+The target `changelog` is automatically run by `git-devbliss finish`,
+and the `version` target is run by `git-devbliss release`. If those
+targets aren't implemented, the git extensions will simply print a
+warning.
