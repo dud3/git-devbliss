@@ -111,9 +111,7 @@ def tags():
         else:
             print("Fatal:", status, reason)
         sys.exit(1)
-    tags = [tag['name'] for tag in req]
-    tags.sort()
-    print("\n".join(tags))
+    print("\n".join(sorted(tag["name"] for tag in req)))
     sys.exit(0)
 
 
@@ -186,7 +184,7 @@ Options:
                     current branch to master
 
     tags            list current repositories tags
-    """.format(sys.argv[0] * 2)
+    """.format([sys.argv[0]] * 2)
     if args[:1] == ["pull-request"]:
         pull_request()
         sys.exit(0)

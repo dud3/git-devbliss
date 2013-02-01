@@ -3,11 +3,11 @@
 set -eu
 
 latest_remote=$(github-devbliss tags | tail -n1)
-cd git-extensions/
+cd $(dirname $0)
 git fetch origin --quiet
 git checkout --quiet $latest_remote
 sudo make install
-cd ..
+cd -
 echo
 echo "Update successful. You're now on version $latest_remote"
 echo
