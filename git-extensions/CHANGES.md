@@ -2,7 +2,7 @@
 
 ## 0.1.1
 
- - better regex to grep version no from changelog
+- better regex to grep version no from changelog
 
 ## 0.1.0
 
