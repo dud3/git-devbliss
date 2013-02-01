@@ -163,12 +163,24 @@ def issue():
     owner, repository = get_repository()
     try:
         title = raw_input("Title: ") if len(sys.argv) == 2 else sys.argv[-1]
-        req = github.issue(owner, repository, title, None)
+        body = ""
+        print("Body (^D to finish):")
+        while True:
+            try:
+                body += raw_input("") + "\n"
+            except EOFError:
+                break
+            except KeyboardInterrupt():
+                print()
+                sys.exit(2)
+        req = github.issue(owner, repository, title, body)
     except httplib.HTTPException as e:
         status, reason, body = e.args
         print("Fatal:", status, reason)
         sys.exit(1)
-    print(req["html_url"])
+    print()
+    print("    " + req["html_url"])
+    print()
 
 
 def main(args):
