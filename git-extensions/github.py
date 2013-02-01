@@ -222,17 +222,13 @@ Options:
     status          List information about the repository
     issue           Quickly post a new issue
     tags            List the current repository's tags""".format(name=sys.argv[0])
-    if args[:1] == ["pull-request"]:
+    if args[:1] == ["pull-request"] and len(args) == 1:
         pull_request()
         sys.exit(0)
-    if args[:1] == ["status"] and len(args) == 1:
-    if args[:1] == ["pull-request"]:
-        pull_request()
-        sys.exit(0)
-    if args[:1] == ["tags"]:
+    if args[:1] == ["tags"] and len(args) == 1:
         tags()
         sys.exit(0)
-    if args[:1] == ["status"]:
+    if args[:1] == ["status"] and len(args) == 1:
         status()
         sys.exit(0)
     if args[:1] == ["issue"] and len(args) in (1, 2):
