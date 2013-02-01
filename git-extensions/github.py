@@ -87,7 +87,7 @@ class GitHub (object):
         return self._request("GET", "/orgs/{}/events".format(org))
 
     def repos(self, org):
-        return self._request("GET", "/orgs/{}/repos".format(org))
+        return self._request("GET", "/orgs/{}/repos?per_page=500".format(org))
 
     def pull_request(self, owner, repository, head, base="master", title="", body=""):
         return self._request("POST", "/repos/{}/{}/pulls".format(owner, repository),
@@ -204,6 +204,23 @@ def issue():
     print()
 
 
+def overview():
+    github = GitHub()
+    owner = sys.argv[-1]
+    first = True
+    for i in github.repos(owner):
+        repository = i["name"]
+        pulls = github.pulls(owner, repository)
+        if pulls:
+            if first:
+                print()
+                first = False
+            print(repository, "<https://github.com/{}/{}>".format(owner, repository))
+            for p in pulls:
+                print("    #{number}: {title} <{html_url}>".format(**p))
+            print()
+
+
 def main(args):
     usage = """Devbliss Github Client
 
@@ -212,13 +229,16 @@ Usage:
     {name} status
     {name} issue [TITLE]
     {name} tags [REPOSITORY]
+    {name} overview ORG
 
 Options:
     pull-request    Start a new pull request from the
                     current branch to master
     status          List information about the repository
     issue           Quickly post a new issue
-    tags            List the current repository's tags""".format(name=sys.argv[0])
+    tags            List the current repository's tags
+    overview        Show outstanding pull requests for an
+                    entire organisation""".format(name=sys.argv[0])
     if args[:1] == ["pull-request"] and len(args) == 1:
         pull_request()
         sys.exit(0)
@@ -233,6 +253,9 @@ Options:
         sys.exit(0)
     if args[:1] == ["issue"] and len(args) in (1, 2):
         issue()
+        sys.exit(0)
+    if args[:1] == ["overview"] and len(args) == 2:
+        overview()
         sys.exit(0)
     print(usage)
     sys.exit(2)
