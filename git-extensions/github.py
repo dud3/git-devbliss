@@ -175,11 +175,15 @@ def main(args):
     usage = """Devbliss Github Client
 
 Usage:
-    {} [pull-request]
+    {} pull-request
+    {} status
+    {} issue [TITLE]
 
 Options:
     pull-request    Start a new pull request from the
-                    current branch to master""".format(sys.argv[0])
+                    current branch to master
+    status          List information about the repository
+    issue           Quickly post a new issue""".format(*([sys.argv[0]] * 3))
     if args[:1] == ["pull-request"]:
         pull_request()
         sys.exit(0)
