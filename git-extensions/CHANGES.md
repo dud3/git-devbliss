@@ -2,6 +2,7 @@
 
 ## 0.1.0
 
+ - added 'status' command
  - aliased git devbliss to git de
  - added native github client (python)
  - finish now checks if current branch contains master
