@@ -179,13 +179,14 @@ def main(args):
 
 Usage:
     {} [pull-request]
+    {} [tags]
 
 Options:
     pull-request    Start a new pull request from the
                     current branch to master
 
     tags            list current repositories tags
-    """.format(sys.argv[0])
+    """.format(sys.argv[0] * 2)
     if args[:1] == ["pull-request"]:
         pull_request()
         sys.exit(0)
