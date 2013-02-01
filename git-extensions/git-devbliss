@@ -29,7 +29,7 @@ function help {
 
 function version {
     changelog="/usr/share/doc/git-devbliss/CHANGES.md"
-    local local_version=$(perl -ne '/^## +\d\.\d\.\d/ && s/^## +(\d\.\d\.\d)/$1/ && print && exit' $changelog)
+    local local_version=$(perl -ne '/^#+ +\d\.\d\.\d([^\.].*)?$/ && s/^#+ +(\d\.\d\.\d)/$1/ && print && exit' $changelog)
     echo $local_version
 }
 
