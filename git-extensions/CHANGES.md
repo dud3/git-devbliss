@@ -2,6 +2,7 @@
 
 ## 0.1.0
 
+ - added manpage
  - added 'status' command
  - aliased git devbliss to git de
  - added native github client (python)

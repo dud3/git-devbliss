@@ -1,0 +1,73 @@
+.TH GIT-DEVBLISS 1 "FEB 2013" Linux "User Manuals"
+.SH NAME
+git-devbliss \- git extensions for best practices at devbliss
+.SH SYNOPSIS
+.B git devbliss [feature | bug | refactor | research]
+.I DESCRIPTION
+
+.B git devbliss hotfix VERSION DESCRIPTION
+
+.B git devbliss finish
+
+.B git devbliss release VERSION
+
+.B git devbliss status
+
+.B git devbliss delete [-f]
+
+.B git devbliss issue [TITLE]
+
+.SH DESCRIPTION
+.B foo
+git-devbliss implements simple
+.BR git (1)
+commands according
+to best practices at devbliss. a detailed description
+of the workflow that is supported by git-devbliss can
+be found at
+
+.B https://github.com/devbliss/workflow
+
+.SH OPTIONS
+.I "feature bug refactor research hotfix"
+
+        Branch from master (normal branches)
+
+.I "hotfix"
+
+        Branch from a tag (fix a bug in an already released version)
+
+.I "finish"
+
+        Open a pull request for the current branch
+
+.I "release"
+
+        Create a new tag, commit and push
+
+.I "status"
+
+        List branches, pull requests, and issues
+
+.I "delete"
+
+        Delete the current branch on github.com
+
+.I "issue"
+
+        Quickly post a new issue to GitHub
+
+.SH FILES
+.I /usr/bin/github-devbliss
+.RS
+Generic GitHub API client used for issuing pull-requests
+and listing information about repositories.
+.SH BUGS
+Bugs can be filed at
+
+.B https://github.com/devbliss/workflow/issues
+
+.SH AUTHOR
+Team Schneemann <team_schneemann@devbliss.com>
+.SH "SEE ALSO"
+.BR git (1)

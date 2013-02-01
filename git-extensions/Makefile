@@ -12,6 +12,7 @@ install:
 	@mkdir -p /etc/bash_completion.d/
 	@git config --global alias.de devbliss
 	@cp bash_completion/git-devbliss /etc/bash_completion.d/
+	@cp man1/* /usr/share/man/man1/
 	@echo To enable bash completion, source '/etc/bash_completion.d/git-devbliss':
 	@echo
 	@echo "    echo \"source /etc/bash_completion.d/git-devbliss\" >> ~/.profile"
