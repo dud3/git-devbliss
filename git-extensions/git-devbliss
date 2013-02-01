@@ -169,19 +169,19 @@ elif [[ $# == 2 ]]; then
         branch $1 $2
     elif [[ $1 == "release" ]]; then
         if echo $2 | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-            release $2
+            release "$2"
         else
             echo "Invalid version number" > /dev/stderr
             exit 2
         fi
     elif [[ $1 == "delete" ]]; then
         if [[ $2 == "-f" ]]; then
-            delete $2
+            delete "$2"
         else
             help
         fi
     elif [[ $1 == "issue" ]]; then
-        github-devbliss issue $2
+        github-devbliss issue "$2"
     else
         help
     fi
