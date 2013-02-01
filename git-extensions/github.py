@@ -65,6 +65,13 @@ class GitHub (object):
         return self._request("GET", "/repos/"
             "{}/{}/issues".format(owner, repository))
 
+    def issue(self, owner, repository, title, body):
+        return self._request("POST", "/repos/"
+            "{}/{}/issues".format(owner, repository), json.dumps({
+                "title": title,
+                "body": body or None,
+            }))
+
     def branches(self, owner, repository):
         return self._request("GET", "/repos/"
             "{}/{}/branches".format(owner, repository))
@@ -161,14 +168,40 @@ def status():
         print()
         print("Pull Requests:")
     for i in pulls:
-        print("    {} <{}>".format(i["title"], i["html_url"]))
+        print("    #{}: {} <{}>".format(i["number"], i["title"], i["html_url"]))
     issues = [i for i in github.issues(owner, repository)
         if not i["pull_request"]["diff_url"]]
     if issues:
         print()
         print("Issues:")
         for i in issues:
-            print("    {} <{}>".format(i["title"], i["html_url"]))
+            print()
+            print("    #{}: {} <{}>".format(i["number"], i["title"], i["html_url"]))
+    print()
+
+
+def issue():
+    github = GitHub()
+    owner, repository = get_repository()
+    try:
+        title = raw_input("Title: ") if len(sys.argv) == 2 else sys.argv[-1]
+        body = ""
+        print("Body (^D to finish):")
+        while True:
+            try:
+                body += raw_input("") + "\n"
+            except EOFError:
+                break
+            except KeyboardInterrupt():
+                print()
+                sys.exit(2)
+        req = github.issue(owner, repository, title, body)
+    except httplib.HTTPException as e:
+        status, reason, body = e.args
+        print("Fatal:", status, reason)
+        sys.exit(1)
+    print()
+    print("    " + req["html_url"])
     print()
 
 
@@ -176,23 +209,28 @@ def main(args):
     usage = """Devbliss Github Client
 
 Usage:
-    {} [pull-request]
-    {} [tags]
+    {name} pull-request
+    {name} status
+    {name} issue [TITLE]
+    {name} tags
 
 Options:
     pull-request    Start a new pull request from the
                     current branch to master
-
-    tags            list current repositories tags
-    """.format([sys.argv[0]] * 2)
-    if args[:1] == ["pull-request"]:
+    status          List information about the repository
+    issue           Quickly post a new issue
+    tags            List the current repository's tags""".format(name=sys.argv[0])
+    if args[:1] == ["pull-request"] and len(args) == 1:
         pull_request()
         sys.exit(0)
-    if args[:1] == ["tags"]:
+    if args[:1] == ["tags"] and len(args) == 1:
         tags()
         sys.exit(0)
-    if args[:1] == ["status"]:
+    if args[:1] == ["status"] and len(args) == 1:
         status()
+        sys.exit(0)
+    if args[:1] == ["issue"] and len(args) in (1, 2):
+        issue()
         sys.exit(0)
     print(usage)
     sys.exit(2)

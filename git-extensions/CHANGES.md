@@ -2,6 +2,7 @@
 
 ## 0.1.0
 
+ - new 'issue' command
  - added uninstall script
  - added update script
  - update check
