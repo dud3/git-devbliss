@@ -2,6 +2,7 @@
 
 ## 0.1.0
 
+ - new 'issue' command
  - added 'status' command
  - aliased git devbliss to git de
  - added native github client (python)
