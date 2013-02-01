@@ -14,18 +14,17 @@ function help {
     echo '    git devbliss status'
     echo '    git devbliss delete [-f]'
     echo '    git devbliss issue [TITLE]'
-    echo '    git devbliss version'
     echo
-    echo 'Commands:'
-    echo '    '`echo "${branches[@]}" | sed 's/ /, /g'`':'
-    echo '              Branch from master (normal branches)'
-    echo '    hotfix:   Branch from a tag (fix a bug in an already released version)'
-    echo '    finish:   Open a pull request for the current branch'
-    echo '    release:  Create a new tag, commit and push'
-    echo '    status:   List branches, pull requests, and issues'
-    echo '    issue:    Quickly post an issue to GitHub'
-    echo '    delete:   Delete the current branch on github.com'
-    echo '    version:  Print version number'
+    echo 'Options:'
+    echo '    '`echo "${branches[@]}" | sed 's/ /, /g'`
+    echo '                  Branch from master (normal branches)'
+    echo '    hotfix        Branch from a tag (fix a bug in an already released version)'
+    echo '    finish        Open a pull request for the current branch'
+    echo '    release       Create a new tag, commit and push'
+    echo '    status        List branches, pull requests, and issues'
+    echo '    issue         Quickly post an issue to GitHub'
+    echo '    delete        Delete the current branch on github.com'
+    echo '    -v --version  Print version number of git-devbliss'
 }
 
 function version {
@@ -213,7 +212,9 @@ elif [[ $# == 1 ]]; then
         update_check
     elif [[ $1 == "delete" ]]; then
         delete ""
-    elif [[ $1 == "version" ]]; then
+    elif [[ $1 == "-v" ]]; then
+        version
+    elif [[ $1 == "--version" ]]; then
         version
     elif [[ $1 == "status" ]]; then
         github-devbliss status
