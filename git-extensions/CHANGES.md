@@ -17,6 +17,6 @@
  - make releases
  - makefile hooks
 
-## 0.0
+## 0.0.0
 
  - Initial release
