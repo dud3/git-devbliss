@@ -2,7 +2,7 @@
 
 set -eu
 
-latest_remote=$(github-devbliss tags | rev | cut -d' ' -f1 | rev)
+latest_remote=$(github-devbliss tags | tail -n1)
 cd git-extensions/
 git fetch origin --quiet
 #git checkout --quiet $latest_remote

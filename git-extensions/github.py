@@ -119,7 +119,7 @@ def tags():
         sys.exit(1)
     tags = [tag['name'] for tag in req]
     tags.sort()
-    print(" ".join(tags))
+    print("\n".join(tags))
     sys.exit(0)
 
 
