@@ -3,6 +3,7 @@
 ## 0.2.0
 
  - added "github-devbliss overview ORG" command
+ - set DEVBLISS_VERSION environment variable in relaease command
 
 ## 0.1.1
 
