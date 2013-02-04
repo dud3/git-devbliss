@@ -5,6 +5,7 @@ set -eu
 latest_remote=$(github-devbliss tags | tail -n1)
 cd $(dirname $0)
 git fetch origin --quiet
+git fetch origin --tags --quiet
 git checkout --quiet $latest_remote
 sudo make install
 cd -
