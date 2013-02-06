@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.3.0
+
+ - explicitly use python 2.7
+
 ## 0.2.0
 
  - added "github-devbliss overview ORG" command
