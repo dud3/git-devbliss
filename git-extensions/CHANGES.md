@@ -1,8 +1,14 @@
 # git devbliss changelog
 
+## 0.3.0
+
+ - explicitly use python 2.7
+ - bug: update script runs wrong makefile
+
 ## 0.2.0
 
  - added "github-devbliss overview ORG" command
+ - set DEVBLISS_VERSION environment variable in relaease command
 
 ## 0.1.1
 
