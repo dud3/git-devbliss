@@ -9,6 +9,7 @@ git fetch origin --tags --quiet
 git checkout --quiet $latest_remote
 sudo make install
 cd -
+git checkout --quiet -
 echo
 echo "Update successful. You're now on version $latest_remote"
 echo

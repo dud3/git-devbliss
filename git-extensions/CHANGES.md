@@ -4,6 +4,7 @@
 
  - explicitly use python 2.7
  - bug: update script runs wrong makefile
+ - bug: return to previous branch on update
 
 ## 0.2.0
 
