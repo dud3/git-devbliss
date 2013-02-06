@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.3.0
+
+ - bug: update script runs wrong makefile
+
 ## 0.2.0
 
  - added "github-devbliss overview ORG" command
