@@ -174,7 +174,6 @@ def status():
         print()
         print("Issues:")
         for i in issues:
-            print()
             print("    #{}: {} <{}>".format(i["number"], i["title"], i["html_url"]))
     print()
 
