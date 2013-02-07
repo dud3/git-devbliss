@@ -35,7 +35,13 @@ class GitHub (object):
         return json.loads(resp.read())["token"]
 
     def _interactive_login(self):
-        username = raw_input("GitHub username: ")
+        try:
+            print("GitHub username: ", file=sys.stderr, end='')
+            sys.stderr.flush()
+            username = raw_input("")
+        except KeyboardInterrupt:
+            print()
+            sys.exit(1)
         password = getpass.getpass("GitHub password: ")
         try:
             token = self._login(username, password)
