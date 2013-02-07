@@ -5,6 +5,8 @@
  - explicitly use python 2.7
  - bug: update script runs wrong makefile
  - bug: return to previous branch on update
+ - bug: username prompt on github login not displaying
+ - improved update script
 
 ## 0.2.0
 
