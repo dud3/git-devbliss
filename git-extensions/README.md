@@ -1,23 +1,11 @@
 # devbliss git extensions
 
-## Easy web-based Installation
-
-using curl:
-
-    curl -L https://raw.github.com/devbliss/workflow/master/install | sh
-
-or using wget:
-
-    wget -O - https://raw.github.com/devbliss/workflow/master/install | sh
-
-
-## 'Manual' Installation
+# Installation
 
     git clone git@github.com:devbliss/workflow.git
-    cd workflow/git-extensions/
-    sudo make install
+    git-extensions/install
 
-Note: the makefile will write a file at `/etc/bash_completion.d/git-devbliss`,
+Note: the Makefile run by the install script will write a file at `/etc/bash_completion.d/git-devbliss`,
 which may or may not be sourced on your system. If bash completion doesn't work,
 append the following line to your `.profile` (or `.bashrc`) file:
 
@@ -73,7 +61,7 @@ it eases the pain of continuing.
  4. (This is of interest here) Conventonally defined make targets make it possible to
 integrate hooks in our git devbliss toolset which makes your daily work easier and more failsafe.
 
-### make targets
+### Make targets
 
 You are encouraged to implement the following targets in your Makefile:
 
@@ -86,11 +74,11 @@ of finishing your task. This way you will never forget to remark your changes.
 - **version**: Make sure your projects version number has been incremented (will be run when called 'git devbliss finish')  
 Implement that similar to the changes target.
 
-## make target snippets
+## Make target snippets
 
 This section contains some snippets for the use in conjuction with the recomended make targets. You can copy/paste from here or even better add your own snippets for the benefit of others.
 
-### open changelog in the default editor
+### Open changelog in the default editor
 
     define changelog_cmd
         changelog="CHANGES.md"
