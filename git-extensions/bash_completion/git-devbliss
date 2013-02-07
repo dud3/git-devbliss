@@ -6,7 +6,7 @@ _git_devbliss ()
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    subcmds="feature bug refactor hotfix finish release delete"
+    subcmds="feature bug refactor research hotfix finish release status delete issue --version"
     COMPREPLY=( $(compgen -W "$subcmds" -- $cur) )
     case "${prev}" in
         hotfix)

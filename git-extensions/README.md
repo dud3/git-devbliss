@@ -13,16 +13,13 @@ append the following line to your `.profile` (or `.bashrc`) file:
 
 ### Zsh Completion
 
-Zsh has no proper default location for custom completion scripts. So just grep the
-comletion file in the zsh_completion/ subdirectory an put it in some place in your
-`$fpath`. Here is a useful example which employs a completion directory in your `~`:
+Just put the following in your .zshrc:
 
-    mkdir ~/.zsh_completion
-    echo "fpath=(~/.zsh_completion $fpath)" >> ~/.zshrc
-    cp zsh_completion/_git-devbliss ~/.zsh_completion/
+    fpath=(<path-to-workflow>/git-extensions/zsh_completion $fpath)
+    zstyle ':completion:*:*:git:*' user-commands \
+        devbliss:'devbliss git workflow' \
 
-You might already have an fpath vaiable set in your `.zshrc`. In this case you better
-just append the ~/.zsh_completion/.
+
 To make completion work at all you have to load zsh's completion module like this:
 
     autoload -Uz compinit
@@ -33,7 +30,7 @@ The fpath should be set before the compinit.
 ## Overview
 
     Usage:
-        git devbliss [feature | bug | refactor] DESCRIPTION
+        git devbliss [feature | bug | refactor | research] DESCRIPTION
         git devbliss hotfix VERSION DESCRIPTION
         git devbliss finish
         git devbliss release VERSION
@@ -68,11 +65,11 @@ You are encouraged to implement the following targets in your Makefile:
 - **test**: Run all your projects software tests (will be run when called 'git devbliss release')
 - **deb**: Build a ready to deploy Debian package
 - **clean**: Clean up all messy stuff created while building your project
-- **changes**: Make sure your changelog has been updated (will be run when called 'git devbliss finish')  
+- **changelog**: Make sure your changelog has been updated (will be run when called 'git devbliss finish')  
 The best thing you can do here is to open a text editor and get used to write the changelog at time
 of finishing your task. This way you will never forget to remark your changes.
-- **version**: Make sure your projects version number has been incremented (will be run when called 'git devbliss finish')  
-Implement that similar to the changes target.
+- **version**: Make sure your projects version number has been incremented (will be run when called 'git devbliss release')  
+Implement that similar to the `changelog` target.
 
 ## Make target snippets
 
@@ -81,20 +78,29 @@ This section contains some snippets for the use in conjuction with the recomende
 ### Open changelog in the default editor
 
     define changelog_cmd
-        changelog="CHANGES.md"
-        if [ -z "$$EDITOR" ]; then
-            EDITOR=vi
-        fi
-        ch_hash=$$(sha1sum $$changelog)
-        $$EDITOR $$changelog
-        ch_hash_new=$$(sha1sum $$changelog)
-        if [ "$$ch_hash" == "$$ch_hash_new" ]; then
-            echo "Operation aborted due to missing changelog entry" > /dev/stderr
-            exit 1
-        fi
+    	changelog="CHANGES.md"
+    	if [ -z "$$EDITOR" ]; then
+    	    EDITOR=vi
+    	fi
+    	$$EDITOR $$changelog
     endef
     export changelog_cmd
     .PHONY : changelog
     changelog:
-        @bash -c "$$changelog_cmd"
+    	@bash -c "$$changelog_cmd"
+
+
+### Typical maven delegation
+
+    build:
+    	mvn gwt:compile
+
+    changelog:
+    	@bash -c "$$changelog_cmd"
+
+    test:
+    	mvn test
+
+    clean:
+    	mvn clean
 

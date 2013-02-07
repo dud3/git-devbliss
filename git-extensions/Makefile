@@ -2,12 +2,19 @@
 build:
 	@echo nothing to do
 
+.PHONY : install
 install:
 	@cp git-devbliss /usr/bin/
 	@cp show-pulls /usr/bin/show-pulls
+	@cp github.py /usr/bin/github-devbliss
+	@mkdir -p /usr/share/doc/git-devbliss/
+	@cp CHANGES.md /usr/share/doc/git-devbliss/
 	@chmod a+x /usr/bin/show-pulls
+	@chmod a+x /usr/bin/github-devbliss
 	@mkdir -p /etc/bash_completion.d/
+	@git config --global alias.de devbliss
 	@cp bash_completion/git-devbliss /etc/bash_completion.d/
+	@cp man1/* /usr/share/man/man1/
 	@echo To enable bash completion, source '/etc/bash_completion.d/git-devbliss':
 	@echo
 	@echo "    echo \"source /etc/bash_completion.d/git-devbliss\" >> ~/.profile"
@@ -19,19 +26,15 @@ uninstall:
 	@rm -f /usr/bin/git-devbliss
 	@rm -f /usr/bin/show-pulls
 	@rm -f /etc/bash_completion.d/git-devbliss
+	@rm -f /usr/bin/github-devbliss
+	@rm -rf /usr/share/doc/git-devbliss/
 
 define changelog_cmd
 	changelog="CHANGES.md"
 	if [ -z "$$EDITOR" ]; then
 		EDITOR=vi
 	fi
-	ch_hash=$$(sha1sum $$changelog)
 	$$EDITOR $$changelog
-	ch_hash_new=$$(sha1sum $$changelog)
-	if [ "$$ch_hash" == "$$ch_hash_new" ]; then
-		echo "Operation aborted due to missing changelog entry" > /dev/stderr
-		exit 1
-	fi
 endef
 export changelog_cmd
 .PHONY : changelog

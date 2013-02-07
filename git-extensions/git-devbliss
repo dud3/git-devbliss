@@ -3,7 +3,7 @@
 set -eu
 
 # normal branches
-branches=(feature bug refactor)
+branches=(feature bug refactor research)
 
 function help {
     echo 'Usage:'
@@ -11,19 +11,44 @@ function help {
     echo '    git devbliss hotfix VERSION DESCRIPTION'
     echo '    git devbliss finish'
     echo '    git devbliss release VERSION'
+    echo '    git devbliss status'
     echo '    git devbliss delete [-f]'
+    echo '    git devbliss issue [TITLE]'
     echo
-    echo 'Commands:'
-    echo '    '`echo "${branches[@]}" | sed 's/ /, /g'`':'
-    echo '              Branch from master (normal branches)'
-    echo '    hotfix:   Branch from a tag (fix a bug in an already released version)'
-    echo '    finish:   Open a pull request for the current branch'
-    echo '    release:  Create a new tag, commit and push'
-    echo '    delete:   Discard the current branch and delete the remote branch'
+    echo 'Options:'
+    echo '    '`echo "${branches[@]}" | sed 's/ /, /g'`
+    echo '                  Branch from master (normal branches)'
+    echo '    hotfix        Branch from a tag (fix a bug in an already released version)'
+    echo '    finish        Open a pull request for the current branch'
+    echo '    release       Create a new tag, commit and push'
+    echo '    status        List branches, pull requests, and issues'
+    echo '    issue         Quickly post an issue to GitHub'
+    echo '    delete        Delete the current branch on github.com'
+    echo '    -v --version  Print version number of git-devbliss'
+}
+
+function version {
+    changelog="/usr/share/doc/git-devbliss/CHANGES.md"
+    local local_version=$(perl -ne '/^#+ +\d\.\d\.\d([^\.].*)?$/ && s/^#+ +(\d\.\d\.\d)/$1/ && print && exit' $changelog)
+    echo $local_version
+}
+
+function update_check {
+    local latest_remote=$(github-devbliss tags devbliss/workflow | tail -n1)
+    if [ -z $latest_remote ]; then
+        return 0
+    fi
+    local local_version=$(version)
+    if [[ $latest_remote > $local_version ]]; then
+        echo "New version ($latest_remote) of git devbliss available. Your version is $local_version"
+        echo "Please go to your local copy of git devbliss (workflow) and enter './update'"
+        echo
+    fi
+
 }
 
 function is_repository_clean {
-    if [ "`git status --short --untracked-files=no | wc -l`" != "0" ]; then
+    if [ "`git status --short --untracked-files=no | wc -l | sed -e 's/ //g'`" != "0" ]; then
         return 1
     fi
     return 0
@@ -80,38 +105,48 @@ function release {
     echo "[enter / ctrl+c to cancel]"
     read || exit 1
     local branch=`git rev-parse --abbrev-ref HEAD`
-    if [[ "$branch" != "master" ]]; then
+    if [[ ! "$branch" =~ ^hotfix && "$branch" != 'master' ]]; then
         echo "Warning: You are not currently on the master branch. Releasing from feature branches is discouraged."
         echo "Currently on branch $branch"
         echo "[enter / ctrl+c to cancel]"
         read || exit 1
     fi
+    export DEVBLISS_VERSION="$1"
     makefile_hooks version
     if ! is_repository_clean; then
-        git commit -am "version increment"
+        git commit --quiet -am "Ran git devbliss version hook"
     fi
     makefile_hooks test
-    git commit --allow-empty -m "Release: $1"
+    git commit --quiet --allow-empty -m "Release: $1"
     git tag $1
     git push origin $1
     git push --tags origin $1
+    unset DEVBLISS_VERSION
 }
 
 function finish {
+    local branch=`git rev-parse --abbrev-ref HEAD`
     if ! is_repository_clean; then
         echo "Error: Repository is not clean. Aborting." >> /dev/stderr
         exit 1
     fi
+    if ! git branch --contains master | grep "$branch" > /dev/null; then
+        echo "Error: Won't finish. Master is not merged into the current branch." > /dev/stderr
+        echo "Please do 'git pull origin master', make sure all conflicts are merged and try again." > /dev/stderr
+        exit 1
+    fi
     makefile_hooks changelog
     if ! is_repository_clean; then
-        git commit -am "Ran git devbliss changelog hook"
+        git commit --quiet -am "Ran git devbliss changelog hook"
     fi
-    local branch=`git rev-parse --abbrev-ref HEAD`
     git push origin $branch
     echo
-    hub pull-request
+    github-devbliss pull-request
     echo
-    git checkout master
+    if [[ ! "$branch" =~ ^hotfix ]]; then
+        git checkout master
+        git pull
+    fi
     show-pulls || true
 }
 
@@ -137,13 +172,6 @@ function delete {
     fi
 }
 
-# make sure that hub is installed
-if [ ! `which hub` ]; then
-    echo "Fatal: hub is not installed" > /dev/stderr
-    echo "       see <https://github.com/defunkt/hub>"
-    exit 1
-fi
-
 # check whether the pwd is a git repository
 git rev-parse --abbrev-ref HEAD > /dev/null || exit 1
 
@@ -164,28 +192,41 @@ elif [[ $# == 2 ]]; then
         branch $1 $2
     elif [[ $1 == "release" ]]; then
         if echo $2 | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-            release $2
+            release "$2"
         else
             echo "Invalid version number" > /dev/stderr
             exit 2
         fi
     elif [[ $1 == "delete" ]]; then
         if [[ $2 == "-f" ]]; then
-            delete $2
+            delete "$2"
         else
             help
         fi
+    elif [[ $1 == "issue" ]]; then
+        github-devbliss issue "$2"
     else
         help
     fi
 elif [[ $# == 1 ]]; then
     if [[ $1 == "finish" ]]; then
         finish
+        update_check
     elif [[ $1 == "delete" ]]; then
         delete ""
+    elif [[ $1 == "-v" ]]; then
+        version
+    elif [[ $1 == "--version" ]]; then
+        version
+    elif [[ $1 == "status" ]]; then
+        github-devbliss status
+        update_check
+    elif [[ $1 == "issue" ]]; then
+        github-devbliss issue
     else
         help
     fi
 else
     help
 fi
+
