@@ -6,10 +6,12 @@ latest_remote=$(github-devbliss tags | tail -n1)
 cd $(dirname $0)/git-extensions
 git fetch origin --quiet
 git fetch origin --tags --quiet
+git stash >> /dev/null
 git checkout --quiet $latest_remote
-sudo make install
-cd -
+sudo -p "[sudo] password for $USER: " make install
+cd - >> /dev/null
 git checkout --quiet -
+git stash apply >> /dev/null
 echo
 echo "Update successful. You're now on version $latest_remote"
 echo
