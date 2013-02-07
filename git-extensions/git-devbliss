@@ -54,7 +54,18 @@ function is_repository_clean {
     return 0
 }
 
+function check_repo_toplevel {
+    # check if pwd is repository root in order to run makefile hooks properly
+    if [[ $(git rev-parse --show-toplevel) != $(pwd) ]]; then
+        echo "You need to run this command from the toplevel of the working tree." > /dev/stderr
+        exit 1
+    fi
+}
+
 function makefile_hooks {
+    # if you use this function always run the check_repo_toplevel beforehand
+    # otherwise the makefile will not be found.
+    #
     # reasonable targets are: changelog, version, test (see: README.md)
     if [ ! -f Makefile ]; then
         echo "Warning: No Makefile found. All make hooks have been skipped." >> /dev/stderr
@@ -97,6 +108,7 @@ function branch {
 }
 
 function release {
+    check_repo_toplevel # neccessary to run makefile hooks
     if ! is_repository_clean; then
         echo "Error: Repository is not clean. Aborting." >> /dev/stderr
         exit 1
@@ -125,6 +137,7 @@ function release {
 }
 
 function finish {
+    check_repo_toplevel # neccessary to run makefile hooks
     local branch=`git rev-parse --abbrev-ref HEAD`
     if ! is_repository_clean; then
         echo "Error: Repository is not clean. Aborting." >> /dev/stderr
