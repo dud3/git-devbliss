@@ -6,6 +6,8 @@
  - bug: update script runs wrong makefile
  - bug: return to previous branch on update
  - check if pwd is repo toplevel in order to run makefile hooks properly
+ - bug: username prompt on github login not displaying
+ - improved update script
 
 ## 0.2.0
 
