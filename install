@@ -1,6 +1,11 @@
 #!/bin/bash
 
-set -e
+set -eu
 
-cd git-extensions/
-sudo make install
+cd $(dirname $0)/git-extensions
+sudo -p "[sudo] password for $USER: " make install
+cd - >> /dev/null
+echo
+echo "Installation successful. Type 'git help devbliss' to get started."
+echo
+
