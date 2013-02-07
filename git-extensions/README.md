@@ -1,6 +1,6 @@
 # devbliss git extensions
 
-# Installation
+## Installation
 
     git clone git@github.com:devbliss/workflow.git
     git-extensions/install
