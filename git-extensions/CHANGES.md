@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.4.0
+
+ - Error handling for revoked authorisation
+
 ## 0.3.0
 
  - explicitly use python 2.7
