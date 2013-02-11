@@ -67,8 +67,9 @@ class GitHub (object):
                 with open(self.token_file, "w") as f:
                     f.write(self.token)
                 return self._request(method, path, body, host)
-            except (IOError, OSError):
-                pass
+            except (IOError, OSError) as e:
+                print(str(e), file=sys.stderr)
+                sys.exit(1)
         if resp.status >= 300:
             raise httplib.HTTPException(resp.status, resp.reason, resp.read())
         return json.load(resp)
