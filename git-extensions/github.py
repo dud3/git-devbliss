@@ -13,6 +13,8 @@ import sys
 
 class GitHub (object):
 
+    interactive = False
+
     def __init__(self, token_file="~/.github_token"):
         self.token_file = os.path.abspath(os.path.expanduser(token_file))
         if not os.path.exists(self.token_file):
@@ -59,6 +61,15 @@ class GitHub (object):
             "User-Agent": "git-devbliss/ng",  # TODO
         })
         resp = conn.getresponse()
+        if resp.status == 401 and self.interactive:
+            try:
+                self.token = self._interactive_login()
+                with open(self.token_file, "w") as f:
+                    f.write(self.token)
+                return self._request(method, path, body, host)
+            except (IOError, OSError) as e:
+                print(str(e), file=sys.stderr)
+                sys.exit(1)
         if resp.status >= 300:
             raise httplib.HTTPException(resp.status, resp.reason, resp.read())
         return json.load(resp)
@@ -227,6 +238,7 @@ def overview():
 
 
 def main(args):
+    GitHub.interactive = True
     usage = """Devbliss Github Client
 
 Usage:
