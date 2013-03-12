@@ -71,7 +71,6 @@ class GitHub (object):
                 print(str(e), file=sys.stderr)
                 sys.exit(1)
         if resp.status in (301, ):
-            print("redirect from {} to {}".format(path, resp.getheader("Location")))
             path = resp.getheader("Location")
             return self._request(method, path, body, host)
         if resp.status >= 300:
