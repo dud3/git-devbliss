@@ -70,7 +70,7 @@ class GitHub (object):
             except (IOError, OSError) as e:
                 print(str(e), file=sys.stderr)
                 sys.exit(1)
-        if resp.status in (301, ):
+        if resp.status in (301, ):  # TODO: 302, 307, 308
             path = resp.getheader("Location")
             return self._request(method, path, body, host)
         if resp.status >= 300:
