@@ -70,6 +70,10 @@ class GitHub (object):
             except (IOError, OSError) as e:
                 print(str(e), file=sys.stderr)
                 sys.exit(1)
+        if resp.status in (301, ):
+            print("redirect from {} to {}".format(path, resp.getheader("Location")))
+            path = resp.getheader("Location")
+            return self._request(method, path, body, host)
         if resp.status >= 300:
             raise httplib.HTTPException(resp.status, resp.reason, resp.read())
         return json.load(resp)

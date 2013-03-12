@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -eux
 
 latest_remote=$(github-devbliss tags | tail -n1)
 cd $(dirname $0)/git-extensions
