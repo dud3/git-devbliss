@@ -71,7 +71,7 @@ class GitHub (object):
                 print(str(e), file=sys.stderr)
                 sys.exit(1)
         if resp.status in (301, ):  # TODO: 302, 307, 308
-            path = resp.getheader("Location")
+            path = resp.getheader("Location", None) or resp.getheader("location")
             return self._request(method, path, body, host)
         if resp.status >= 300:
             raise httplib.HTTPException(resp.status, resp.reason, resp.read())
