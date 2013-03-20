@@ -148,7 +148,6 @@ function finish {
         echo "Please do 'git pull origin master', make sure all conflicts are merged and try again." > /dev/stderr
         exit 1
     fi
-    export DEVBLISS_BRANCH_TYPE=`echo $branch | sed -e 's#\([^/]*\)/.*#\1#g'`
     makefile_hooks changelog
     if ! is_repository_clean; then
         git commit --quiet -am "Ran git devbliss changelog hook"
@@ -188,6 +187,7 @@ function delete {
 
 # check whether the pwd is a git repository
 git rev-parse --abbrev-ref HEAD > /dev/null || exit 1
+export DEVBLISS_BRANCH_TYPE=`echo $branch | sed -e 's#\([^/]*\)/.*#\1#g'`
 
 # chech whether origin points to github.com
 if ! git remote -v | grep "^origin.*github.com:.*(fetch)$" > /dev/null; then
