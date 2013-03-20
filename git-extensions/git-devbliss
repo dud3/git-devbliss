@@ -156,6 +156,7 @@ function finish {
     echo
     github-devbliss pull-request
     echo
+    export $DEVBLISS_BRANCH_TYPE=`echo $branch | sed -e 's#\([^/]*\)/.*#\1#g'`
     if [[ ! "$branch" =~ ^hotfix ]]; then
         git checkout master
         git pull
