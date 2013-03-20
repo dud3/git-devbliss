@@ -29,37 +29,63 @@ be found at
 .B https://github.com/devbliss/workflow
 
 .SH OPTIONS
-.I "feature bug refactor research hotfix"
+.I "feature bug refactor research"
 
-        Branch from master (normal branches)
+        Branch from master (normal branches). Specifically, this
+        command checks out the master branch and, from it, creates
+        a new branch with the prefix feature, bug, refactor, or
+        research and pushes the new branch upstream.
 
 .I "hotfix"
 
-        Branch from a tag (fix a bug in an already released version)
+        Branch from a tag (fix a bug in an already released version).
+        Otherwise this command is similar to feature, bug, refactor,
+        and research.
 
 .I "finish"
 
-        Open a pull request for the current branch
+        Open a pull request for the current branch. This command will
+        first check whether it is run on the top level of the repository,
+        so that it can execute 'make changelog'. If there is no makefile
+        or the changelog target is missing, you will get a warning.
+        Afterwards, the current branch is pushed and the pull request is
+        opened on github. You will be given a link to the pull request.
 
 .I "release"
 
-        Create a new tag, commit and push
+        Create a new tag, commit and push. After executing the 'version'
+        make target and commiting any changes that may have occured as
+        a result of it, this command creates a release commit and a tag.
+        You should configure the 'version' target of your makefile to
+        ensure that any package management related version numbers are
+        changed accordingly.
 
 .I "status"
 
-        List branches, pull requests, and issues
+        List branches, pull requests, and issues.
 
 .I "delete"
 
-        Delete the current branch on github.com
+        Delete the current branch on github.com (does not delete the
+        local branch).
 
 .I "issue"
 
-        Quickly post a new issue to GitHub
+        Quickly post a new issue to GitHub.
+
+        Usage:
+                git devbliss issue
+                git devbliss issue "bug description"
+
+        In the first case, the command will ask for both a title and
+        a body. The body is read similar to how the 'mail' program
+        works. On an empty line at the end of the message, type ^D to
+        end the program and post the issue. Type ^C at any point to
+        cancel.
 
 .I "-v --version"
 
-        Print version number
+        Print version number and exit.
 
 .SH FILES
 .I /usr/bin/github-devbliss
