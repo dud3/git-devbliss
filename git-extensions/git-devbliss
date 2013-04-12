@@ -40,6 +40,7 @@ function update_check {
     fi
     local local_version=$(version)
     if [[ $latest_remote > $local_version ]]; then
+        echo
         echo "New version ($latest_remote) of git devbliss available. Your version is $local_version"
         echo "Please go to your local copy of git devbliss (workflow) and enter './update'"
         echo
