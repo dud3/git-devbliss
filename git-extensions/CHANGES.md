@@ -1,5 +1,10 @@
 # git devbliss changelog
 
+## 0.5.2
+
+ - Documentation
+ - Export `DEVBLISS_BRANCH_TYPE` variable
+
 ## 0.4.0
 
  - Error handling for revoked authorisation
