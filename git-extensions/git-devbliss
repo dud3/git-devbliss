@@ -59,7 +59,7 @@ function check_repo_toplevel {
     # check if pwd is repository root in order to run makefile hooks properly
     if [[ $(git rev-parse --show-toplevel) != $(pwd) ]]; then
         echo "You need to run this command from the toplevel of the working tree." > /dev/stderr
-        exit 1
+        exit 2
     fi
 }
 
@@ -116,13 +116,12 @@ function release {
     fi
     echo "Have these changes been reviewed?"
     echo "[enter / ctrl+c to cancel]"
-    read || exit 1
+    read || exit 2
     local branch=`git rev-parse --abbrev-ref HEAD`
-    if [[ ! "$branch" =~ ^hotfix && "$branch" != 'master' ]]; then
-        echo "Warning: You are not currently on the master branch. Releasing from feature branches is discouraged."
-        echo "Currently on branch $branch"
+    if [[ "$branch" = 'master' ]]; then
+        echo "Warning: You are currently on the master branch. Releasing from master branch is discouraged."
         echo "[enter / ctrl+c to cancel]"
-        read || exit 1
+        read || exit 2
     fi
     export DEVBLISS_VERSION="$1"
     makefile_hooks version
@@ -134,6 +133,10 @@ function release {
     git tag $1
     git push origin $1
     git push --tags origin $1
+    if [[ "$branch" != 'master' ]]; then
+        echo
+        github-devbliss pull-request
+    fi
     unset DEVBLISS_VERSION
 }
 
@@ -169,7 +172,7 @@ function delete {
     local branch=`git rev-parse --abbrev-ref HEAD`
     if [[ "$branch" == "master" ]]; then
         echo "Won't delete master branch. Aborting." > /dev/stderr
-        exit 1
+        exit 2
     fi
     if [[ $1 != "-f" ]]; then
         echo -n "Really delete the remote branch? [y/N] "
