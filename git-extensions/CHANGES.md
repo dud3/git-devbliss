@@ -1,5 +1,15 @@
 # git devbliss changelog
 
+## 0.6.0
+
+ - new relase policy: encourage releases form feature branch
+ - fixed: on update only stash and apply if working dir is dirty
+
+## 0.5.0
+
+ - Documentation
+ - Export `DEVBLISS_BRANCH_TYPE` variable
+
 ## 0.4.0
 
  - Error handling for revoked authorisation
