@@ -3,6 +3,7 @@
 ## 0.6.0
 
  - new relase policy: encourage releases form feature branch
+ - fixed: on update only stash and apply if working dir is dirty
 
 ## 0.5.0
 
