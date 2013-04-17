@@ -1,6 +1,10 @@
 # git devbliss changelog
 
-## 0.5.2
+## 0.6.0
+
+ - new relase policy: encourage releases form feature branch
+
+## 0.5.0
 
  - Documentation
  - Export `DEVBLISS_BRANCH_TYPE` variable
