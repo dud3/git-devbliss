@@ -156,6 +156,7 @@ function finish {
     fi
     git push origin $branch
     echo
+    makefile_hooks test
     github-devbliss pull-request
     echo
     if [[ ! "$branch" =~ ^hotfix ]]; then
