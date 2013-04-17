@@ -1,13 +1,13 @@
 #!/bin/bash
 
+set -eu
+
 function is_repository_clean {
     if [ "`git status --short --untracked-files=no | wc -l | sed -e 's/ //g'`" != "0" ]; then
         return 1
     fi
     return 0
 }
-
-set -eu
 
 latest_remote=$(github-devbliss tags | tail -n1)
 cd $(dirname $0)/git-extensions
@@ -22,7 +22,7 @@ git checkout --quiet $latest_remote
 sudo -p "[sudo] password for $USER: " make install
 cd - >> /dev/null
 git checkout --quiet -
-if [ $stashed = 1]; then
+if [[ $stashed = 1 ]]; then
     git stash apply >> /dev/null
 fi
 echo
