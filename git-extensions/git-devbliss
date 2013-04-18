@@ -162,10 +162,6 @@ function finish {
     makefile_hooks test
     github-devbliss pull-request
     echo
-    if [[ ! "$branch" =~ ^hotfix ]]; then
-        git checkout master
-        git pull
-    fi
     show-pulls || true
 }
 
@@ -248,4 +244,3 @@ elif [[ $# == 1 ]]; then
 else
     help
 fi
-
