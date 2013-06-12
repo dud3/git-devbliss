@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.7.0
+
+ - no test run on release
+
 ## 0.6.0
 
  - new relase policy: encourage releases form feature branch
