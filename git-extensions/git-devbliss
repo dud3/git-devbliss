@@ -128,7 +128,6 @@ function release {
     if ! is_repository_clean; then
         git commit --quiet -am "Ran git devbliss version hook"
     fi
-    makefile_hooks test
     git commit --quiet --allow-empty -m "Release: $1"
     git tag $1
     git push origin $1
