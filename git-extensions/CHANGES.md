@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.8.0
+
+ - retry pull request if no commits between master and feature branch
+
 ## 0.7.0
 
  - no test run on release
