@@ -185,7 +185,6 @@ def pull_request():
                 if retry:
                     maxretrys = maxretrys - 1
                     time.sleep(1)
-                    print("retry")
                     if maxretrys:
                         continue
                 for i in errors:
