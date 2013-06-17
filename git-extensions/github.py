@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import json
 import os
+import time
 import httplib
 import getpass
 import base64
@@ -157,16 +158,29 @@ def tags():
 def pull_request():
     github = GitHub()
     owner, repository = get_repository()
-    try:
-        req = github.pull_request(owner, repository, github.get_current_branch())
-    except httplib.HTTPException as e:
-        status, reason, body = e.args
-        if status == 422:
-            for i in (j for j in json.loads(body)["errors"] if j.get("message")):
-                print("Fatal: " + str(i.get("message") or i))
-        else:
-            print("Fatal:", status, reason)
-        sys.exit(1)
+    maxretrys = 3 if len(sys.argv) < 3 else int(sys.argv[-1])
+    while maxretrys:
+        try:
+            req = github.pull_request(owner, repository, github.get_current_branch())
+            maxretrys = 0
+        except httplib.HTTPException as e:
+            status, reason, body = e.args
+            if status == 422:
+                errors = [j for j in json.loads(body)["errors"] if j.get("message")]
+                # retry in case github needs a few seconds to realize the push
+                retry = [i for i in errors if str(i.get("message")).startswith("No commits between")]
+                if retry:
+                    maxretrys = maxretrys - 1
+                    time.sleep(1)
+                    print("retry")
+                    if maxretrys:
+                        continue
+                for i in errors:
+                    print("Fatal: " + str(i.get("message") or i))
+                sys.exit(1)
+            else:
+                print("Fatal:", status, reason)
+                sys.exit(1)
     print(req["html_url"])
 
 
@@ -245,7 +259,7 @@ def main(args):
     usage = """Devbliss Github Client
 
 Usage:
-    {name} pull-request
+    {name} pull-request [MAXRETRYS]
     {name} status
     {name} issue [TITLE]
     {name} tags [REPOSITORY]
@@ -259,7 +273,7 @@ Options:
     tags            List the current repository's tags
     overview        Show outstanding pull requests for an
                     entire organisation""".format(name=sys.argv[0])
-    if args[:1] == ["pull-request"] and len(args) == 1:
+    if args[:1] == ["pull-request"] and len(args) in (1, 2):
         pull_request()
         sys.exit(0)
     if args[:1] == ["tags"] and len(args) == 1:
