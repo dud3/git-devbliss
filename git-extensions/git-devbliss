@@ -56,7 +56,10 @@ function is_repository_clean {
 }
 
 function is_synced_origin {
-    if [ "$(git diff origin/$1 | wc -l | sed -e 's/ //g')" != "0" ]; then
+    if [ "$(git diff origin/${1} | wc -l | sed -e 's/ //g')" != "0" ]; then
+        return 1
+    fi
+    if [ "$(git log origin/${1}..HEAD -- | wc -l | sed -e 's/ //g')" != "0" ]; then
         return 1
     fi
     return 0
@@ -141,9 +144,10 @@ function release {
         git commit --quiet -am "Ran git devbliss version hook"
     fi
     git commit --quiet --allow-empty -m "Release: $1"
-    git tag $1
     git push origin $1
+    git tag $1
     git push --tags origin $1
+    git push origin $1
     if [[ "$branch" != 'master' ]]; then
         echo
         github-devbliss pull-request

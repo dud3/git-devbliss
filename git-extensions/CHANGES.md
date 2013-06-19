@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.8.1
+
+ - make sure release commit is pushed
+
 ## 0.8.0
 
  - retry pull request if no commits between master and feature branch
