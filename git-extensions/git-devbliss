@@ -144,10 +144,10 @@ function release {
         git commit --quiet -am "Ran git devbliss version hook"
     fi
     git commit --quiet --allow-empty -m "Release: $1"
-    git push origin $1
+    git push origin $branch
     git tag $1
-    git push --tags origin $1
-    git push origin $1
+    git push --tags origin
+    git push origin $branch
     if [[ "$branch" != 'master' ]]; then
         echo
         github-devbliss pull-request
