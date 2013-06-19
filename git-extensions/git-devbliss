@@ -55,6 +55,13 @@ function is_repository_clean {
     return 0
 }
 
+function is_synced_origin {
+    if [ "$(git diff origin/$1 | wc -l | sed -e 's/ //g')" != "0" ]; then
+        return 1
+    fi
+    return 0
+}
+
 function check_repo_toplevel {
     # check if pwd is repository root in order to run makefile hooks properly
     if [[ $(git rev-parse --show-toplevel) != $(pwd) ]]; then
@@ -110,14 +117,19 @@ function branch {
 
 function release {
     check_repo_toplevel # neccessary to run makefile hooks
+    git fetch --quiet origin
+    local branch=`git rev-parse --abbrev-ref HEAD`
     if ! is_repository_clean; then
         echo "Error: Repository is not clean. Aborting." >> /dev/stderr
+        exit 1
+    fi
+    if ! is_synced_origin $branch; then
+        echo "Error: Local branch is not in sync with origin. Aborting." >> /dev/stderr
         exit 1
     fi
     echo "Have these changes been reviewed?"
     echo "[enter / ctrl+c to cancel]"
     read || exit 2
-    local branch=`git rev-parse --abbrev-ref HEAD`
     if [[ "$branch" = 'master' ]]; then
         echo "Warning: You are currently on the master branch. Releasing from master branch is discouraged."
         echo "[enter / ctrl+c to cancel]"
