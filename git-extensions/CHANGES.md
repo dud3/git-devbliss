@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.9.0
+
+ - check if local and remote branch are in sync on release
+
 ## 0.8.0
 
  - retry pull request if no commits between master and feature branch
