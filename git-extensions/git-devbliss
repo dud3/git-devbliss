@@ -127,6 +127,7 @@ function release {
     fi
     if ! is_synced_origin $branch; then
         echo "Error: Local branch is not in sync with origin. Aborting." >> /dev/stderr
+        echo "Do 'git pull && git push' and try agin." >> /dev/stderr
         exit 1
     fi
     echo "Have these changes been reviewed?"
