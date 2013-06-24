@@ -1,5 +1,18 @@
 # git devbliss changelog
 
+## 0.8.1
+
+ - make sure release commit is pushed
+
+## 0.8.0
+
+ - retry pull request if no commits between master and feature branch
+ - check if local and remote branch are in sync on release
+
+## 0.7.0
+
+ - no test run on release
+
 ## 0.6.0
 
  - new relase policy: encourage releases form feature branch

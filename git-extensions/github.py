@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import json
 import os
+import time
 import httplib
 import getpass
 import base64
@@ -24,13 +25,15 @@ class GitHub (object):
         self.token = open(self.token_file).read().strip()
 
     def _login(self, username, password):
-        body = json.dumps({"note": "git-devbliss-ng", "scopes": ["repo"]}, indent=0)
+        body = json.dumps(
+            {"note": "git-devbliss-ng", "scopes": ["repo"]}, indent=0)
         conn = httplib.HTTPSConnection("api.github.com")
         conn.request("POST", "/authorizations", body, headers={
             "User-Agent": "git-devbliss/ng",  # TODO
-            "Content-Type": "application/json", "Content-Length": str(len(body)),
+            "Content-Type": "application/json",
+            "Content-Length": str(len(body)),
             "Authorization": "basic " + base64.encodestring(
-                    ":".join((username, password))).strip(), })
+                ":".join((username, password))).strip(), })
         resp = conn.getresponse()
         if resp.status == 401:
             raise ValueError("Bad credentials")
@@ -71,7 +74,8 @@ class GitHub (object):
                 print(str(e), file=sys.stderr)
                 sys.exit(1)
         if resp.status in (301, ):  # TODO: 302, 307, 308
-            path = resp.getheader("Location", None) or resp.getheader("location")
+            path = resp.getheader(
+                "Location", None) or resp.getheader("location")
             return self._request(method, path, body, host)
         if resp.status >= 300:
             raise httplib.HTTPException(resp.status, resp.reason, resp.read())
@@ -79,26 +83,27 @@ class GitHub (object):
 
     def pulls(self, owner, repository):
         return self._request("GET", "/repos/"
-            "{}/{}/pulls".format(owner, repository))
+                             "{}/{}/pulls".format(owner, repository))
 
     def issues(self, owner, repository):
         return self._request("GET", "/repos/"
-            "{}/{}/issues".format(owner, repository))
+                             "{}/{}/issues".format(owner, repository))
 
     def issue(self, owner, repository, title, body):
         return self._request("POST", "/repos/"
-            "{}/{}/issues".format(owner, repository), json.dumps({
-                "title": title,
-                "body": body or None,
-            }))
+                             "{}/{}/issues".format(owner, repository),
+                             json.dumps(
+                                 {"title": title,
+                                  "body": body or None,
+                                  }))
 
     def branches(self, owner, repository):
         return self._request("GET", "/repos/"
-            "{}/{}/branches".format(owner, repository))
+                             "{}/{}/branches".format(owner, repository))
 
     def tags(self, owner, repository):
         return self._request("GET", "/repos/"
-            "{}/{}/tags".format(owner, repository))
+                             "{}/{}/tags".format(owner, repository))
 
     def orgs(self, org):
         return self._request("GET", "/orgs/{}".format(org))
@@ -109,21 +114,27 @@ class GitHub (object):
     def repos(self, org):
         return self._request("GET", "/orgs/{}/repos?per_page=500".format(org))
 
-    def pull_request(self, owner, repository, head, base="master", title="", body=""):
-        return self._request("POST", "/repos/{}/{}/pulls".format(owner, repository),
-            json.dumps({"title": title or head, "body": body or "",
-                "head": head, "base": base}, indent=0))
+    def pull_request(self, owner, repository, head, base="master",
+                     title="", body=""):
+        return self._request("POST", "/repos/{}/{}/pulls".format(
+            owner, repository),
+            json.dumps({"title": title or head,
+                        "body": body or "",
+                        "head": head,
+                        "base": base},
+                       indent=0))
 
     def get_current_repo(self):
-        owner, repository = subprocess.check_output("git remote -v", shell=True).split(
-            "git@github.com:")[1].split(".git (")[0].split("/") or (None, None)
+        owner, repository = subprocess.check_output(
+            "git remote -v", shell=True).split("git@github.com:")[1].split(
+                ".git (")[0].split("/") or (None, None)
         if owner is None:
             raise ValueError("Not a git repository")
         return owner, repository
 
     def get_current_branch(self):
         return subprocess.check_output("git rev-parse "
-            "--abbrev-ref HEAD", shell=True).strip()
+                                       "--abbrev-ref HEAD", shell=True).strip()
 
 
 def get_repository():
@@ -157,16 +168,31 @@ def tags():
 def pull_request():
     github = GitHub()
     owner, repository = get_repository()
-    try:
-        req = github.pull_request(owner, repository, github.get_current_branch())
-    except httplib.HTTPException as e:
-        status, reason, body = e.args
-        if status == 422:
-            for i in (j for j in json.loads(body)["errors"] if j.get("message")):
-                print("Fatal: " + str(i.get("message") or i))
-        else:
-            print("Fatal:", status, reason)
-        sys.exit(1)
+    maxretrys = 3 if len(sys.argv) < 3 else int(sys.argv[-1])
+    while maxretrys:
+        try:
+            req = github.pull_request(
+                owner, repository, github.get_current_branch())
+            maxretrys = 0
+        except httplib.HTTPException as e:
+            status, reason, body = e.args
+            if status == 422:
+                errors = [j for j in json.loads(body)["errors"]
+                          if j.get("message")]
+                # retry in case github needs a few seconds to realize the push
+                retry = [i for i in errors if str(i.get("message")).startswith(
+                    "No commits between")]
+                if retry:
+                    maxretrys = maxretrys - 1
+                    time.sleep(1)
+                    if maxretrys:
+                        continue
+                for i in errors:
+                    print("Fatal: " + str(i.get("message") or i))
+                sys.exit(1)
+            else:
+                print("Fatal:", status, reason)
+                sys.exit(1)
     print(req["html_url"])
 
 
@@ -175,7 +201,8 @@ def status():
     owner, repository = get_repository()
     branches = github.branches(owner, repository)
     print()
-    print("Tracking {}/{} <https://github.com/{}/{}>".format(owner, repository, owner, repository))
+    print("Tracking {}/{} <https://github.com/{}/{}>".format(
+        owner, repository, owner, repository))
     print()
     print("Branches:")
     for i in branches:
@@ -187,14 +214,16 @@ def status():
         print()
         print("Pull Requests:")
     for i in pulls:
-        print("    #{}: {} <{}>".format(i["number"], i["title"], i["html_url"]))
+        print("    #{}: {} <{}>".format(
+            i["number"], i["title"], i["html_url"]))
     issues = [i for i in github.issues(owner, repository)
-        if not i["pull_request"]["diff_url"]]
+              if not i["pull_request"]["diff_url"]]
     if issues:
         print()
         print("Issues:")
         for i in issues:
-            print("    #{}: {} <{}>".format(i["number"], i["title"], i["html_url"]))
+            print("    #{}: {} <{}>".format(
+                i["number"], i["title"], i["html_url"]))
     print()
 
 
@@ -234,7 +263,8 @@ def overview():
             if first:
                 print()
                 first = False
-            print(repository, "<https://github.com/{}/{}>".format(owner, repository))
+            print(repository, "<https://github.com/{}/{}>".format(
+                owner, repository))
             for p in pulls:
                 print("    #{number}: {title} <{html_url}>".format(**p))
             print()
@@ -245,7 +275,7 @@ def main(args):
     usage = """Devbliss Github Client
 
 Usage:
-    {name} pull-request
+    {name} pull-request [MAXRETRYS]
     {name} status
     {name} issue [TITLE]
     {name} tags [REPOSITORY]
@@ -259,7 +289,7 @@ Options:
     tags            List the current repository's tags
     overview        Show outstanding pull requests for an
                     entire organisation""".format(name=sys.argv[0])
-    if args[:1] == ["pull-request"] and len(args) == 1:
+    if args[:1] == ["pull-request"] and len(args) in (1, 2):
         pull_request()
         sys.exit(0)
     if args[:1] == ["tags"] and len(args) == 1:
