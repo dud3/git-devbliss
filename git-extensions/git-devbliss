@@ -184,7 +184,9 @@ function delete {
         echo "Won't delete master branch. Aborting." > /dev/stderr
         exit 2
     fi
-    if [[ $1 != "-f" ]]; then
+    if [[ $1 = "-f" ]]; then
+        git push --delete origin $branch
+    else
         echo -n "Really delete the remote branch? [y/N] "
         read a
         if [[ $a == "y" || $a == "Y" ]]; then
