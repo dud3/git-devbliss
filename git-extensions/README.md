@@ -70,6 +70,7 @@ The best thing you can do here is to open a text editor and get used to write th
 of finishing your task. This way you will never forget to remark your changes.
 - **version**: Make sure your projects version number has been incremented (will be run when called 'git devbliss release')  
 Implement that similar to the `changelog` target.
+- **finish**: Define some tasks that have to be done before creating a pull request: e.g. formatting source files...
 
 ## Make target snippets
 
