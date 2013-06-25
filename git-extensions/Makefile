@@ -1,3 +1,4 @@
+all:
 
 build:
 	@echo nothing to do
