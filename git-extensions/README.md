@@ -3,7 +3,8 @@
 ## Installation
 
     git clone git@github.com:devbliss/workflow.git
-    git-extensions/install
+    cd workflow
+    ./install
 
 Note: the Makefile run by the install script will write a file at `/etc/bash_completion.d/git-devbliss`,
 which may or may not be sourced on your system. If bash completion doesn't work,
