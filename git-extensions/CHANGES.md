@@ -1,5 +1,10 @@
 # git devbliss changelog
 
+## 0.9.0
+
+ - bug: branch to create already exists
+ - bug: force delete not working
+
 ## 0.8.1
 
  - make sure release commit is pushed
