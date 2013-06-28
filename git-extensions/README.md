@@ -45,6 +45,19 @@ The fpath should be set before the compinit.
         release:  Create a new tag, commit and push
         delete:   Discard the current branch and delete the remote branch
 
+## Testing
+
+The git-extensions are tested using the following github account.
+
+    Horst Nuschke
+    user: h-nuschke
+    email: h-nuschke1@trash-mail.com
+    password: h-nuschke1
+    repo: git@github.com:h-nuschke/workflow_test.git
+
+The ssh keys are applied via puppet so github can be accessed.
+
+
 ## Makefile hooks
 
 You need to include a Makefile in your project, which defines entry points
