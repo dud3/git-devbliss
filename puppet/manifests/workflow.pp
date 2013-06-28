@@ -4,11 +4,29 @@ class workflow {
     content => "cd /home/vagrant/workflow",
   }
 
+  exec {"devbliss-repo-key":
+    command => "/usr/bin/wget -O - http://deb.devbliss.com/gpg/devbliss.gpg.key | /usr/bin/apt-key add -",
+    user => root,
+    onlyif => "/bin/bash -c '! apt-key finger | grep 2048R/6E7CFE27'",
+
+    } -> file {"devbliss-repo":
+        path    => "/etc/apt/sources.list.d/devbliss.list",
+        content => "deb http://deb.devbliss.com/ precise main\ndeb-src http://deb.devbliss.com/ precise main",
+        ensure  => present,
+    }
+
+  exec { "update":
+       command => "/usr/bin/apt-get update",
+       require => File['devbliss-repo'],
+  }
+
   package{ "packages":
       name => [
         "git-core",
+        "python-fail",
       ],
-      ensure    => "latest",
+      ensure => "latest",
+      require => Exec["update"],
   }
 
   file{ "ssh-config":
