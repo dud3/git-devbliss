@@ -45,3 +45,7 @@ changelog:
 .PHONY : version
 version:
 	@bash -c "$$changelog_cmd"
+
+.PHONY : test
+test:
+	fail --all

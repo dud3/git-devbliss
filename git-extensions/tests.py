@@ -6,7 +6,7 @@ def clean_repository():
 def setup():
     import os
     clean_repository()
-    os.system("make install")
+    os.system("sudo make install > /dev/null")
     #os.chdir("/home/vagrant/workflow_test")
     return locals()
 

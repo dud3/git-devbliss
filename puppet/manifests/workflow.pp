@@ -1,7 +1,7 @@
 class workflow {
 
   file { "/home/vagrant/.bash_login":
-    content => "cd /home/vagrant/workflow",
+    content => "cd /home/vagrant/workflow/git-extensions",
   }
 
   exec {"devbliss-repo-key":
@@ -25,6 +25,7 @@ class workflow {
         "git-core",
         "python-fail",
         "vim",
+        "make",
       ],
       ensure => "latest",
       require => Exec["update"],
