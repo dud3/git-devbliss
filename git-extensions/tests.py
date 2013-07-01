@@ -2,9 +2,11 @@ import fail
 
 def setup():
     import os
+    # chdir
+    # install git-devbliss with puppet first
     return locals()
 
 def teardown(**globs):
     return
 
-#fail.add('./tests_example.md')
+fail.add('./test/commands.md')
