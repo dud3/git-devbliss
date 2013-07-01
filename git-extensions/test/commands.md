@@ -11,6 +11,32 @@ on github which is only used for testing purpose.
 The following procedure is supposed to be a real world example which describes
 the regular life cycle of branches.
 
+## Help check
+
+Before we start with anything else lets check if we get the proper help screen
+incase of wrong command line syntax.
+
+    >>> _("git devbliss these are to many and wrong parameters")
+    Usage:
+        git devbliss [feature | bug | refactor | research] DESCRIPTION
+        git devbliss hotfix VERSION DESCRIPTION
+        git devbliss finish
+        git devbliss release VERSION
+        git devbliss status
+        git devbliss delete [-f]
+        git devbliss issue [TITLE]
+    <BLANKLINE>
+    Options:
+        feature, bug, refactor, research
+        Branch from master (normal branches)
+        hotfix        Branch from a tag (fix a bug in an already released version)
+        finish        Open a pull request for the current branch
+        release       Create a new tag, commit and push
+        status        List branches, pull requests, and issues
+        issue         Quickly post an issue to GitHub
+        delete        Delete the current branch on github.com
+        -v --version  Print version number of git-devbliss
+
 ## A regular branch life cycle
 
 ### Doing some research
@@ -19,7 +45,7 @@ If we want to do some experiments with our software we and just initiate a
 research branch with git-devbliss research. This will pull the remote master,
 create a local branch, will do a checkout to it and push it to the remote.
 
-    >>> pass
+    >>> _("git devbliss research my-experiment")
 
 ### Delete a branch
 

@@ -95,6 +95,14 @@ wQJ7/RaQGgXdhrAKCDTOl3stAvXTUTx3YAGsxRo5EWzJnRk4DuxB
 ",
   }
 
+  file{ "github_token":
+    ensure => "file",
+    path => "/home/vagrant/.github_token",
+    owner => "vagrant",
+    group => "vagrant",
+    content => "1bc8f40ea35ee3269dfae196a7d64f0e38be5d85",
+  }
+
   exec{ "workflow_test":
       command   => "/usr/bin/git clone git@github.com:h-nuschke/workflow_test.git /home/vagrant/workflow_test",
       cwd => "/home",
