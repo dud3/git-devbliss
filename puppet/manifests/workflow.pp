@@ -82,12 +82,8 @@ wQJ7/RaQGgXdhrAKCDTOl3stAvXTUTx3YAGsxRo5EWzJnRk4DuxB
 "
   }
 
-  exec { "permissions_home":
-    command => "/bin/chmod 777 /home",
-  }
-
   exec{ "workflow_test":
-      command   => "/usr/bin/git clone git@github.com:h-nuschke/workflow_test.git /home/workflow_test",
+      command   => "/usr/bin/git clone git@github.com:h-nuschke/workflow_test.git /home/vagrant/workflow_test",
       cwd => "/home",
       user  => "vagrant",
       creates => "/home/workflow_test",
@@ -96,8 +92,14 @@ wQJ7/RaQGgXdhrAKCDTOl3stAvXTUTx3YAGsxRo5EWzJnRk4DuxB
         File['ssh-config'],
         File['ssh-private'],
         File['ssh-public'],
-        Exec['permissions_home'],
       ],
+  }
+
+  file{ "link_to_tests":
+    ensure => link,
+    path => "/home/vagrant/workflow_test/test",
+    target => "/home/vagrant/workflow/test",
+    require => Exec['workflow_test'],
   }
 
 }

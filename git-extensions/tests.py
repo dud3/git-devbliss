@@ -1,9 +1,13 @@
 import fail
 
+def clean_repository():
+    pass
+
 def setup():
     import os
-    # chdir
-    # install git-devbliss with puppet first
+    clean_repository()
+    os.system("make install")
+    #os.chdir("/home/vagrant/workflow_test")
     return locals()
 
 def teardown(**globs):
