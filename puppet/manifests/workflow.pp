@@ -24,6 +24,7 @@ class workflow {
       name => [
         "git-core",
         "python-fail",
+        "vim",
       ],
       ensure => "latest",
       require => Exec["update"],
@@ -82,16 +83,28 @@ wQJ7/RaQGgXdhrAKCDTOl3stAvXTUTx3YAGsxRo5EWzJnRk4DuxB
 "
   }
 
+  file{ "git_config":
+    ensure => "file",
+    path => "/home/vagrant/.gitconfig",
+    owner => "vagrant",
+    group => "vagrant",
+    content => "[user]
+    name = Horst Nuschke
+    email = h-nuschke1@trash-mail.com
+",
+  }
+
   exec{ "workflow_test":
       command   => "/usr/bin/git clone git@github.com:h-nuschke/workflow_test.git /home/vagrant/workflow_test",
       cwd => "/home",
       user  => "vagrant",
-      creates => "/home/workflow_test",
+      creates => "/home/vagrant/workflow_test",
       require => [
         Package['packages'],
         File['ssh-config'],
         File['ssh-private'],
         File['ssh-public'],
+        File['git_config'],
       ],
   }
 
@@ -101,6 +114,7 @@ wQJ7/RaQGgXdhrAKCDTOl3stAvXTUTx3YAGsxRo5EWzJnRk4DuxB
     target => "/home/vagrant/workflow/test",
     require => Exec['workflow_test'],
   }
+
 
 }
 
