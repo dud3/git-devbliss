@@ -111,11 +111,12 @@ wQJ7/RaQGgXdhrAKCDTOl3stAvXTUTx3YAGsxRo5EWzJnRk4DuxB
 
   file{ "link_to_tests":
     ensure => link,
+    owner => "vagrant",
+    group => "vagrant",
     path => "/home/vagrant/workflow_test/test",
-    target => "/home/vagrant/workflow/test",
+    target => "/home/vagrant/workflow/git-extensions/test",
     require => Exec['workflow_test'],
   }
-
 
 }
 
