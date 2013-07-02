@@ -26,6 +26,7 @@ class workflow {
         "python-fail",
         "vim",
         "make",
+        "curl",
       ],
       ensure => "latest",
       require => Exec["update"],

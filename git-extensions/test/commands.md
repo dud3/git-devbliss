@@ -16,7 +16,7 @@ the regular life cycle of branches.
 Before we start with anything else lets check if we get the proper help screen
 incase of wrong command line syntax.
 
-    >>> _("git devbliss these are to many and wrong parameters")
+    >>> sh("git devbliss these are to many and wrong parameters")
     Usage:
         git devbliss [feature | bug | refactor | research] DESCRIPTION
         git devbliss hotfix VERSION DESCRIPTION
@@ -45,17 +45,22 @@ If we want to do some experiments with our software we and just initiate a
 research branch with git-devbliss research. This will pull the remote master,
 create a local branch, will do a checkout to it and push it to the remote.
 
-    >>> _("git devbliss research my-experiment")
+    >>> sh("git devbliss research my-experiment")
+    To git@github.com:h-nuschke/workflow_test.git
+     * [new branch]      research/my-experiment -> research/my-experiment
+    Branch research/my-experiment set up to track remote branch research/my-experiment from origin.
 
 ### Delete a branch
 
-When we finished our reseach we probably want to delete the branch since we
+When we finished our research we probably want to delete the branch since we
 were just experimenting and never intended to merge the research branch into
 our master branch. This can be done by git-devbliss delete. It will delete the
 current branch remotely but will keep the local branch so it can be restored if
 necessary.
 
-    >>> pass
+    >>> sh("git devbliss delete -f")
+    To git@github.com:h-nuschke/workflow_test.git
+     - [deleted]         research/my-experiment
 
 ### Implementing a feature
 
@@ -63,7 +68,10 @@ Now the real work starts similar to the creation of the research branch.
 Instead of git-devbliss research we use git-devbliss feature. The same
 procedure is done with git-devbliss bug in case of a bug.
 
-    >>> pass
+    >>> sh("git devbliss feature my-feature")
+    To git@github.com:h-nuschke/workflow_test.git
+     * [new branch]      feature/my-feature -> feature/my-feature
+    Branch feature/my-feature set up to track remote branch feature/my-feature from origin.
 
 ### Finishing the feature branch
 
@@ -71,7 +79,39 @@ When the feature is ready we simply type git-devbliss finish. This will check
 if the master current master branch is integrated in the feature branch and
 will then push the feature branch to the remote side and open a pull request.
 
-    >>> pass
+Let's do the finish
+
+    >>> sh("git devbliss finish")
+    make[1]: Entering directory `/home/vagrant/workflow_test'
+    make[1]: Leaving directory `/home/vagrant/workflow_test'
+    make[1]: Entering directory `/home/vagrant/workflow_test'
+    make[1]: Leaving directory `/home/vagrant/workflow_test'
+    Everything up-to-date
+    <BLANKLINE>
+    Fatal: No commits between h-nuschke:master and h-nuschke:feature/my-feature
+
+As you can see the finish command calles a few makefile hooks (namely:
+changelog and finish) and then aborts the finish process since we havent made
+any changes.
+
+Thus we implement a little feature and do another finish
+
+    >>> sh("echo '#!/usr/bin/env python' > hello_world.py")
+    >>> sh("git add .")
+    >>> sh("git commit -m'hello world script'")
+    [feature/my-feature 2dae663] hello world script
+     1 file changed, 1 insertion(+)
+     create mode 100644 hello_world.py
+    >>> sh("echo 'print \"hello world\"' >> hello_world.py")
+    >>> sh("git devbliss finish")
+    Error: Repository is not clean. Aborting.
+
+The finish command checks for the repository to be clean before the process is
+started. If we commit our changes first the finish should work.
+
+    >>> sh("git commit -am'hello world script'")
+
+    >>> sh("git devbliss finish")
 
 ### Releasing a new version
 
