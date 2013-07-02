@@ -124,6 +124,19 @@ class GitHub (object):
                         "base": base},
                        indent=0))
 
+    def get_pull_request(self, owner, repository, pull_request_no):
+        return self._request("GET", "/repos/{}/{}/pulls/{}".format(
+            owner, repository, pull_request_no))
+
+    def merge_button(self, owner, repository, pull_request_no):
+        return self._request("PUT", "/repos/{}/{}/pulls/{}/merge".format(
+            owner, repository, pull_request_no))
+
+    def update_pull_request(self, owner, repository, pull_request_no, body):
+        return self._request("PATCH", "/repos/{}/{}/pulls/{}".format(
+            owner, repository, pull_request_no),
+            json.dumps(body))
+
     def get_current_repo(self):
         owner, repository = subprocess.check_output(
             "git remote -v", shell=True).split("git@github.com:")[1].split(
@@ -269,6 +282,31 @@ def overview():
                 print("    #{number}: {title} <{html_url}>".format(**p))
             print()
 
+def merge_button():
+    github = GitHub()
+    owner, repository = get_repository()
+    pull_request = github.get_pull_request(owner, repository, pull_request_no)
+    head = pull_request['head']['ref']
+    github.merge_button(owner, repository, pull_request_no)
+    output = subprocess.check_output(
+        "git push --delete origin {}".format(head), shell=True)
+    print(output)
+
+def review(pull_request_no):
+    github = GitHub()
+    owner, repository = get_repository()
+    pull_request = github.get_pull_request(owner, repository, pull_request_no)
+    base, head = pull_request['base']['ref'], pull_request['head']['ref']
+    output = subprocess.check_output(
+        "git diff --color origin/{} origin/{}".format(base, head), shell=True)
+    print(output)
+
+def close_pull_request(pull_request_no):
+    body = {"state": "closed"}
+    github = GitHub()
+    owner, repository = get_repository()
+    response = github.update_pull_request(
+        owner, repository, pull_request_no, body)
 
 def main(args):
     GitHub.interactive = True
@@ -276,21 +314,37 @@ def main(args):
 
 Usage:
     {name} pull-request [MAXRETRYS]
+    {name} review PULLNUMBER
+    {name} merge-button PULLNUMBER
+    {name} close-pull-request PULLNUMBER
     {name} status
     {name} issue [TITLE]
     {name} tags [REPOSITORY]
     {name} overview ORG
 
 Options:
-    pull-request    Start a new pull request from the
-                    current branch to master
-    status          List information about the repository
-    issue           Quickly post a new issue
-    tags            List the current repository's tags
-    overview        Show outstanding pull requests for an
-                    entire organisation""".format(name=sys.argv[0])
+    pull-request            Start a new pull request from the
+                            current branch to master
+    review                  Review the pull request with the given number
+    merge-button            Merge the pull request with the given number
+    close-pull-request      Close the pull request with the given number
+    status                  List information about the repository
+    issue                   Quickly post a new issue
+    tags                    List the current repository's tags
+    overview                Show outstanding pull requests for an
+                            entire organisation""".format(name=sys.argv[0])
+
     if args[:1] == ["pull-request"] and len(args) in (1, 2):
         pull_request()
+        sys.exit(0)
+    if args[:1] == ["review"] and len(args) == 2:
+        review(args[1])
+        sys.exit(0)
+    if args[:1] == ["merge-button"] and len(args) == 2:
+        merge_button()
+        sys.exit(0)
+    if args[:1] == ["close-pull-request"] and len(args) == 2:
+        close_pull_request()
         sys.exit(0)
     if args[:1] == ["tags"] and len(args) == 1:
         tags()
