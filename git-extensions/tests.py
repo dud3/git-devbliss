@@ -11,15 +11,19 @@ def clean_repository():
 def setup():
     import os
     from pprint import pprint
-    from subprocess import check_output
     os.system("sudo make install > /dev/null")
     clean_repository()
     # never remove the following line or the workflow repo will be messed up
     os.chdir("/home/vagrant/workflow_test")
 
     # short alias for check_output
-    def _(cmd):
-        print check_output(cmd, shell=True)
+    def sh(cmd):
+        from subprocess import call
+        open('/dev/shm/fail_output', 'w').close()
+        with open('/dev/shm/fail_output', 'a+') as output:
+            call(cmd, stderr=output, stdout=output, shell=True)
+        with open('/dev/shm/fail_output', 'r') as output:
+            print output.read()
 
     return locals()
 
