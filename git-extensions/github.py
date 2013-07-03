@@ -189,27 +189,46 @@ def pull_request():
         try:
             req = github.pull_request(
                 owner, repository, github.get_current_branch())
-            maxretrys = 0
+            maxretrys = 0 # we got an answer so we're happy
         except httplib.HTTPException as e:
-            status, reason, body = e.args
-            if status == 422:
+            if len(e.args) == 3:
+                status, reason, body = e.args
                 errors = [j for j in json.loads(body)["errors"]
                           if j.get("message")]
                 # retry in case github needs a few seconds to realize the push
                 retry = [i for i in errors if str(i.get("message")).startswith(
                     "No commits between")]
+            else:
+                status, reason = e.args
+                errors = []
+                retry = 0 # int because it's an int in the if case too
+            if status == 422: # means no commits between base and head branch
                 if retry:
                     maxretrys = maxretrys - 1
                     time.sleep(1)
                     if maxretrys:
                         continue
-                for i in errors:
-                    print("Fatal: " + str(i.get("message") or i))
+                if errors:
+                    for i in errors:
+                        print("Fatal: " + str(i.get("message") or i))
+                else:
+                    print("Fatal: " + str(reason))
                 sys.exit(1)
             else:
-                print("Fatal:", status, reason)
-                sys.exit(1)
+                raise e
     print(req["html_url"])
+
+def pulls():
+    github = GitHub()
+    owner, repository = get_repository()
+    pulls = github.pulls(owner, repository)
+    if pulls:
+        print()
+        print("Pull Requests:")
+    for i in pulls:
+        print("    #{}: {} <{}>".format(
+            i["number"], i["title"], i["html_url"]))
+    print()
 
 
 def status():
@@ -225,13 +244,7 @@ def status():
         url = "https://github.com/{}/{}/tree/{}".format(
             owner, repository, i["name"])
         print("    {} <{}>".format(i["name"], url))
-    pulls = github.pulls(owner, repository)
-    if pulls:
-        print()
-        print("Pull Requests:")
-    for i in pulls:
-        print("    #{}: {} <{}>".format(
-            i["number"], i["title"], i["html_url"]))
+    pulls()
     issues = [i for i in github.issues(owner, repository)
               if not i["pull_request"]["diff_url"]]
     if issues:
@@ -327,6 +340,7 @@ def main(args):
 Usage:
     {name} pull-request [MAXRETRYS]
     {name} review PULLNUMBER
+    {name} open-pulls
     {name} merge-button PULLNUMBER
     {name} close-button PULLNUMBER
     {name} status
@@ -337,6 +351,7 @@ Usage:
 Options:
     pull-request    Start a new pull request from the
                     current branch to master
+    open-pulls      List open pull requests
     review          Review the pull request with the given number
     merge-button    Merge the pull request with the given number
     close-button    Close the pull request without merging
@@ -349,6 +364,9 @@ Options:
     try:
         if args[:1] == ["pull-request"] and len(args) in (1, 2):
             pull_request()
+            sys.exit(0)
+        if args[:1] == ["open-pulls"] and len(args) == 1:
+            pulls()
             sys.exit(0)
         if args[:1] == ["review"] and len(args) == 2:
             review(args[1])

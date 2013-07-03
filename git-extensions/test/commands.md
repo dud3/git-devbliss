@@ -1,11 +1,11 @@
-# git-devbliss commandline integration test
+# git-devbliss command line integration test
 
-This is a test of the git-devbliss commandline. Therefore it is a simple test
+This is a test of the git-devbliss command line. Therefore it is a simple test
 which ensures that the commands work like expected. Since git-devbliss is
 closely interacting with github it is also a test of our github-devbliss
 python script which is tested here implicitly.
 
-For the tests of the proper colaboration with github we created a fake account
+For the tests of the proper collaboration with github we created a fake account
 on github which is only used for testing purpose.
 
 The following procedure is supposed to be a real world example which describes
@@ -14,7 +14,7 @@ the regular life cycle of branches.
 ## Help check
 
 Before we start with anything else lets check if we get the proper help screen
-incase of wrong command line syntax.
+increase of wrong command line syntax.
 
     >>> sh("git devbliss these are to many and wrong parameters")
     Usage:
@@ -90,8 +90,8 @@ Let's do the finish
     <BLANKLINE>
     Fatal: No commits between h-nuschke:master and h-nuschke:feature/my-feature
 
-As you can see the finish command calles a few makefile hooks (namely:
-changelog and finish) and then aborts the finish process since we havent made
+As you can see the finish command calls a few makefile hooks (namely:
+changelog and finish) and then aborts the finish process since we haven't made
 any changes.
 
 Thus we implement a little feature and do another finish
@@ -115,7 +115,7 @@ started. If we commit our changes first the finish should work.
 
 ### Releasing a new version
 
-Making a release will mainly cause a release commit with the version numver in
+Making a release will mainly cause a release commit with the version number in
 it's commit message and a tag which is pointing to the release commit.
 It is encouraged to release new features as early as possible. Therefore we can
 do releases from the feature branch so the resulting tag will be merged into
@@ -144,7 +144,7 @@ git-devbliss status.
 
 A hotfix is supposed to be a bug fix in an already deployed version of our
 software which contains only the needed bug fix but no new features. To get
-there we branch from a given tag insted of the master. Thisway no new features
+there we branch from a given tag instead of the master. This way no new features
 will be included in the resulting release. The desired tag has to be provided
 for the hotfix command.
 
@@ -157,7 +157,7 @@ branch by the provided tag to which the resulting branch refers to.
 
 ### Release the hotfix
 
-A hotfix can be finished with a regular git-devbliss devbliss finish but the
+A hotfix can be finished with a regular git-devbliss finish but the
 branch should definitely contain a release commit and a belonging tag.
 If the branch should be merged into the master has to be decided dependent
 on the masters current state and how far the fixed piece of code has changed

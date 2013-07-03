@@ -177,7 +177,7 @@ function finish {
     echo
     github-devbliss pull-request
     echo
-    show-pulls || true
+    github-devbliss open-pulls
 }
 
 function delete {
