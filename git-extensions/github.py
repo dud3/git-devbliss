@@ -77,6 +77,8 @@ class GitHub (object):
             path = resp.getheader(
                 "Location", None) or resp.getheader("location")
             return self._request(method, path, body, host)
+        if resp.status in (404, 405, ):  # caused by unmergable pull request
+            return json.load(resp)
         if resp.status >= 300:
             raise httplib.HTTPException(resp.status, resp.reason, resp.read())
         return json.load(resp)
@@ -123,6 +125,20 @@ class GitHub (object):
                         "head": head,
                         "base": base},
                        indent=0))
+
+    def get_pull_request(self, owner, repository, pull_request_no):
+        return self._request("GET", "/repos/{}/{}/pulls/{}".format(
+            owner, repository, pull_request_no))
+
+    def merge_button(self, owner, repository, pull_request_no):
+        return self._request("PUT", "/repos/{}/{}/pulls/{}/merge".format(
+            owner, repository, pull_request_no),
+            json.dumps({}))
+
+    def update_pull_request(self, owner, repository, pull_request_no, body):
+        return self._request("PATCH", "/repos/{}/{}/pulls/{}".format(
+            owner, repository, pull_request_no),
+            json.dumps(body))
 
     def get_current_repo(self):
         owner, repository = subprocess.check_output(
@@ -269,6 +285,38 @@ def overview():
                 print("    #{number}: {title} <{html_url}>".format(**p))
             print()
 
+def merge_button(pull_request_no):
+    github = GitHub()
+    owner, repository = get_repository()
+    pull_request = github.get_pull_request(owner, repository, pull_request_no)
+    head = pull_request['head']['ref']
+    response = github.merge_button(owner, repository, pull_request_no)
+    if response.get('merged'):
+        output = subprocess.check_output(
+            "git push --delete origin {}".format(head), shell=True)
+        print("Success: {}".format(response['message']))
+        print(output)
+    else:
+        print("Failure: {}".format(response['message']))
+    print()
+
+def review(pull_request_no):
+    github = GitHub()
+    owner, repository = get_repository()
+    pull_request = github.get_pull_request(owner, repository, pull_request_no)
+    base, head = pull_request['base']['ref'], pull_request['head']['ref']
+    output = subprocess.check_output(
+        "git diff --color origin/{} origin/{}".format(base, head), shell=True)
+    print(output)
+    print()
+
+def close_pull_request(pull_request_no):
+    body = {"state": "closed"}
+    github = GitHub()
+    owner, repository = get_repository()
+    response = github.update_pull_request(
+        owner, repository, pull_request_no, body)
+    print()
 
 def main(args):
     GitHub.interactive = True
@@ -276,6 +324,9 @@ def main(args):
 
 Usage:
     {name} pull-request [MAXRETRYS]
+    {name} review PULLNUMBER
+    {name} merge-button PULLNUMBER
+    {name} close-button PULLNUMBER
     {name} status
     {name} issue [TITLE]
     {name} tags [REPOSITORY]
@@ -284,13 +335,26 @@ Usage:
 Options:
     pull-request    Start a new pull request from the
                     current branch to master
+    review          Review the pull request with the given number
+    merge-button    Merge the pull request with the given number
+    close-button    Close the pull request with the given number
     status          List information about the repository
     issue           Quickly post a new issue
     tags            List the current repository's tags
     overview        Show outstanding pull requests for an
                     entire organisation""".format(name=sys.argv[0])
+
     if args[:1] == ["pull-request"] and len(args) in (1, 2):
         pull_request()
+        sys.exit(0)
+    if args[:1] == ["review"] and len(args) == 2:
+        review(args[1])
+        sys.exit(0)
+    if args[:1] == ["merge-button"] and len(args) == 2:
+        merge_button(args[1])
+        sys.exit(0)
+    if args[:1] == ["close-button"] and len(args) == 2:
+        close_pull_request(args[1])
         sys.exit(0)
     if args[:1] == ["tags"] and len(args) == 1:
         tags()
