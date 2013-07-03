@@ -77,10 +77,10 @@ class GitHub (object):
             path = resp.getheader(
                 "Location", None) or resp.getheader("location")
             return self._request(method, path, body, host)
-        if resp.status in (404, 405, ):  # caused by unmergable pull request
-            return json.load(resp)
         if resp.status >= 300:
-            raise httplib.HTTPException(resp.status, resp.reason, resp.read())
+            e =  httplib.HTTPException(resp.status, resp.reason)
+            e.body = resp.read()
+            raise e
         return json.load(resp)
 
     def pulls(self, owner, repository):
@@ -305,10 +305,8 @@ def review(pull_request_no):
     owner, repository = get_repository()
     pull_request = github.get_pull_request(owner, repository, pull_request_no)
     base, head = pull_request['base']['ref'], pull_request['head']['ref']
-    output = subprocess.check_output(
-        "git diff --color origin/{} origin/{}".format(base, head), shell=True)
-    print(output)
-    print()
+    os.system("git diff --color=auto origin/{} origin/{}".format(
+        base, head), shell=True)
 
 def close_pull_request(pull_request_no):
     body = {"state": "closed"}
@@ -316,6 +314,10 @@ def close_pull_request(pull_request_no):
     owner, repository = get_repository()
     response = github.update_pull_request(
         owner, repository, pull_request_no, body)
+    if response.get('state') == 'closed':
+        print("Success: {}".format(response['message']))
+    else:
+        print("Failure: {}".format(response['message']))
     print()
 
 def main(args):
@@ -337,42 +339,56 @@ Options:
                     current branch to master
     review          Review the pull request with the given number
     merge-button    Merge the pull request with the given number
-    close-button    Close the pull request with the given number
+    close-button    Close the pull request without merging
     status          List information about the repository
     issue           Quickly post a new issue
     tags            List the current repository's tags
     overview        Show outstanding pull requests for an
                     entire organisation""".format(name=sys.argv[0])
 
-    if args[:1] == ["pull-request"] and len(args) in (1, 2):
-        pull_request()
-        sys.exit(0)
-    if args[:1] == ["review"] and len(args) == 2:
-        review(args[1])
-        sys.exit(0)
-    if args[:1] == ["merge-button"] and len(args) == 2:
-        merge_button(args[1])
-        sys.exit(0)
-    if args[:1] == ["close-button"] and len(args) == 2:
-        close_pull_request(args[1])
-        sys.exit(0)
-    if args[:1] == ["tags"] and len(args) == 1:
-        tags()
-        sys.exit(0)
-    if args[:1] == ["tags"] and len(args) == 2 and "/" in args[-1]:
-        tags()
-        sys.exit(0)
-    if args[:1] == ["status"] and len(args) == 1:
-        status()
-        sys.exit(0)
-    if args[:1] == ["issue"] and len(args) in (1, 2):
-        issue()
-        sys.exit(0)
-    if args[:1] == ["overview"] and len(args) == 2:
-        overview()
-        sys.exit(0)
-    print(usage)
-    sys.exit(2)
+    try:
+        if args[:1] == ["pull-request"] and len(args) in (1, 2):
+            pull_request()
+            sys.exit(0)
+        if args[:1] == ["review"] and len(args) == 2:
+            review(args[1])
+            sys.exit(0)
+        if args[:1] == ["merge-button"] and len(args) == 2:
+            merge_button(args[1])
+            sys.exit(0)
+        if args[:1] == ["close-button"] and len(args) == 2:
+            close_pull_request(args[1])
+            sys.exit(0)
+        if args[:1] == ["tags"] and len(args) == 1:
+            tags()
+            sys.exit(0)
+        if args[:1] == ["tags"] and len(args) == 2 and "/" in args[-1]:
+            tags()
+            sys.exit(0)
+        if args[:1] == ["status"] and len(args) == 1:
+            status()
+            sys.exit(0)
+        if args[:1] == ["issue"] and len(args) in (1, 2):
+            issue()
+            sys.exit(0)
+        if args[:1] == ["overview"] and len(args) == 2:
+            overview()
+            sys.exit(0)
+        print(usage, file=sys.stderr)
+        sys.exit(2)
+    except httplib.HTTPException as e:
+        if hasattr(e, "body"):
+            try:
+                message = json.loads(e.body)['message']
+            except (KeyError, ValueError):
+                pass
+            else:
+                print("Error: {}".format(message), file=sys.stderr)
+                sys.exit(1)
+        print(str(e))
+        sys.exit(1)
+
+
 
 
 if __name__ == '__main__':
