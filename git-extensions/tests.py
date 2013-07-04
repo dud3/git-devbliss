@@ -15,7 +15,7 @@ def clean_repository():
 def setup():
     import os
     from pprint import pprint
-    os.system("sudo make install > /dev/null")
+    os.system("sudo make install")
     clean_repository()
     # never remove the following line or the workflow repo will be messed up
     os.chdir("/home/vagrant/workflow_test")

@@ -175,7 +175,7 @@ def tags():
         req = github.tags(owner, repository)
     except httplib.HTTPException as e:
         status, reason, body = e.args
-        print("Fatal:", status, reason)
+        print("Fatal:", status, reason, file=sys.stderr)
         sys.exit(1)
     print("\n".join(sorted(tag["name"] for tag in req)))
     sys.exit(0)
@@ -210,9 +210,10 @@ def pull_request():
                         continue
                 if errors:
                     for i in errors:
-                        print("Fatal: " + str(i.get("message") or i))
+                        print("Fatal: " + str(i.get("message") or i, file=sys.stderr))
                 else:
-                    print("Fatal: " + str(reason))
+                    print("Fatal: " + str(reason), file=sys.stderr)
+                    print("Possibly pull request already exists.", file=sys.stderr)
                 sys.exit(1)
             else:
                 raise e
@@ -274,7 +275,7 @@ def issue():
         req = github.issue(owner, repository, title, body)
     except httplib.HTTPException as e:
         status, reason, body = e.args
-        print("Fatal:", status, reason)
+        print("Fatal:", status, reason, file=sys.stderr)
         sys.exit(1)
     print()
     print("    " + req["html_url"])
@@ -411,3 +412,4 @@ Options:
 
 if __name__ == '__main__':
     main(sys.argv[1:])
+

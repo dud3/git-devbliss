@@ -82,13 +82,10 @@ will then push the feature branch to the remote side and open a pull request.
 Let's do the finish
 
     >>> sh("git devbliss finish")
-    make[1]: Entering directory `/home/vagrant/workflow_test'
-    make[1]: Leaving directory `/home/vagrant/workflow_test'
-    make[1]: Entering directory `/home/vagrant/workflow_test'
-    make[1]: Leaving directory `/home/vagrant/workflow_test'
     Everything up-to-date
     <BLANKLINE>
-    Fatal: No commits between h-nuschke:master and h-nuschke:feature/my-feature
+    Fatal: Unprocessable Entity
+    Possibly pull request already exists.
 
 As you can see the finish command calls a few makefile hooks (namely:
 changelog and finish) and then aborts the finish process since we haven't made
@@ -99,9 +96,8 @@ Thus we implement a little feature and do another finish
     >>> sh("echo '#!/usr/bin/env python' > hello_world.py")
     >>> sh("git add .")
     >>> sh("git commit -m'hello world script'")
-    [feature/my-feature 2dae663] hello world script
-     1 file changed, 1 insertion(+)
-     create mode 100644 hello_world.py
+    [feature/my-feature ...] hello world script
+     1 file changed, 1 deletion(-)
     >>> sh("echo 'print \"hello world\"' >> hello_world.py")
     >>> sh("git devbliss finish")
     Error: Repository is not clean. Aborting.
@@ -110,8 +106,19 @@ The finish command checks for the repository to be clean before the process is
 started. If we commit our changes first the finish should work.
 
     >>> sh("git commit -am'hello world script'")
+    [feature/my-feature ...] hello world script
+     1 file changed, 1 insertion(+)
 
     >>> sh("git devbliss finish")
+    To git@github.com:h-nuschke/workflow_test.git
+       ...  feature/my-feature -> feature/my-feature
+    <BLANKLINE>
+    https://github.com/h-nuschke/workflow_test/pull/...
+    <BLANKLINE>
+    <BLANKLINE>
+    Pull Requests:
+        #...: feature/my-feature <https://github.com/h-nuschke/workflow_test/pull/...>
+
 
 ### Releasing a new version
 
