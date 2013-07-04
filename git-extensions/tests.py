@@ -7,6 +7,8 @@ def clean_repository():
     os.system('git stash')
     os.system('git stash drop')
     os.system("git checkout master")
+    os.system('for tag in $(git tag); do git push origin :refs/tags/$tag; done')
+    os.system('for tag in $(git tag); do git tag -d $tag; done')
     os.system("git reset --hard {}".format(neutral_master))
     os.system('for branch in $(git branch | grep -v master); do git branch -D $branch; done')
     os.system('for branch in $(git branch -r | grep -v master | sed s#origin/##); do git push --delete origin $branch; done')
