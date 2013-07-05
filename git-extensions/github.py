@@ -201,8 +201,8 @@ def pull_request():
             else:
                 status, reason = e.args
                 errors = []
-                retry = 0 # int because it's an int in the if case too
-            if status == 422: # means no commits between base and head branch
+                retry = 0  # int because it's an int in the if case too
+            if status == 422:  # means no commits between base and head branch
                 if retry:
                     maxretrys = maxretrys - 1
                     time.sleep(1)
@@ -210,10 +210,12 @@ def pull_request():
                         continue
                 if errors:
                     for i in errors:
-                        print("Fatal: " + str(i.get("message") or i, file=sys.stderr))
+                        print("Fatal: " + str(i.get("message") or i),
+                              file=sys.stderr)
                 else:
                     print("Fatal: " + str(reason), file=sys.stderr)
-                    print("Possibly pull request already exists.", file=sys.stderr)
+                    print("Either the pull request already exists or there are"
+                          " no commits between the two branches", file=sys.stderr)
                 sys.exit(1)
             else:
                 raise e

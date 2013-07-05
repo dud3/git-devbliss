@@ -24,7 +24,6 @@ class workflow {
       name => [
         "git-core",
         "python-fail",
-        "vim",
         "make",
         "curl",
       ],

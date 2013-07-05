@@ -216,7 +216,7 @@ We now push our changes and the release should word then.
     Everything up-to-date
     <BLANKLINE>
     Fatal: Unprocessable Entity
-    Possibly pull request already exists.
+    Either the pull request already exists or there are no commits between the two branches
 
 The error at the end of the output is normal in this case since a pull request
 already exists from the finish command.
@@ -278,5 +278,3 @@ till the version from which the hotfix was branched.
     Everything up-to-date
     <BLANKLINE>
     https://github.com/h-nuschke/workflow_test/pull/...
-
-

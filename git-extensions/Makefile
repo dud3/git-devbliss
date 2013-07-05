@@ -44,5 +44,9 @@ version:
 	@bash -c "$$changelog_cmd"
 
 .PHONY : test
+
 test:
+	$(MAKE) --no-print-directory silent_test
+
+silent_test:
 	fail --all
