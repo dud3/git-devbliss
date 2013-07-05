@@ -78,7 +78,9 @@ class GitHub (object):
                 "Location", None) or resp.getheader("location")
             return self._request(method, path, body, host)
         if resp.status >= 300:
-            raise httplib.HTTPException(resp.status, resp.reason, resp.read())
+            e =  httplib.HTTPException(resp.status, resp.reason)
+            e.body = resp.read()
+            raise e
         return json.load(resp)
 
     def pulls(self, owner, repository):
@@ -124,6 +126,20 @@ class GitHub (object):
                         "base": base},
                        indent=0))
 
+    def get_pull_request(self, owner, repository, pull_request_no):
+        return self._request("GET", "/repos/{}/{}/pulls/{}".format(
+            owner, repository, pull_request_no))
+
+    def merge_button(self, owner, repository, pull_request_no):
+        return self._request("PUT", "/repos/{}/{}/pulls/{}/merge".format(
+            owner, repository, pull_request_no),
+            json.dumps({}))
+
+    def update_pull_request(self, owner, repository, pull_request_no, body):
+        return self._request("PATCH", "/repos/{}/{}/pulls/{}".format(
+            owner, repository, pull_request_no),
+            json.dumps(body))
+
     def get_current_repo(self):
         owner, repository = subprocess.check_output(
             "git remote -v", shell=True).split("git@github.com:")[1].split(
@@ -159,7 +175,7 @@ def tags():
         req = github.tags(owner, repository)
     except httplib.HTTPException as e:
         status, reason, body = e.args
-        print("Fatal:", status, reason)
+        print("Fatal:", status, reason, file=sys.stderr)
         sys.exit(1)
     print("\n".join(sorted(tag["name"] for tag in req)))
     sys.exit(0)
@@ -173,27 +189,47 @@ def pull_request():
         try:
             req = github.pull_request(
                 owner, repository, github.get_current_branch())
-            maxretrys = 0
+            maxretrys = 0 # we got an answer so we're happy
         except httplib.HTTPException as e:
-            status, reason, body = e.args
-            if status == 422:
+            if len(e.args) == 3:
+                status, reason, body = e.args
                 errors = [j for j in json.loads(body)["errors"]
                           if j.get("message")]
                 # retry in case github needs a few seconds to realize the push
                 retry = [i for i in errors if str(i.get("message")).startswith(
                     "No commits between")]
+            else:
+                status, reason = e.args
+                errors = []
+                retry = 0 # int because it's an int in the if case too
+            if status == 422: # means no commits between base and head branch
                 if retry:
                     maxretrys = maxretrys - 1
                     time.sleep(1)
                     if maxretrys:
                         continue
-                for i in errors:
-                    print("Fatal: " + str(i.get("message") or i))
+                if errors:
+                    for i in errors:
+                        print("Fatal: " + str(i.get("message") or i, file=sys.stderr))
+                else:
+                    print("Fatal: " + str(reason), file=sys.stderr)
+                    print("Possibly pull request already exists.", file=sys.stderr)
                 sys.exit(1)
             else:
-                print("Fatal:", status, reason)
-                sys.exit(1)
+                raise e
     print(req["html_url"])
+
+def pulls():
+    github = GitHub()
+    owner, repository = get_repository()
+    pulls = github.pulls(owner, repository)
+    if pulls:
+        print()
+        print("Pull Requests:")
+    for i in pulls:
+        print("    #{}: {} <{}>".format(
+            i["number"], i["title"], i["html_url"]))
+    print()
 
 
 def status():
@@ -209,13 +245,7 @@ def status():
         url = "https://github.com/{}/{}/tree/{}".format(
             owner, repository, i["name"])
         print("    {} <{}>".format(i["name"], url))
-    pulls = github.pulls(owner, repository)
-    if pulls:
-        print()
-        print("Pull Requests:")
-    for i in pulls:
-        print("    #{}: {} <{}>".format(
-            i["number"], i["title"], i["html_url"]))
+    pulls()
     issues = [i for i in github.issues(owner, repository)
               if not i["pull_request"]["diff_url"]]
     if issues:
@@ -245,7 +275,7 @@ def issue():
         req = github.issue(owner, repository, title, body)
     except httplib.HTTPException as e:
         status, reason, body = e.args
-        print("Fatal:", status, reason)
+        print("Fatal:", status, reason, file=sys.stderr)
         sys.exit(1)
     print()
     print("    " + req["html_url"])
@@ -269,6 +299,40 @@ def overview():
                 print("    #{number}: {title} <{html_url}>".format(**p))
             print()
 
+def merge_button(pull_request_no):
+    github = GitHub()
+    owner, repository = get_repository()
+    pull_request = github.get_pull_request(owner, repository, pull_request_no)
+    head = pull_request['head']['ref']
+    response = github.merge_button(owner, repository, pull_request_no)
+    if response.get('merged'):
+        output = subprocess.check_output(
+            "git push --delete origin {}".format(head), shell=True)
+        print("Success: {}".format(response['message']))
+        print(output)
+    else:
+        print("Failure: {}".format(response['message']))
+    print()
+
+def review(pull_request_no):
+    github = GitHub()
+    owner, repository = get_repository()
+    pull_request = github.get_pull_request(owner, repository, pull_request_no)
+    base, head = pull_request['base']['ref'], pull_request['head']['ref']
+    os.system("git diff --color=auto origin/{} origin/{}".format(
+        base, head), shell=True)
+
+def close_pull_request(pull_request_no):
+    body = {"state": "closed"}
+    github = GitHub()
+    owner, repository = get_repository()
+    response = github.update_pull_request(
+        owner, repository, pull_request_no, body)
+    if response.get('state') == 'closed':
+        print("Success: {}".format(response['message']))
+    else:
+        print("Failure: {}".format(response['message']))
+    print()
 
 def main(args):
     GitHub.interactive = True
@@ -276,6 +340,10 @@ def main(args):
 
 Usage:
     {name} pull-request [MAXRETRYS]
+    {name} review PULLNUMBER
+    {name} open-pulls
+    {name} merge-button PULLNUMBER
+    {name} close-button PULLNUMBER
     {name} status
     {name} issue [TITLE]
     {name} tags [REPOSITORY]
@@ -284,32 +352,64 @@ Usage:
 Options:
     pull-request    Start a new pull request from the
                     current branch to master
+    open-pulls      List open pull requests
+    review          Review the pull request with the given number
+    merge-button    Merge the pull request with the given number
+    close-button    Close the pull request without merging
     status          List information about the repository
     issue           Quickly post a new issue
     tags            List the current repository's tags
     overview        Show outstanding pull requests for an
                     entire organisation""".format(name=sys.argv[0])
-    if args[:1] == ["pull-request"] and len(args) in (1, 2):
-        pull_request()
-        sys.exit(0)
-    if args[:1] == ["tags"] and len(args) == 1:
-        tags()
-        sys.exit(0)
-    if args[:1] == ["tags"] and len(args) == 2 and "/" in args[-1]:
-        tags()
-        sys.exit(0)
-    if args[:1] == ["status"] and len(args) == 1:
-        status()
-        sys.exit(0)
-    if args[:1] == ["issue"] and len(args) in (1, 2):
-        issue()
-        sys.exit(0)
-    if args[:1] == ["overview"] and len(args) == 2:
-        overview()
-        sys.exit(0)
-    print(usage)
-    sys.exit(2)
+
+    try:
+        if args[:1] == ["pull-request"] and len(args) in (1, 2):
+            pull_request()
+            sys.exit(0)
+        if args[:1] == ["open-pulls"] and len(args) == 1:
+            pulls()
+            sys.exit(0)
+        if args[:1] == ["review"] and len(args) == 2:
+            review(args[1])
+            sys.exit(0)
+        if args[:1] == ["merge-button"] and len(args) == 2:
+            merge_button(args[1])
+            sys.exit(0)
+        if args[:1] == ["close-button"] and len(args) == 2:
+            close_pull_request(args[1])
+            sys.exit(0)
+        if args[:1] == ["tags"] and len(args) == 1:
+            tags()
+            sys.exit(0)
+        if args[:1] == ["tags"] and len(args) == 2 and "/" in args[-1]:
+            tags()
+            sys.exit(0)
+        if args[:1] == ["status"] and len(args) == 1:
+            status()
+            sys.exit(0)
+        if args[:1] == ["issue"] and len(args) in (1, 2):
+            issue()
+            sys.exit(0)
+        if args[:1] == ["overview"] and len(args) == 2:
+            overview()
+            sys.exit(0)
+        print(usage, file=sys.stderr)
+        sys.exit(2)
+    except httplib.HTTPException as e:
+        if hasattr(e, "body"):
+            try:
+                message = json.loads(e.body)['message']
+            except (KeyError, ValueError):
+                pass
+            else:
+                print("Error: {}".format(message), file=sys.stderr)
+                sys.exit(1)
+        print(str(e))
+        sys.exit(1)
+
+
 
 
 if __name__ == '__main__':
     main(sys.argv[1:])
+

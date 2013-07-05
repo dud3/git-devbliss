@@ -6,11 +6,9 @@ build:
 .PHONY : install
 install:
 	@cp git-devbliss /usr/bin/
-	@cp show-pulls /usr/bin/show-pulls
 	@cp github.py /usr/bin/github-devbliss
 	@mkdir -p /usr/share/doc/git-devbliss/
 	@cp CHANGES.md /usr/share/doc/git-devbliss/
-	@chmod a+x /usr/bin/show-pulls
 	@chmod a+x /usr/bin/github-devbliss
 	@mkdir -p /etc/bash_completion.d/
 	@git config --global alias.de devbliss
@@ -25,7 +23,6 @@ install:
 .PHONY : uninstall
 uninstall:
 	@rm -f /usr/bin/git-devbliss
-	@rm -f /usr/bin/show-pulls
 	@rm -f /etc/bash_completion.d/git-devbliss
 	@rm -f /usr/bin/github-devbliss
 	@rm -rf /usr/share/doc/git-devbliss/
@@ -45,3 +42,7 @@ changelog:
 .PHONY : version
 version:
 	@bash -c "$$changelog_cmd"
+
+.PHONY : test
+test:
+	fail --all

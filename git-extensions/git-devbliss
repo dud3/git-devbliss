@@ -177,7 +177,7 @@ function finish {
     echo
     github-devbliss pull-request
     echo
-    show-pulls || true
+    github-devbliss open-pulls
 }
 
 function delete {
@@ -243,7 +243,7 @@ elif [[ $# == 2 ]]; then
 elif [[ $# == 1 ]]; then
     if [[ $1 == "finish" ]]; then
         finish
-        update_check
+        #update_check
     elif [[ $1 == "delete" ]]; then
         delete ""
     elif [[ $1 == "-v" ]]; then
@@ -252,7 +252,7 @@ elif [[ $# == 1 ]]; then
         version
     elif [[ $1 == "status" ]]; then
         github-devbliss status
-        update_check
+        #update_check
     elif [[ $1 == "issue" ]]; then
         github-devbliss issue
     else
