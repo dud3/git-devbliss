@@ -85,7 +85,7 @@ Let's do the finish
     Everything up-to-date
     <BLANKLINE>
     Fatal: Unprocessable Entity
-    Possibly pull request already exists.
+    Either the pull request already exists or there are no commits between the two branches.
 
 As you can see the finish command calls a few makefile hooks (namely:
 changelog and finish) and then aborts the finish process since we haven't made
@@ -216,7 +216,7 @@ We now push our changes and the release should word then.
     Everything up-to-date
     <BLANKLINE>
     Fatal: Unprocessable Entity
-    Either the pull request already exists or there are no commits between the two branches
+    Either the pull request already exists or there are no commits between the two branches.
 
 The error at the end of the output is normal in this case since a pull request
 already exists from the finish command.

@@ -215,7 +215,7 @@ def pull_request():
                 else:
                     print("Fatal: " + str(reason), file=sys.stderr)
                     print("Either the pull request already exists or there are"
-                          " no commits between the two branches", file=sys.stderr)
+                          " no commits between the two branches.", file=sys.stderr)
                 sys.exit(1)
             else:
                 raise e
