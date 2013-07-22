@@ -237,6 +237,12 @@ elif [[ $# == 2 ]]; then
         fi
     elif [[ $1 == "issue" ]]; then
         github-devbliss issue "$2"
+    elif [[ $1 == "merge-button" ]]; then
+        github-devbliss merge-button "$2"
+    elif [[ $1 == "close-button" ]]; then
+        github-devbliss close-button "$2"
+    elif [[ $1 == "review" ]]; then
+        github-devbliss review "$2"
     else
         help
     fi
