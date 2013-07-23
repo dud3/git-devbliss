@@ -14,6 +14,9 @@ function help {
     echo '    git devbliss status'
     echo '    git devbliss delete [-f]'
     echo '    git devbliss issue [TITLE]'
+    echo '    git devbliss review <pull-request-id>'
+    echo '    git devbliss merge-button <pull-request-id>'
+    echo '    git devbliss close-button <pull-request-id>'
     echo
     echo 'Options:'
     echo '    '`echo "${branches[@]}" | sed 's/ /, /g'`
@@ -24,6 +27,9 @@ function help {
     echo '    status        List branches, pull requests, and issues'
     echo '    issue         Quickly post an issue to GitHub'
     echo '    delete        Delete the current branch on github.com'
+    echo '    review        Review a pull request with the given id'
+    echo '    merge-button  Merge a pull request with the given id'
+    echo '    close-button  Close a pull request with the given id without merging'
     echo '    -v --version  Print version number of git-devbliss'
 }
 
