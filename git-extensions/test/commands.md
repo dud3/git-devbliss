@@ -352,7 +352,26 @@ As we see the pull request has gone.
         prepare-master <https://github.com/h-nuschke/workflow_test/tree/prepare-master>
     <BLANKLINE>
     Pull Requests:
-    #...: hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/pull/...>
+        #...: hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/pull/...>
+
+What happens if the desired pull request doesn't exist?
+
+    >>> sh("git devbliss merge-button {0}".format(pull))
+    Error: Pull Request is not mergeable
+
+The status command shows that nothing has changed.
+
+    >>> sh("git devbliss status")
+    Tracking h-nuschke/workflow_test <https://github.com/h-nuschke/workflow_test>
+    <BLANKLINE>
+    Branches:
+        feature/my-feature <https://github.com/h-nuschke/workflow_test/tree/feature/my-feature>
+        hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/tree/hotfix/mean-bug-on-live>
+        master <https://github.com/h-nuschke/workflow_test/tree/master>
+        prepare-master <https://github.com/h-nuschke/workflow_test/tree/prepare-master>
+    <BLANKLINE>
+    Pull Requests:
+        #...: hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/pull/...>
 
 ### Close a pull request
 
@@ -379,3 +398,9 @@ intended.
         hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/tree/hotfix/mean-bug-on-live>
         master <https://github.com/h-nuschke/workflow_test/tree/master>
         prepare-master <https://github.com/h-nuschke/workflow_test/tree/prepare-master>
+
+And what happens if the desired pull request doesn't exist?
+
+    >>> sh("git devbliss close-button {0}".format(pull))
+    Failure: hotfix/mean-bug-on-live not closed.
+

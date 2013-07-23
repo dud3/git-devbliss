@@ -328,12 +328,16 @@ def close_pull_request(pull_request_no):
     body = {"state": "closed"}
     github = GitHub()
     owner, repository = get_repository()
-    response = github.update_pull_request(
-        owner, repository, pull_request_no, body)
-    if response.get('state') == 'closed':
-        print("Success: {} closed.".format(response['title']))
-    else:
-        print("Failure: {} not closed.".format(response['title']))
+    try:
+        response = github.update_pull_request(
+            owner, repository, pull_request_no, body)
+        if response.get('state') == 'closed':
+            print("Success: {} closed.".format(response['title']))
+        else:
+            print("Failure: {} not closed.".format(response['title']))
+    except (ValueError, KeyError):
+        print("Failure: pull request not closed.")
+        print(response['message'])
     print()
 
 def main(args):
