@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.10.0
+
+ - github commands for pull requests: review, close-button, merge-button
+
 ## 0.9.0
 
  - bug: branch to create already exists

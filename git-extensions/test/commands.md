@@ -97,7 +97,8 @@ Thus we implement a little feature and do another finish
     >>> sh("git add .")
     >>> sh("git commit -m'hello world script'")
     [feature/my-feature ...] hello world script
-     1 file changed, 2 deletions(-)
+     1 file changed, 1 insertion(+)
+     create mode 100644 hello_world.py
     >>> sh("echo 'print \"hello world\"' >> hello_world.py")
     >>> sh("git devbliss finish")
     Error: Repository is not clean. Aborting.
@@ -141,8 +142,9 @@ the feature branch is not containing the current master.
     >>> sh("git merge feature/my-feature")
     Updating ...
     Fast-forward
-     hello_world.py |    1 -
-     1 file changed, 1 deletion(-)
+     hello_world.py |    2 ++
+     1 file changed, 2 insertions(+)
+     create mode 100644 hello_world.py
     >>> sh("git checkout -")
     Switched to branch 'feature/another-feature'
     Your branch is ahead of 'origin/feature/another-feature' by 1 commit.
@@ -153,8 +155,9 @@ If we now merge the master in our feature branch the finish command will work.
 
     >>> sh("git merge master")
     Merge made by the 'recursive' strategy.
-     hello_world.py |    1 -
-     1 file changed, 1 deletion(-)
+     hello_world.py |    2 ++
+     1 file changed, 2 insertions(+)
+     create mode 100644 hello_world.py
     >>> sh("git devbliss finish")
     To git@github.com:h-nuschke/workflow_test.git
        ...  feature/another-feature -> feature/another-feature
@@ -278,3 +281,126 @@ till the version from which the hotfix was branched.
     Everything up-to-date
     <BLANKLINE>
     https://github.com/h-nuschke/workflow_test/pull/...
+
+### Repository status
+
+The git devbliss status command gives an overview on the repository. It shows
+all existing branches and pull requests as well as issues.
+
+    >>> sh("git devbliss status")
+    Tracking h-nuschke/workflow_test <https://github.com/h-nuschke/workflow_test>
+    <BLANKLINE>
+    Branches:
+        feature/another-feature <https://github.com/h-nuschke/workflow_test/tree/feature/another-feature>
+        feature/my-feature <https://github.com/h-nuschke/workflow_test/tree/feature/my-feature>
+        hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/tree/hotfix/mean-bug-on-live>
+        master <https://github.com/h-nuschke/workflow_test/tree/master>
+        prepare-master <https://github.com/h-nuschke/workflow_test/tree/prepare-master>
+    <BLANKLINE>
+    Pull Requests:
+    #...: hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/pull/...>
+    #...: feature/another-feature <https://github.com/h-nuschke/workflow_test/pull/...>
+
+
+### Review a pull request
+
+Next we want to be a nice co-worker and review a pull request. The git devbliss
+review command shows a diff between master and feature branch.
+
+    # the status command has to run first for this trick to work
+    >>> with open("/dev/shm/fail_output", "r") as f:
+    ...     pull = re.search(r"#(\d+).*another-feature", f.read()).group(1)
+    >>> sh("git devbliss review {0}".format(pull))
+    diff --git a/another-feature.py b/another-feature.py
+    new file mode 100644
+    index ...
+    --- /dev/null
+    +++ b/another-feature.py
+    @@ -0,0 +1 @@
+    +#!/usr/bin/env python
+    diff --git a/hello_world.py b/hello_world.py
+    index ...
+    --- a/hello_world.py
+    +++ b/hello_world.py
+    @@ -1,3 +1,2 @@
+     #!/usr/bin/env python
+     print "hello world"
+     -print "hello world"
+
+
+### Merge a pull request
+
+After a successful review we can merge the feature branch into master with a
+single command similar to the merge button on github. Therefore the commands
+name is merge-button.
+
+    >>> sh("git devbliss merge-button {0}".format(pull))
+    To git@github.com:h-nuschke/workflow_test.git
+     - [deleted]         feature/another-feature
+    Success: Pull Request successfully merged
+
+
+As we see the pull request has gone.
+
+    >>> sh("git devbliss status")
+    Tracking h-nuschke/workflow_test <https://github.com/h-nuschke/workflow_test>
+    <BLANKLINE>
+    Branches:
+        feature/my-feature <https://github.com/h-nuschke/workflow_test/tree/feature/my-feature>
+        hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/tree/hotfix/mean-bug-on-live>
+        master <https://github.com/h-nuschke/workflow_test/tree/master>
+        prepare-master <https://github.com/h-nuschke/workflow_test/tree/prepare-master>
+    <BLANKLINE>
+    Pull Requests:
+        #...: hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/pull/...>
+
+What happens if the desired pull request doesn't exist?
+
+    >>> sh("git devbliss merge-button {0}".format(pull))
+    Error: Pull Request is not mergeable
+
+The status command shows that nothing has changed.
+
+    >>> sh("git devbliss status")
+    Tracking h-nuschke/workflow_test <https://github.com/h-nuschke/workflow_test>
+    <BLANKLINE>
+    Branches:
+        feature/my-feature <https://github.com/h-nuschke/workflow_test/tree/feature/my-feature>
+        hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/tree/hotfix/mean-bug-on-live>
+        master <https://github.com/h-nuschke/workflow_test/tree/master>
+        prepare-master <https://github.com/h-nuschke/workflow_test/tree/prepare-master>
+    <BLANKLINE>
+    Pull Requests:
+        #...: hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/pull/...>
+
+### Close a pull request
+
+A pull request can also be closed in case a merge is not intended anymore. In
+our example we just close the hotfix branch. In case the hotfix concerns a bug
+which is solved in the current master in some other way it's a realistic
+scenario to close the pull request but leave the hotfix branch as it is to keep
+the release commit and probably build further packages from the hotfix branch.
+
+    # the status command has to run first for this trick to work
+    >>> with open("/dev/shm/fail_output", "r") as f:
+    ...     pull = re.search(r"#(\d+).*mean-bug-on-live", f.read()).group(1)
+    >>> sh("git devbliss close-button {0}".format(pull))
+    Success: hotfix/mean-bug-on-live closed.
+
+The pull request is closed now but the hotfix branch still exists as it was
+intended.
+
+    >>> sh("git devbliss status")
+    Tracking h-nuschke/workflow_test <https://github.com/h-nuschke/workflow_test>
+    <BLANKLINE>
+    Branches:
+        feature/my-feature <https://github.com/h-nuschke/workflow_test/tree/feature/my-feature>
+        hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/tree/hotfix/mean-bug-on-live>
+        master <https://github.com/h-nuschke/workflow_test/tree/master>
+        prepare-master <https://github.com/h-nuschke/workflow_test/tree/prepare-master>
+
+And what happens if the desired pull request doesn't exist?
+
+    >>> sh("git devbliss close-button {0}".format(pull))
+    Failure: hotfix/mean-bug-on-live not closed.
+

@@ -322,18 +322,22 @@ def review(pull_request_no):
     pull_request = github.get_pull_request(owner, repository, pull_request_no)
     base, head = pull_request['base']['ref'], pull_request['head']['ref']
     os.system("git diff --color=auto origin/{} origin/{}".format(
-        base, head), shell=True)
+        base, head))
 
 def close_pull_request(pull_request_no):
     body = {"state": "closed"}
     github = GitHub()
     owner, repository = get_repository()
-    response = github.update_pull_request(
-        owner, repository, pull_request_no, body)
-    if response.get('state') == 'closed':
-        print("Success: {}".format(response['message']))
-    else:
-        print("Failure: {}".format(response['message']))
+    try:
+        response = github.update_pull_request(
+            owner, repository, pull_request_no, body)
+        if response.get('state') == 'closed':
+            print("Success: {} closed.".format(response['title']))
+        else:
+            print("Failure: {} not closed.".format(response['title']))
+    except (ValueError, KeyError):
+        print("Failure: pull request not closed.")
+        print(response['message'])
     print()
 
 def main(args):
