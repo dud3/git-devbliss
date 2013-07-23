@@ -25,6 +25,9 @@ increase of wrong command line syntax.
         git devbliss status
         git devbliss delete [-f]
         git devbliss issue [TITLE]
+        git devbliss review <pull-request-id>
+        git devbliss merge-button <pull-request-id>
+        git devbliss close-button <pull-request-id>
     <BLANKLINE>
     Options:
         feature, bug, refactor, research
@@ -35,6 +38,9 @@ increase of wrong command line syntax.
         status        List branches, pull requests, and issues
         issue         Quickly post an issue to GitHub
         delete        Delete the current branch on github.com
+        review        Review a pull request with the given id
+        merge-button  Merge a pull request with the given id
+        close-button  Close a pull request with the given id without merging
         -v --version  Print version number of git-devbliss
 
 ## A regular branch life cycle
