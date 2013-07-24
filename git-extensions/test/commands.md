@@ -319,20 +319,11 @@ review command shows a diff between master and feature branch.
     >>> sh("git devbliss review {0}".format(pull))
     diff --git a/another-feature.py b/another-feature.py
     new file mode 100644
-    index ...
+    index 0000000..4265cc3
     --- /dev/null
     +++ b/another-feature.py
     @@ -0,0 +1 @@
     +#!/usr/bin/env python
-    diff --git a/hello_world.py b/hello_world.py
-    index ...
-    --- a/hello_world.py
-    +++ b/hello_world.py
-    @@ -1,3 +1,2 @@
-     #!/usr/bin/env python
-     print "hello world"
-     -print "hello world"
-
 
 ### Merge a pull request
 
@@ -348,6 +339,7 @@ name is merge-button.
 
 As we see the pull request has gone.
 
+    >>> sleep(2)
     >>> sh("git devbliss status")
     Tracking h-nuschke/workflow_test <https://github.com/h-nuschke/workflow_test>
     <BLANKLINE>

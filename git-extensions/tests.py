@@ -19,6 +19,7 @@ def setup():
     import os
     import re
     from pprint import pprint
+    from time import sleep
     os.system("sudo make install")
     clean_repository()
     # never remove the following line or the workflow repo will be messed up

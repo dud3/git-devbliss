@@ -1,5 +1,10 @@
 # git devbliss changelog
 
+## 0.11.0
+
+ - The review command no longer shows the full historic diff,
+   now same as github.com
+
 ## 0.10.0
 
  - github commands for pull requests: review, close-button, merge-button
