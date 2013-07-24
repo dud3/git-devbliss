@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.9.1
+
+ - bug: version numbers used to be sorted lexicographically, preventing update
+
 ## 0.9.0
 
  - bug: branch to create already exists
