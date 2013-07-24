@@ -17,6 +17,12 @@ git-devbliss \- git extensions for best practices at devbliss
 
 .B git devbliss issue [TITLE]
 
+.B git devbliss review PULL-REQUEST-ID
+
+.B git devbliss merge-button PULL-REQUEST-ID
+
+.B git devbliss close-button PULL-REQUEST-ID
+
 .SH DESCRIPTION
 .B git-devbliss
 implements simple
@@ -83,6 +89,21 @@ be found at
         works. On an empty line at the end of the message, type ^D to
         end the program and post the issue. Type ^C at any point to
         cancel.
+
+.I "review"
+
+        Review a pull request with the given id. The id can be discovered
+        using the git devbliss status command.
+
+.I "merge-button"
+
+        Merge a pull request with the given id. The id can be discovered
+        using the git devbliss status command.
+
+.I "close-button"
+
+        Close a pull request with the given id without merging. The id can
+        be discovered using the git devbliss status command.
 
 .I "-v --version"
 

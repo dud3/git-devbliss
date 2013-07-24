@@ -30,20 +30,8 @@ The fpath should be set before the compinit.
 
 ## Overview
 
-    Usage:
-        git devbliss [feature | bug | refactor | research] DESCRIPTION
-        git devbliss hotfix VERSION DESCRIPTION
-        git devbliss finish
-        git devbliss release VERSION
-        git devbliss delete [-f]
-
-    Commands:
-        feature, bug, refactor:
-                  Branch from master (normal branches)
-        hotfix:   Branch from a tag (fix a bug in an already released version)
-        finish:   Open a pull request for the current branch
-        release:  Create a new tag, commit and push
-        delete:   Discard the current branch and delete the remote branch
+See: git help devbliss or if not installed see:
+[manpage](https://github.com/devbliss/workflow/blob/master/git-extensions/man1/git-devbliss.1)
 
 ## Testing
 
