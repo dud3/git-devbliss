@@ -320,8 +320,8 @@ def review(pull_request_no):
     github = GitHub()
     owner, repository = get_repository()
     pull_request = github.get_pull_request(owner, repository, pull_request_no)
-    base, head = pull_request['base']['ref'], pull_request['head']['ref']
-    os.system("git diff --color=auto origin/{} origin/{}".format(
+    base, head = pull_request['base']['sha'], pull_request['head']['sha']
+    os.system("git diff --color=auto {}...{}".format(
         base, head))
 
 def close_pull_request(pull_request_no):
