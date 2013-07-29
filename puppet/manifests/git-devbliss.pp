@@ -1,7 +1,7 @@
 class workflow {
 
   file { "/home/vagrant/.bash_login":
-    content => "cd /home/vagrant/workflow/git-extensions",
+    content => "cd /home/vagrant/git-devbliss/git-extensions",
   }
 
   exec {"devbliss-repo-key":
@@ -122,7 +122,7 @@ wQJ7/RaQGgXdhrAKCDTOl3stAvXTUTx3YAGsxRo5EWzJnRk4DuxB
     owner => "vagrant",
     group => "vagrant",
     path => "/home/vagrant/workflow_test/test",
-    target => "/home/vagrant/workflow/git-extensions/test",
+    target => "/home/vagrant/git-devbliss/git-extensions/test",
     require => Exec['workflow_test'],
   }
 
