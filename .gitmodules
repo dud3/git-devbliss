@@ -1,3 +1,0 @@
-[submodule "packaging"]
-	path = packaging
-	url = git@github.com:devbliss/packaging.git
