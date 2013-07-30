@@ -27,21 +27,13 @@ uninstall:
 	@rm -f /usr/bin/github-devbliss
 	@rm -rf /usr/share/doc/git-devbliss/
 
-define changelog_cmd
-	changelog="CHANGES.md"
-	if [ -z "$$EDITOR" ]; then
-		EDITOR=vi
-	fi
-	$$EDITOR $$changelog
-endef
-export changelog_cmd
 .PHONY : changelog
 changelog:
-	@bash -c "$$changelog_cmd"
+	@$${EDITOR:-"vi"} CHANGES.md
 
 .PHONY : version
 version:
-	@bash -c "$$changelog_cmd"
+	@$${EDITOR:-"vi"} CHANGES.md
 
 .PHONY : test
 

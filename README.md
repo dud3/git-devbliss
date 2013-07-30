@@ -80,17 +80,9 @@ This section contains some snippets for the use in conjuction with the recomende
 
 ### Open changelog in the default editor
 
-    define changelog_cmd
-    	changelog="CHANGES.md"
-    	if [ -z "$$EDITOR" ]; then
-    	    EDITOR=vi
-    	fi
-    	$$EDITOR $$changelog
-    endef
-    export changelog_cmd
     .PHONY : changelog
     changelog:
-    	@bash -c "$$changelog_cmd"
+    	@$${EDITOR:-"vi"} debian/changelog
 
 
 ### Typical maven delegation
@@ -99,11 +91,10 @@ This section contains some snippets for the use in conjuction with the recomende
     	mvn gwt:compile
 
     changelog:
-    	@bash -c "$$changelog_cmd"
+    	@$${EDITOR:-"vi"} debian/changelog
 
     test:
     	mvn test
 
     clean:
     	mvn clean
-
