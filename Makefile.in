@@ -1,0 +1,57 @@
+DESTDIR ?= /
+all:
+
+build:
+	@echo nothing to do
+
+.PHONY : install
+install:
+	@mkdir -p ${DESTDIR}/usr/bin/
+	@mkdir -p ${DESTDIR}/usr/share/doc/git-devbliss/
+	@mkdir -p ${DESTDIR}/usr/share/man/man1
+	@mkdir -p ${DESTDIR}/etc/bash_completion.d/
+	@cp git-devbliss ${DESTDIR}/usr/bin/
+	@cp github.py ${DESTDIR}/usr/bin/github-devbliss
+	@mkdir -p ${DESTDIR}/usr/share/doc/git-devbliss/
+	@cp CHANGES.md ${DESTDIR}/usr/share/doc/git-devbliss/
+	@chmod a+x ${DESTDIR}/usr/bin/github-devbliss
+	@git config --global alias.de devbliss
+	@cp bash_completion/git-devbliss ${DESTDIR}/etc/bash_completion.d/
+	@cp man1/* ${DESTDIR}/usr/share/man/man1/
+	@echo To enable bash completion, source '/etc/bash_completion.d/git-devbliss':
+	@echo
+	@echo "    echo \"source /etc/bash_completion.d/git-devbliss\" >> ~/.profile"
+	@echo
+	@echo done
+
+.PHONY : uninstall
+uninstall:
+	@rm -f ${DESTDIR}/usr/bin/git-devbliss
+	@rm -f ${DESTDIR}/etc/bash_completion.d/git-devbliss
+	@rm -f ${DESTDIR}/usr/bin/github-devbliss
+	@rm -rf ${DESTDIR}/usr/share/doc/git-devbliss/
+	@rm -f ${DESTDIR}/usr/share/man/man1/git-devbliss.1
+
+define changelog_cmd
+	changelog="CHANGES.md"
+	if [ -z "$$EDITOR" ]; then
+		EDITOR=vi
+	fi
+	$$EDITOR $$changelog
+endef
+export changelog_cmd
+.PHONY : changelog
+changelog:
+	@bash -c "$$changelog_cmd"
+
+.PHONY : version
+version:
+	@bash -c "$$changelog_cmd"
+
+.PHONY : test
+
+test:
+	$(MAKE) --no-print-directory silent_test
+
+silent_test:
+	fail --all

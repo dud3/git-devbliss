@@ -1,0 +1,14 @@
+#!/bin/bash
+
+PREFIX=${PREFIX-/}
+if [[ "$1" =~ "--prefix" ]]; then 
+    PREFIX=$( echo $1 | cut -d'=' -f2 )
+fi
+
+echo "PREFIX ?= \"$PREFIX\"" > Makefile
+echo "" >> Makefile
+cat Makefile.in >> Makefile
+
+echo "Created Makefile"
+
+exit 0
