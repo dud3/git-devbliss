@@ -1,11 +1,11 @@
 #!/bin/bash
 
-PREFIX=${PREFIX-/}
+PREFIX=/usr
 if [[ "$1" =~ "--prefix" ]]; then 
     PREFIX=$( echo $1 | cut -d'=' -f2 )
 fi
 
-echo "PREFIX ?= \"$PREFIX\"" > Makefile
+echo "PREFIX ?= $PREFIX" > Makefile
 echo "" >> Makefile
 cat Makefile.in >> Makefile
 

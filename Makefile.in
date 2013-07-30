@@ -1,4 +1,3 @@
-DESTDIR ?= /
 all:
 
 build:
@@ -6,18 +5,18 @@ build:
 
 .PHONY : install
 install:
-	@mkdir -p ${DESTDIR}/usr/bin/
-	@mkdir -p ${DESTDIR}/usr/share/doc/git-devbliss/
-	@mkdir -p ${DESTDIR}/usr/share/man/man1
-	@mkdir -p ${DESTDIR}/etc/bash_completion.d/
-	@cp git-devbliss ${DESTDIR}/usr/bin/
-	@cp github.py ${DESTDIR}/usr/bin/github-devbliss
-	@mkdir -p ${DESTDIR}/usr/share/doc/git-devbliss/
-	@cp CHANGES.md ${DESTDIR}/usr/share/doc/git-devbliss/
-	@chmod a+x ${DESTDIR}/usr/bin/github-devbliss
+	@mkdir -p ${DESTDIR}${PREFIX}/bin/ || :
+	@mkdir -p ${DESTDIR}${PREFIX}/share/doc/git-devbliss/ || :
+	@mkdir -p ${DESTDIR}${PREFIX}/share/man/man1 || :
+	@mkdir -p ${DESTDIR}${PREFIX}/etc/bash_completion.d/ || :
+	@cp git-devbliss ${PREFIX}/bin/
+	@cp github.py ${DESTDIR}${PREFIX}/bin/github-devbliss
+	@mkdir -p ${DESTDIR}${PREFIX}/share/doc/git-devbliss/
+	@cp CHANGES.md ${DESTDIR}${PREFIX}/share/doc/git-devbliss/
+	@chmod a+x ${DESTDIR}${PREFIX}/bin/github-devbliss
 	@git config --global alias.de devbliss
-	@cp bash_completion/git-devbliss ${DESTDIR}/etc/bash_completion.d/
-	@cp man1/* ${DESTDIR}/usr/share/man/man1/
+	@cp bash_completion/git-devbliss ${DESTDIR}${PREFIX}/etc/bash_completion.d/
+	@cp man1/* ${DESTDIR}${PREFIX}/share/man/man1/
 	@echo To enable bash completion, source '/etc/bash_completion.d/git-devbliss':
 	@echo
 	@echo "    echo \"source /etc/bash_completion.d/git-devbliss\" >> ~/.profile"
@@ -26,11 +25,11 @@ install:
 
 .PHONY : uninstall
 uninstall:
-	@rm -f ${DESTDIR}/usr/bin/git-devbliss
-	@rm -f ${DESTDIR}/etc/bash_completion.d/git-devbliss
-	@rm -f ${DESTDIR}/usr/bin/github-devbliss
-	@rm -rf ${DESTDIR}/usr/share/doc/git-devbliss/
-	@rm -f ${DESTDIR}/usr/share/man/man1/git-devbliss.1
+	@rm -f ${DESTDIR}${PREFIX}/bin/git-devbliss
+	@rm -f ${DESTDIR}${PREFIX}/etc/bash_completion.d/git-devbliss
+	@rm -f ${DESTDIR}${PREFIX}/bin/github-devbliss
+	@rm -rf ${DESTDIR}${PREFIX}/share/doc/git-devbliss/
+	@rm -f ${DESTDIR}${PREFIX}/share/man/man1/git-devbliss.1
 
 define changelog_cmd
 	changelog="CHANGES.md"
