@@ -64,13 +64,13 @@ integrate hooks in our git devbliss toolset which makes your daily work easier a
 
 You are encouraged to implement the following targets in your Makefile:
 
-- **test**: Run all your projects software tests (will be run when called 'git devbliss release')
+- **test**: Run all your projects software tests
 - **deb**: Build a ready to deploy Debian package
 - **clean**: Clean up all messy stuff created while building your project
-- **changelog**: Make sure your changelog has been updated (will be run when called 'git devbliss finish')  
+- **changelog**: Make sure your changelog has been updated (will be run when called 'git devbliss finish')
 The best thing you can do here is to open a text editor and get used to write the changelog at time
 of finishing your task. This way you will never forget to remark your changes.
-- **version**: Make sure your projects version number has been incremented (will be run when called 'git devbliss release')  
+- **version**: Make sure your projects version number has been incremented (will be run when called 'git devbliss release')
 Implement that similar to the `changelog` target.
 - **finish**: Define some tasks that have to be done before creating a pull request: e.g. formatting source files...
 
@@ -80,17 +80,9 @@ This section contains some snippets for the use in conjuction with the recomende
 
 ### Open changelog in the default editor
 
-    define changelog_cmd
-    	changelog="CHANGES.md"
-    	if [ -z "$$EDITOR" ]; then
-    	    EDITOR=vi
-    	fi
-    	$$EDITOR $$changelog
-    endef
-    export changelog_cmd
     .PHONY : changelog
     changelog:
-    	@bash -c "$$changelog_cmd"
+    	@$${EDITOR:-"vi"} debian/changelog
 
 
 ### Typical maven delegation
@@ -99,11 +91,10 @@ This section contains some snippets for the use in conjuction with the recomende
     	mvn gwt:compile
 
     changelog:
-    	@bash -c "$$changelog_cmd"
+    	@$${EDITOR:-"vi"} debian/changelog
 
     test:
     	mvn test
 
     clean:
     	mvn clean
-
