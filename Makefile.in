@@ -9,7 +9,7 @@ install:
 	@mkdir -p ${DESTDIR}${PREFIX}/share/doc/git-devbliss/ || :
 	@mkdir -p ${DESTDIR}${PREFIX}/share/man/man1 || :
 	@mkdir -p ${DESTDIR}${PREFIX}/etc/bash_completion.d/ || :
-	@cp git-devbliss ${PREFIX}/bin/
+	@cp git-devbliss ${DESTDIR}${PREFIX}/bin/
 	@cp github.py ${DESTDIR}${PREFIX}/bin/github-devbliss
 	@mkdir -p ${DESTDIR}${PREFIX}/share/doc/git-devbliss/
 	@cp CHANGES.md ${DESTDIR}${PREFIX}/share/doc/git-devbliss/
@@ -17,9 +17,9 @@ install:
 	@git config --global alias.de devbliss
 	@cp bash_completion/git-devbliss ${DESTDIR}${PREFIX}/etc/bash_completion.d/
 	@cp man1/* ${DESTDIR}${PREFIX}/share/man/man1/
-	@echo To enable bash completion, source '/etc/bash_completion.d/git-devbliss':
+	@echo To enable bash completion, source '${DESTDIR}${PREFIX}/etc/bash_completion.d/git-devbliss':
 	@echo
-	@echo "    echo \"source /etc/bash_completion.d/git-devbliss\" >> ~/.profile"
+	@echo "    echo \"source ${DESTDIR}${PREFIX}/etc/bash_completion.d/git-devbliss\" >> ~/.profile"
 	@echo
 	@echo done
 
