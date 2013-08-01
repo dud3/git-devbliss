@@ -2,8 +2,8 @@
 
 ## Installation
 
-    git clone git@github.com:devbliss/workflow.git
-    cd workflow
+    git clone git@github.com:devbliss/git-devbliss.git
+    cd git-devbliss
     ./install
 
 Note: the Makefile run by the install script will write a file at `/etc/bash_completion.d/git-devbliss`,
@@ -16,7 +16,7 @@ append the following line to your `.profile` (or `.bashrc`) file:
 
 Just put the following in your .zshrc:
 
-    fpath=(<path-to-workflow>/git-extensions/zsh_completion $fpath)
+    fpath=(<path-to-workflow>/zsh_completion $fpath)
     zstyle ':completion:*:*:git:*' user-commands \
         devbliss:'devbliss git workflow' \
 
@@ -31,7 +31,7 @@ The fpath should be set before the compinit.
 ## Overview
 
 See: git help devbliss or if not installed see:
-[manpage](https://github.com/devbliss/workflow/blob/master/git-extensions/man1/git-devbliss.1)
+[manpage](https://github.com/devbliss/git-devbliss/blob/master/man1/git-devbliss.1)
 
 ## Testing
 

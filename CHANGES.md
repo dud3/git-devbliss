@@ -1,5 +1,10 @@
 # git devbliss changelog
 
+## 0.12.0
+
+ - Restructured source tree
+ - Macports compatibility (github.com/devbliss/macports)
+
 ## 0.11.0
 
  - The review command no longer shows the full historic diff,
