@@ -4,7 +4,8 @@
 
     git clone git@github.com:devbliss/git-devbliss.git
     cd git-devbliss
-    ./install
+    ./configure
+    sudo make install
 
 Note: the Makefile run by the install script will write a file at `/etc/bash_completion.d/git-devbliss`,
 which may or may not be sourced on your system. If bash completion doesn't work,
