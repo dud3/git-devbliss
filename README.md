@@ -71,7 +71,7 @@ You are encouraged to implement the following targets in your Makefile:
 - **changelog**: Make sure your changelog has been updated (will be run when called 'git devbliss finish')
 The best thing you can do here is to open a text editor and get used to write the changelog at time
 of finishing your task. This way you will never forget to remark your changes.
-- **version**: Make sure your projects version number has been incremented (will be run when called 'git devbliss release')
+- **version**: Make sure your projects version number has been incremented (will be run when called 'git devbliss finish')
 Implement that similar to the `changelog` target.
 - **finish**: Define some tasks that have to be done before creating a pull request: e.g. formatting source files...
 

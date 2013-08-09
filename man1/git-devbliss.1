@@ -51,21 +51,19 @@ be found at
 .I "finish"
 
         Open a pull request for the current branch. This command will
-        first check whether it is run on the top level of the repository,
-        so that it can execute 'make changelog'. If there is no makefile
-        or the changelog target is missing, you will get a warning.
-        Afterwards, the current branch is pushed and the pull request is
-        opened on github. You will be given a link to the pull request.
-        The finish command will also execute the "finish" target, if any.
+        first check whether it is run on the top level of the
+        repository, so that it can execute 'make changelog' and 'make
+        version'. If there is no makefile or the changelog target is
+        missing, you will get a warning. Afterwards, the current
+        branch is pushed and the pull request is opened on github. You
+        will be given a link to the pull request. The finish command
+        will also execute the "finish" target, if any.
 
 .I "release"
 
         Create a new tag, commit and push. After executing the 'version'
         make target and commiting any changes that may have occured as
         a result of it, this command creates a release commit and a tag.
-        You should configure the 'version' target of your makefile to
-        ensure that any package management related version numbers are
-        changed accordingly.
 
 .I "status"
 
