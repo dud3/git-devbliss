@@ -144,11 +144,6 @@ function release {
         echo "[enter / ctrl+c to cancel]"
         read || exit 2
     fi
-    export DEVBLISS_VERSION="$1"
-    makefile_hooks version
-    if ! is_repository_clean; then
-        git commit --quiet -am "Ran git devbliss version hook"
-    fi
     git commit --quiet --allow-empty -m "Release: $1"
     git push origin $branch
     git tag $1
@@ -158,7 +153,6 @@ function release {
         echo
         github-devbliss pull-request
     fi
-    unset DEVBLISS_VERSION
 }
 
 function finish {
@@ -178,6 +172,10 @@ function finish {
     makefile_hooks changelog
     if ! is_repository_clean; then
         git commit --quiet -am "Ran git devbliss changelog hook"
+    fi
+    makefile_hooks version
+    if ! is_repository_clean; then
+        git commit --quiet -am "Ran git devbliss version hook"
     fi
     git push origin $branch
     echo
