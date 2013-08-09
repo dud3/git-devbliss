@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.13.0
+
+ - Run `make version` on `finish` instead of `release`
+
 ## 0.12.0
 
  - Restructured source tree
