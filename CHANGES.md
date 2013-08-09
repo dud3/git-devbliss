@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.13.1
+
+ - Fixed bad substitution in `git devbliss finish`
+
 ## 0.13.0
 
  - Run `make version` on `finish` instead of `release`
