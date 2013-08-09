@@ -173,12 +173,10 @@ function finish {
     if ! is_repository_clean; then
         git commit --quiet -am "Ran git devbliss changelog hook"
     fi
-    export DEVBLISS_VERSION="$1"
     makefile_hooks version
     if ! is_repository_clean; then
         git commit --quiet -am "Ran git devbliss version hook"
     fi
-    unset DEVBLISS_VERSION
     git push origin $branch
     echo
     github-devbliss pull-request
