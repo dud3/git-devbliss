@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 0.14.0
+
+ - Fixed a bug in `--version` with macports install
+
 ## 0.13.1
 
  - Fixed bad substitution in `git devbliss finish`
