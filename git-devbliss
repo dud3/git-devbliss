@@ -34,8 +34,11 @@ function help {
 }
 
 function version {
-    changelog="/usr/share/doc/git-devbliss/CHANGES.md"
-    local local_version=$(perl -ne '/^#+ +\d\.\d\.\d([^\.].*)?$/ && s/^#+ +(\d\.\d\.\d)/$1/ && print && exit' $changelog)
+    changelog="/opt/local/share/doc/git-devbliss/CHANGES.md"
+    if [[ ! -e $changelog ]]; then
+        changelog="/usr/share/doc/git-devbliss/CHANGES.md"
+    fi
+    local local_version=$(perl -ne '/^#+ +\d+\.\d+\.\d+([^\.].*)?$/ && s/^#+ +(\d+\.\d+\.\d+)/$1/ && print && exit' $changelog)
     echo $local_version
 }
 
