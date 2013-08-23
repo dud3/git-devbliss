@@ -216,6 +216,8 @@ We now push our changes and the release should word then.
 
     >>> sh("yes 2> /dev/null | git devbliss release 0.0.0")
     0.0.0
+    make[2]: *** No rule to make target `release'.  Stop.
+    Warning: Makefile has no target named "release".
     Have these changes been reviewed?
     [enter / ctrl+c to cancel]
     To git@github.com:h-nuschke/workflow_test.git
@@ -278,6 +280,8 @@ till the version from which the hotfix was branched.
 
     >>> sh("yes 2> /dev/null | git devbliss release 0.0.1")
     0.0.1
+    make[2]: *** No rule to make target `release'.  Stop.
+    Warning: Makefile has no target named "release".
     Have these changes been reviewed?
     [enter / ctrl+c to cancel]
     To git@github.com:h-nuschke/workflow_test.git
