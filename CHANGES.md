@@ -1,5 +1,11 @@
 # git devbliss changelog
 
+## 0.14.0
+
+ - Hotfix does not need master merged
+ - Release hook added
+ - Finish hook has its own commit
+
 ## 0.13.1
 
  - Fixed bad substitution in `git devbliss finish`
