@@ -2,7 +2,6 @@
 
 ## 0.14.0
 
- - Hotfix does not need master merged
  - Release hook added
  - Finish hook has its own commit
 
