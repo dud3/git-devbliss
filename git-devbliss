@@ -136,6 +136,12 @@ function release {
         echo "Do 'git pull && git push' and try agin." >> /dev/stderr
         exit 1
     fi
+    export DEVBLISS_VERSION="$1"
+    makefile_hooks release
+    if ! is_repository_clean; then
+        git commit --quiet -am "Ran git devbliss release hook"
+    fi
+    unset DEVBLISS_VERSION
     echo "Have these changes been reviewed?"
     echo "[enter / ctrl+c to cancel]"
     read || exit 2
@@ -162,13 +168,16 @@ function finish {
         echo "Error: Repository is not clean. Aborting." >> /dev/stderr
         exit 1
     fi
-    if ! git branch --contains master | grep "$branch" > /dev/null; then
+    export DEVBLISS_BRANCH_TYPE=`echo $branch | sed -e 's#\([^/]*\)/.*#\1#g'`
+    if ! git branch --contains master | grep "$branch" > /dev/null && ! echo "$DEVBLISS_BRANCH_TYPE" | grep 'hotfix' ; then
         echo "Error: Won't finish. Master is not merged into the current branch." > /dev/stderr
         echo "Please do 'git pull origin master', make sure all conflicts are merged and try again." > /dev/stderr
         exit 1
     fi
-    export DEVBLISS_BRANCH_TYPE=`echo $branch | sed -e 's#\([^/]*\)/.*#\1#g'`
     makefile_hooks finish
+    if ! is_repository_clean; then
+        git commit --quiet -am "Ran git devbliss finish hook"
+    fi
     makefile_hooks changelog
     if ! is_repository_clean; then
         git commit --quiet -am "Ran git devbliss changelog hook"
