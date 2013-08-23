@@ -34,8 +34,11 @@ function help {
 }
 
 function version {
-    changelog="/usr/share/doc/git-devbliss/CHANGES.md"
-    local local_version=$(perl -ne '/^#+ +\d\.\d\.\d([^\.].*)?$/ && s/^#+ +(\d\.\d\.\d)/$1/ && print && exit' $changelog)
+    changelog="/opt/local/share/doc/git-devbliss/CHANGES.md"
+    if [[ ! -e $changelog ]]; then
+        changelog="/usr/share/doc/git-devbliss/CHANGES.md"
+    fi
+    local local_version=$(perl -ne '/^#+ +\d+\.\d+\.\d+([^\.].*)?$/ && s/^#+ +(\d+\.\d+\.\d+)/$1/ && print && exit' $changelog)
     echo $local_version
 }
 
@@ -136,6 +139,12 @@ function release {
         echo "Do 'git pull && git push' and try agin." >> /dev/stderr
         exit 1
     fi
+    export DEVBLISS_VERSION="$1"
+    makefile_hooks release
+    if ! is_repository_clean; then
+        git commit --quiet -am "Ran git devbliss release hook"
+    fi
+    unset DEVBLISS_VERSION
     echo "Have these changes been reviewed?"
     echo "[enter / ctrl+c to cancel]"
     read || exit 2
@@ -169,6 +178,9 @@ function finish {
     fi
     export DEVBLISS_BRANCH_TYPE=`echo $branch | sed -e 's#\([^/]*\)/.*#\1#g'`
     makefile_hooks finish
+    if ! is_repository_clean; then
+        git commit --quiet -am "Ran git devbliss finish hook"
+    fi
     makefile_hooks changelog
     if ! is_repository_clean; then
         git commit --quiet -am "Ran git devbliss changelog hook"
