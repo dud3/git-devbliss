@@ -4,6 +4,7 @@
 
  - Release hook added
  - Finish hook has its own commit
+ - Fixed a bug in `--version` with macports install
 
 ## 0.13.1
 
