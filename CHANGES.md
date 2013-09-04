@@ -1,4 +1,7 @@
 # git devbliss changelog
+## 1.0.0
+
+ - Version Bump
 
 ## 0.14.0
 

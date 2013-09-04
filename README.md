@@ -95,12 +95,20 @@ You are encouraged to implement the following targets in your Makefile:
 - **changelog**: Make sure your changelog has been updated (will be run when
   called 'git devbliss finish') The best thing you can do here is to open a
   text editor and get used to write the changelog at time of finishing your
-  task. This way you will never forget to remark your changes.
+  task. This way you will never forget to remark your changes
 - **version**: Make sure your projects version number has been incremented
   (will be run when called 'git devbliss finish') Implement that similar to the
-  `changelog` target.
+  `changelog` target
 - **finish**: Define some tasks that have to be done before creating a pull
   request: e.g. formatting source files...
+- **release**: Called upon git-devbliss release
+
+Depending on the git-devbliss command used, there is one of two bash variables
+available:
+- **finish**:  `DEVBLISS_BRANCH_TYPE` is available that holds the branch type
+  value (`feature`, `bug`, `hotfix`, `research` or `refactor`)
+- **release**: `DEVBLISS_VERSION` is available that carries the version number
+  used with the release command
 
 ## Make target snippets
 
