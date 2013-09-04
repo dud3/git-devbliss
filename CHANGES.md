@@ -1,4 +1,10 @@
 # git devbliss changelog
+
+## 1.1.0
+
+ - Fixed a bug where hotfix branches that diverged
+   from master coundn't be finished
+
 ## 1.0.0
 
  - Version Bump
