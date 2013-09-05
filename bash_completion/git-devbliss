@@ -15,6 +15,9 @@ _git_devbliss ()
         release)
             COMPREPLY=( $(compgen -W "$(git tag --column)" -- $cur) )
         ;;
+        finish)
+            COMPREPLY=( $(compgen -W "$(git branch -r | tail -n+2 | awk -F 'origin/' '{print $2}')" -- $cur) )
+        ;;
         *)
             if [ ${#COMP_WORDS[@]} -gt 3 ]; then
                 COMPREPLY=()

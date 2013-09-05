@@ -9,7 +9,7 @@ function help {
     echo 'Usage:'
     echo '    git devbliss ['`echo "${branches[@]}" | sed 's/ / \| /g'`'] DESCRIPTION'
     echo '    git devbliss hotfix VERSION DESCRIPTION'
-    echo '    git devbliss finish'
+    echo '    git devbliss finish [ BASE_BRANCH ]'
     echo '    git devbliss release VERSION'
     echo '    git devbliss status'
     echo '    git devbliss delete [-f]'
@@ -40,21 +40,6 @@ function version {
     fi
     local local_version=$(perl -ne '/^#+ +\d+\.\d+\.\d+([^\.].*)?$/ && s/^#+ +(\d+\.\d+\.\d+)/$1/ && print && exit' $changelog)
     echo $local_version
-}
-
-function update_check {
-    local latest_remote=$(github-devbliss tags devbliss/workflow | tail -n1)
-    if [ -z $latest_remote ]; then
-        return 0
-    fi
-    local local_version=$(version)
-    if [[ $latest_remote > $local_version ]]; then
-        echo
-        echo "New version ($latest_remote) of git devbliss available. Your version is $local_version"
-        echo "Please go to your local copy of git devbliss (workflow) and enter './update'"
-        echo
-    fi
-
 }
 
 function is_repository_clean {
@@ -165,6 +150,7 @@ function release {
 }
 
 function finish {
+    local base_branch=${1-}
     check_repo_toplevel # neccessary to run makefile hooks
     local branch=`git rev-parse --abbrev-ref HEAD`
     if ! is_repository_clean; then
@@ -191,7 +177,7 @@ function finish {
     fi
     git push origin $branch
     echo
-    github-devbliss pull-request
+    github-devbliss pull-request ${base_branch-}
     echo
     github-devbliss open-pulls
 }
@@ -251,6 +237,8 @@ elif [[ $# == 2 ]]; then
         else
             help
         fi
+    elif [[ $1 == "finish" ]]; then
+        finish "$2"
     elif [[ $1 == "issue" ]]; then
         github-devbliss issue "$2"
     elif [[ $1 == "merge-button" ]]; then
@@ -265,7 +253,6 @@ elif [[ $# == 2 ]]; then
 elif [[ $# == 1 ]]; then
     if [[ $1 == "finish" ]]; then
         finish
-        #update_check
     elif [[ $1 == "delete" ]]; then
         delete ""
     elif [[ $1 == "-v" ]]; then
@@ -274,7 +261,6 @@ elif [[ $# == 1 ]]; then
         version
     elif [[ $1 == "status" ]]; then
         github-devbliss status
-        #update_check
     elif [[ $1 == "issue" ]]; then
         github-devbliss issue
     else

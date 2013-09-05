@@ -24,6 +24,11 @@ _git-devbliss() {
                 compadd "$@" $(git tag --column)
             fi
         ;;
+        finish)
+            if git branch >& /dev/null; then
+                compadd "$@" $(git branch -r | tail -n+2 | awk -F 'origin/' '{print $2}')
+            fi
+        ;;
         esac
     ;;
     esac
