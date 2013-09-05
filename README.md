@@ -26,7 +26,7 @@ To enable BASH completion you have to source the file
 `/opt/local/etc/bash_completion.d/git-devbliss`. To permanently enable the
 completion add the following line to your `~/.profile`.
 
-    source ~/opt/local/etc/bash_completion.d/git-devbliss
+    source /opt/local/etc/bash_completion.d/git-devbliss
 
 ## Installation via Makefile (discouraged)
 
