@@ -36,7 +36,9 @@ class workflow {
     path => "/home/vagrant/.ssh/config",
     owner => "vagrant",
     group => "vagrant",
-    content => "StrictHostKeyChecking no",
+    content => "StrictHostKeyChecking no
+  LogLevel=quiet
+  ",
   }
 
   file{ "ssh-private":
