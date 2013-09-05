@@ -119,15 +119,21 @@ own snippets for the benefit of others.
 
 ### Open changelog in the default editor
 
-    .PHONY : changelog changelog: @$${EDITOR:-"vi"} debian/changelog
+    changelog:
+    	@$${EDITOR:-"vi"} debian/changelog
 
+    .PHONY: changelog
 
 ### Typical maven delegation
 
-    build: mvn gwt:compile
+    build:
+    	mvn gwt:compile
 
-    changelog: @$${EDITOR:-"vi"} debian/changelog
+    changelog:
+    	@$${EDITOR:-"vi"} debian/changelog
 
-    test: mvn test
+    test:
+    	mvn test
 
-    clean: mvn clean
+    clean:
+    	mvn clean
