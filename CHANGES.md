@@ -1,4 +1,9 @@
 # git devbliss changelog
+
+##
+
+ - The finish command can now crate pull requests to any desired branch
+
 ## 1.0.0
 
  - Version Bump
