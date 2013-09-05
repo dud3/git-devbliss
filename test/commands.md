@@ -264,9 +264,6 @@ We now push our changes and the release should word then.
     <BLANKLINE>
     https://github.com/h-nuschke/workflow_test/pull/...
 
-The error at the end of the output is normal in this case since a pull request
-already exists from the finish command.
-
 ## Hotfix example
 
 A hotfix is supposed to be a bug fix in an already deployed version of our
