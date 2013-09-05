@@ -3,6 +3,8 @@
 ## 1.1.0
 
  - The finish command can now crate pull requests to any desired branch
+ - Fixed a bug where hotfix branches that diverged
+   from master coundn't be finished
 
 ## 1.0.0
 

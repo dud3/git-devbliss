@@ -158,9 +158,13 @@ function finish {
         exit 1
     fi
     if ! git branch --contains master | grep "$branch" > /dev/null; then
-        echo "Error: Won't finish. Master is not merged into the current branch." > /dev/stderr
-        echo "Please do 'git pull origin master', make sure all conflicts are merged and try again." > /dev/stderr
-        exit 1
+        if [[ $branch = hotfix/* ]]; then
+            echo "Warning: Master is not merged into the current branch." > /dev/stderr
+        else
+            echo "Error: Won't finish. Master is not merged into the current branch." > /dev/stderr
+            echo "Please do 'git pull origin master', make sure all conflicts are merged and try again." > /dev/stderr
+            exit 1
+        fi
     fi
     export DEVBLISS_BRANCH_TYPE=`echo $branch | sed -e 's#\([^/]*\)/.*#\1#g'`
     makefile_hooks finish
