@@ -20,7 +20,7 @@ increase of wrong command line syntax.
     Usage:
         git devbliss [feature | bug | refactor | research] DESCRIPTION
         git devbliss hotfix VERSION DESCRIPTION
-        git devbliss finish [ BASE_BRANCH ]
+        git devbliss finish [BASE_BRANCH]
         git devbliss release VERSION
         git devbliss status
         git devbliss delete [-f]

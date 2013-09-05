@@ -9,7 +9,7 @@ function help {
     echo 'Usage:'
     echo '    git devbliss ['`echo "${branches[@]}" | sed 's/ / \| /g'`'] DESCRIPTION'
     echo '    git devbliss hotfix VERSION DESCRIPTION'
-    echo '    git devbliss finish [ BASE_BRANCH ]'
+    echo '    git devbliss finish [BASE_BRANCH]'
     echo '    git devbliss release VERSION'
     echo '    git devbliss status'
     echo '    git devbliss delete [-f]'
