@@ -14,8 +14,7 @@ prevent the developer from using the latter the way he wants to use them.
 
 The installation of git-devbliss via MacPorts is the default installation
 method. If you havn't already enabled the devbliss MacPorts repository on you
-Mac follow [this](https://github.com/devbliss/macports/blob/master/README.md)
-howto.
+Mac follow [this howto](https://github.com/devbliss/macports/blob/master/README.md).
 
 and then type:
 
