@@ -1,6 +1,6 @@
 # git devbliss changelog
 
-##
+## 1.1.0
 
  - The finish command can now crate pull requests to any desired branch
 
