@@ -181,15 +181,17 @@ def tags():
     sys.exit(0)
 
 
-def pull_request():
+def pull_request(base_branch, maxretries):
     github = GitHub()
     owner, repository = get_repository()
-    maxretrys = 3 if len(sys.argv) < 3 else int(sys.argv[-1])
-    while maxretrys:
+    maxretries = 1 if maxretries < 1 else maxretries
+    while maxretries:
         try:
-            req = github.pull_request(
-                owner, repository, github.get_current_branch())
-            maxretrys = 0 # we got an answer so we're happy
+            req = github.pull_request(owner,
+                                      repository,
+                                      github.get_current_branch(),
+                                      base=base_branch)
+            maxretries = 0 # we got an answer so we're happy
         except httplib.HTTPException as e:
             if len(e.args) == 3:
                 status, reason, body = e.args
@@ -204,9 +206,9 @@ def pull_request():
                 retry = 0  # int because it's an int in the if case too
             if status == 422:  # means no commits between base and head branch
                 if retry:
-                    maxretrys = maxretrys - 1
+                    maxretries = maxretries - 1
                     time.sleep(1)
-                    if maxretrys:
+                    if maxretries:
                         continue
                 if errors:
                     for i in errors:
@@ -345,7 +347,7 @@ def main(args):
     usage = """Devbliss Github Client
 
 Usage:
-    {name} pull-request [MAXRETRYS]
+    {name} pull-request [BASE_BRANCH] [MAXRETRIES]
     {name} review PULLNUMBER
     {name} open-pulls
     {name} merge-button PULLNUMBER
@@ -369,8 +371,10 @@ Options:
                     entire organisation""".format(name=sys.argv[0])
 
     try:
-        if args[:1] == ["pull-request"] and len(args) in (1, 2):
-            pull_request()
+        if args[:1] == ["pull-request"] and len(args) in (1, 2, 3):
+            defaults = ["master", "3"]
+            params = (args[1:] + defaults[len(args[1:]):])
+            pull_request(base_branch=params[0], maxretries=params[1])
             sys.exit(0)
         if args[:1] == ["open-pulls"] and len(args) == 1:
             pulls()

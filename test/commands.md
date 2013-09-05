@@ -20,7 +20,7 @@ increase of wrong command line syntax.
     Usage:
         git devbliss [feature | bug | refactor | research] DESCRIPTION
         git devbliss hotfix VERSION DESCRIPTION
-        git devbliss finish
+        git devbliss finish [BASE_BRANCH]
         git devbliss release VERSION
         git devbliss status
         git devbliss delete [-f]
@@ -175,6 +175,42 @@ If we now merge the master in our feature branch the finish command will work.
         #...: feature/another-feature <https://github.com/h-nuschke/workflow_test/pull/...>
         #...: feature/my-feature <https://github.com/h-nuschke/workflow_test/pull/...>
 
+Optionally it is possible to specify another base branch than master in case
+you do not intent to merge your changes into master but into something like a
+reliease branch. Just name the alternative base branch after the finish
+command.
+In order to make this test work we have to create a release branch first and do
+some changes.
+
+    >>> sh("git checkout -b release-branch")
+    Switched to a new branch 'release-branch'
+    >>> sh("git push origin release-branch")
+    To git@github.com:h-nuschke/workflow_test.git
+     * [new branch]      release-branch -> release-branch
+    >>> sh("git checkout -")
+    Switched to branch 'feature/another-feature'
+    >>> sh("echo 'print(\"What a feature !!!\")' > another-feature.py")
+    >>> sh("git commit -am'I can print someting'")
+    [feature/another-feature ...] I can print someting
+     1 file changed, 1 insertion(+), 1 deletion(-)
+    >>> sh("git push")
+    To git@github.com:h-nuschke/workflow_test.git
+     ...  feature/another-feature -> feature/another-feature
+     ...  master -> master
+
+Now we can call another finish and open a pull request to an alternate base
+branch.
+
+    >>> sh("git devbliss finish release-branch")
+    Everything up-to-date
+    <BLANKLINE>
+    https://github.com/h-nuschke/workflow_test/pull/...
+    <BLANKLINE>
+    <BLANKLINE>
+    Pull Requests:
+        #...: feature/another-feature <https://github.com/h-nuschke/workflow_test/pull/...>
+        #...: feature/another-feature <https://github.com/h-nuschke/workflow_test/pull/...>
+
 ### Releasing a new version
 
 Making a release will mainly cause a release commit with the version number in
@@ -212,7 +248,7 @@ We now push our changes and the release should word then.
 
     >>> sh("git push")
     To git@github.com:h-nuschke/workflow_test.git
-       ...  master -> master
+       ...  feature/my-feature -> feature/my-feature
 
     >>> sh("yes 2> /dev/null | git devbliss release 0.0.0")
     0.0.0
@@ -226,11 +262,7 @@ We now push our changes and the release should word then.
      * [new tag]         0.0.0 -> 0.0.0
     Everything up-to-date
     <BLANKLINE>
-    Fatal: Unprocessable Entity
-    Either the pull request already exists or there are no commits between the two branches.
-
-The error at the end of the output is normal in this case since a pull request
-already exists from the finish command.
+    https://github.com/h-nuschke/workflow_test/pull/...
 
 ## Hotfix example
 
@@ -306,11 +338,11 @@ all existing branches and pull requests as well as issues.
         hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/tree/hotfix/mean-bug-on-live>
         master <https://github.com/h-nuschke/workflow_test/tree/master>
         prepare-master <https://github.com/h-nuschke/workflow_test/tree/prepare-master>
+        release-branch <https://github.com/h-nuschke/workflow_test/tree/release-branch>
     <BLANKLINE>
     Pull Requests:
     #...: hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/pull/...>
     #...: feature/another-feature <https://github.com/h-nuschke/workflow_test/pull/...>
-
 
 ### Review a pull request
 
@@ -322,12 +354,12 @@ review command shows a diff between master and feature branch.
     ...     pull = re.search(r"#(\d+).*another-feature", f.read()).group(1)
     >>> sh("git devbliss review {0}".format(pull))
     diff --git a/another-feature.py b/another-feature.py
-    new file mode 100644
-    index 0000000..4265cc3
-    --- /dev/null
+    index ...
+    --- a/another-feature.py
     +++ b/another-feature.py
-    @@ -0,0 +1 @@
-    +#!/usr/bin/env python
+    @@ -1 +1 @@
+    -#!/usr/bin/env python
+    +print("What a feature !!!")
 
 ### Merge a pull request
 
@@ -352,6 +384,7 @@ As we see the pull request has gone.
         hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/tree/hotfix/mean-bug-on-live>
         master <https://github.com/h-nuschke/workflow_test/tree/master>
         prepare-master <https://github.com/h-nuschke/workflow_test/tree/prepare-master>
+        release-branch <https://github.com/h-nuschke/workflow_test/tree/release-branch>
     <BLANKLINE>
     Pull Requests:
         #...: hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/pull/...>
@@ -371,6 +404,7 @@ The status command shows that nothing has changed.
         hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/tree/hotfix/mean-bug-on-live>
         master <https://github.com/h-nuschke/workflow_test/tree/master>
         prepare-master <https://github.com/h-nuschke/workflow_test/tree/prepare-master>
+        release-branch <https://github.com/h-nuschke/workflow_test/tree/release-branch>
     <BLANKLINE>
     Pull Requests:
         #...: hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/pull/...>
@@ -400,6 +434,7 @@ intended.
         hotfix/mean-bug-on-live <https://github.com/h-nuschke/workflow_test/tree/hotfix/mean-bug-on-live>
         master <https://github.com/h-nuschke/workflow_test/tree/master>
         prepare-master <https://github.com/h-nuschke/workflow_test/tree/prepare-master>
+        release-branch <https://github.com/h-nuschke/workflow_test/tree/release-branch>
 
 And what happens if the desired pull request doesn't exist?
 

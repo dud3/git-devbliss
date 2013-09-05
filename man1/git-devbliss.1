@@ -7,7 +7,7 @@ git-devbliss \- git extensions for best practices at devbliss
 
 .B git devbliss hotfix VERSION DESCRIPTION
 
-.B git devbliss finish
+.B git devbliss finish [BASE_BRANCH]
 
 .B git devbliss release VERSION
 
@@ -58,6 +58,9 @@ be found at
         branch is pushed and the pull request is opened on github. You
         will be given a link to the pull request. The finish command
         will also execute the "finish" target, if any.
+        Optionally a base branch can be specified (e.g. a release branch)
+        in case the resulting pull request is not mend to be merged in
+        the master branch.
 
 .I "release"
 
