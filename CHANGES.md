@@ -2,7 +2,7 @@
 
 ## 1.3.0
 
- - Fixed wrongly splitted repository name
+ - Fixed wrongly split repository name
 
 ## 1.2.0
 
