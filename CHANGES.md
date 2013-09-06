@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 1.3.0
+
+ - Fixed wrongly splitted repository name
+
 ## 1.2.0
 
  - Fixed missing fetch in review command
