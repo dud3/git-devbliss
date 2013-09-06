@@ -78,7 +78,7 @@ class GitHub (object):
                 "Location", None) or resp.getheader("location")
             return self._request(method, path, body, host)
         if resp.status >= 300:
-            e =  httplib.HTTPException(resp.status, resp.reason)
+            e = httplib.HTTPException(resp.status, resp.reason)
             e.body = resp.read()
             raise e
         return json.load(resp)
@@ -143,7 +143,7 @@ class GitHub (object):
     def get_current_repo(self):
         owner, repository = subprocess.check_output(
             "git remote -v", shell=True).split(
-                "git@github.com:")[1].split()[0].split("/") or (None, None)
+            "git@github.com:")[1].split()[0].split("/") or (None, None)
         if owner is None:
             raise ValueError("Not a git repository")
         return owner, repository
@@ -191,7 +191,7 @@ def pull_request(base_branch, maxretries):
                                       repository,
                                       github.get_current_branch(),
                                       base=base_branch)
-            maxretries = 0 # we got an answer so we're happy
+            maxretries = 0  # we got an answer so we're happy
         except httplib.HTTPException as e:
             if len(e.args) == 3:
                 status, reason, body = e.args
@@ -217,11 +217,13 @@ def pull_request(base_branch, maxretries):
                 else:
                     print("Fatal: " + str(reason), file=sys.stderr)
                     print("Either the pull request already exists or there are"
-                          " no commits between the two branches.", file=sys.stderr)
+                          " no commits between the two branches.",
+                          file=sys.stderr)
                 sys.exit(1)
             else:
                 raise e
     print(req["html_url"])
+
 
 def pulls():
     github = GitHub()
@@ -303,6 +305,7 @@ def overview():
                 print("    #{number}: {title} <{html_url}>".format(**p))
             print()
 
+
 def merge_button(pull_request_no):
     github = GitHub()
     owner, repository = get_repository()
@@ -318,6 +321,7 @@ def merge_button(pull_request_no):
         print("Failure: {}".format(response['message']))
     print()
 
+
 def review(pull_request_no):
     github = GitHub()
     owner, repository = get_repository()
@@ -326,6 +330,7 @@ def review(pull_request_no):
     os.system("git fetch --quiet origin")
     os.system("git diff --color=auto {}...{}".format(
         base, head))
+
 
 def close_pull_request(pull_request_no):
     body = {"state": "closed"}
@@ -342,6 +347,7 @@ def close_pull_request(pull_request_no):
         print("Failure: pull request not closed.")
         print(response['message'])
     print()
+
 
 def main(args):
     GitHub.interactive = True
@@ -419,8 +425,5 @@ Options:
         sys.exit(1)
 
 
-
-
 if __name__ == '__main__':
     main(sys.argv[1:])
-
