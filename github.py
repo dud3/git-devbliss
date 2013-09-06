@@ -146,7 +146,7 @@ class GitHub (object):
             "git@github.com:")[1].split()[0].split("/") or (None, None)
         if owner is None:
             raise ValueError("Not a git repository")
-        return owner, repository
+        return owner, repository.split(".git")[0]
 
     def get_current_branch(self):
         return subprocess.check_output("git rev-parse "
@@ -159,7 +159,7 @@ def get_repository():
         owner, repository = github.get_current_repo()
     except subprocess.CalledProcessError as e:
         sys.exit(1)
-    except ValueError:
+    except ValueError as e:
         print("Fatal: " + str(e), file=sys.stderr)
         sys.exit(1)
     return owner, repository
