@@ -323,6 +323,7 @@ def review(pull_request_no):
     owner, repository = get_repository()
     pull_request = github.get_pull_request(owner, repository, pull_request_no)
     base, head = pull_request['base']['sha'], pull_request['head']['sha']
+    os.system("git fetch --quiet origin")
     os.system("git diff --color=auto {}...{}".format(
         base, head))
 
