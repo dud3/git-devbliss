@@ -3,6 +3,7 @@
 ## 1.2.0
 
  - Fixed missing fetch in review command
+ - Fixed wrong string splitting when getting remote branch
 
 ## 1.1.0
 
