@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 1.2.0
+
+ - Fixed missing fetch in review command
+
 ## 1.1.0
 
  - The finish command can now crate pull requests to any desired branch
