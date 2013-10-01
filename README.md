@@ -29,7 +29,8 @@ completion add the following line to your `~/.profile`.
 
 ## Installation via Makefile (discouraged)
 
-    git clone git@github.com:devbliss/git-devbliss.git cd git-devbliss
+    git clone git@github.com:devbliss/git-devbliss.git
+    cd git-devbliss
     ./configure sudo make install
 
 Note: the Makefile run by the install script will write a file at
