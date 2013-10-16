@@ -29,4 +29,5 @@ _git_devbliss ()
 
 complete -F _git_devbliss git-devbliss
 complete -F _git_devbliss "git devbliss"
+complete -F _git_devbliss "git de"
 
