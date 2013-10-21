@@ -1,9 +1,5 @@
 # git devbliss changelog
 
-## 1.4.0
-
-- Made Vagrantfile compatible with config version 2
-
 ## 1.3.0
 
  - Fixed wrongly split repository name
