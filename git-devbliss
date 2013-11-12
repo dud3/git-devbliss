@@ -86,6 +86,10 @@ function is_branch_command {
 }
 
 function hotfix {
+    if [[ $# != 2 ]]; then
+        help
+    fi
+    
     if git tag | grep $1; then
         git fetch origin
         git checkout --quiet $1
@@ -101,6 +105,11 @@ function hotfix {
 }
 
 function branch {
+    
+    if [[ $# != 2 ]]; then
+        help
+    fi
+    
     if [ $2 = "finish" ]; then
         echo "You are creating a branch \"$1/$2\", did you mean to type \"git devbliss finish\"?"
         echo "You can delete this branch with \"git devbliss delete\""
@@ -195,6 +204,13 @@ function finish {
 }
 
 function delete {
+    
+    if [[ $1 == "delete" ]]; then
+        if [[ $2 != "-f" ]]; then
+            help
+        fi
+    fi
+    
     local branch=`git rev-parse --abbrev-ref HEAD`
     if [[ "$branch" == "master" ]]; then
         echo "Won't delete master branch. Aborting." > /dev/stderr
@@ -227,52 +243,19 @@ if ! git remote -v | grep "^origin.*github.com:.*(fetch)$" > /dev/null; then
     exit 1
 fi
 
-if [[ $# == 3 ]]; then
-    if [[ $1 == "hotfix" ]]; then
-        hotfix $2 $3
-    else
-        help
-    fi
-elif [[ $# == 2 ]]; then
-    if is_branch_command $1; then
-        branch $1 $2
-    elif [[ $1 == "release" ]]; then        
-        release "$2"
-    elif [[ $1 == "delete" ]]; then
-        if [[ $2 == "-f" ]]; then
-            delete "$2"
-        else
-            help
-        fi
-    elif [[ $1 == "finish" ]]; then
-        finish "$2"
-    elif [[ $1 == "issue" ]]; then
-        github-devbliss issue "$2"
-    elif [[ $1 == "merge-button" ]]; then
-        github-devbliss merge-button "$2"
-    elif [[ $1 == "close-button" ]]; then
-        github-devbliss close-button "$2"
-    elif [[ $1 == "review" ]]; then
-        github-devbliss review "$2"
-    else
-        help
-    fi
-elif [[ $# == 1 ]]; then
-    if [[ $1 == "finish" ]]; then
-        finish
-    elif [[ $1 == "delete" ]]; then
-        delete ""
-    elif [[ $1 == "-v" ]]; then
-        version
-    elif [[ $1 == "--version" ]]; then
-        version
-    elif [[ $1 == "status" ]]; then
-        github-devbliss status
-    elif [[ $1 == "issue" ]]; then
-        github-devbliss issue
-    else
-        help
-    fi
+github_functions=( "issue" "merge-button" "status" "review" "close-button" )
+git_devbliss_functions=( "finish" "hotfix" "release" "delete")
+
+if [[ "${github_functions[@]}" =~ $1 ]]; then
+    github-devbliss $@
+elif [[ "${git_devbliss_functions[@]}" =~ $1 ]]; then
+    $@
+elif [[ $1 == "-v" ]]; then
+    version
+elif [[ $1 == "--version" ]]; then
+    version
+elif is_branch_command $1; then
+    branch $1 $2
 else
     help
 fi
