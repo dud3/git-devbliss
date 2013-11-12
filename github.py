@@ -10,6 +10,7 @@ import getpass
 import base64
 import subprocess
 import sys
+import os.path
 
 
 class GitHub (object):
@@ -184,6 +185,10 @@ def tags():
 def pull_request(base_branch, maxretries):
     github = GitHub()
     owner, repository = get_repository()
+    if os.path.exists('./PullRequest.md'):
+        description = open('./PullRequest.md','r')
+        description.read()
+
     maxretries = 1 if maxretries < 1 else maxretries
     while maxretries:
         try:
