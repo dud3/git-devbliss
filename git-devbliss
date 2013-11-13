@@ -86,12 +86,12 @@ function is_branch_command {
 }
 
 function hotfix {
-    
+
     # hotfix function needs two parameters: version and description
     if [[ $# != 2 ]]; then
         help
     fi
-    
+
     if git tag | grep $1; then
         git fetch origin
         git checkout --quiet $1
@@ -107,12 +107,12 @@ function hotfix {
 }
 
 function branch {
-    
-    # branch function needs two parameters: 
+
+    # branch function needs two parameters:
     if [[ $# != 2 ]]; then
         help
     fi
-    
+
     if [ $2 = "finish" ]; then
         echo "You are creating a branch \"$1/$2\", did you mean to type \"git devbliss finish\"?"
         echo "You can delete this branch with \"git devbliss delete\""
@@ -124,15 +124,15 @@ function branch {
 }
 
 function release {
-    
+
     # the first parameter is the version and must have the following format: 1.12.0
     if echo $1 | grep -vE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
         echo "Invalid version number" > /dev/stderr
         exit 2
     fi
-    
+
     echo $1
-    
+
     check_repo_toplevel # neccessary to run makefile hooks
     git fetch --quiet origin
     local branch=`git rev-parse --abbrev-ref HEAD`
@@ -210,10 +210,10 @@ function finish {
 function delete {
 
     # delete function can take one parameter -f
-    if [[ $# -gt 1  || $1 != "-f" ]]; then
+    if [[ $# -gt 1 || $1 != "-f" ]]; then
         help
     fi
-    
+
     local branch=`git rev-parse --abbrev-ref HEAD`
     if [[ "$branch" == "master" ]]; then
         echo "Won't delete master branch. Aborting." > /dev/stderr
