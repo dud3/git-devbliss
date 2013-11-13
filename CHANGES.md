@@ -1,6 +1,6 @@
 # git devbliss changelog
 
-## 1.4.0-SNAPSHOT
+## 1.4.0
 
  -  Refactoring of the git-devbliss main: adding parameters to command is 
     easier now

@@ -210,11 +210,7 @@ function finish {
 function delete {
 
     # delete function can take one parameter -f
-    if [[ $# -ge 1 ]]; then
-        if [ $1 != "-f" ]; then
-            help
-        fi
-    else
+    if [[ $# -gt 1  || $1 != "-f" ]]; then
         help
     fi
     
