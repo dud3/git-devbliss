@@ -151,14 +151,10 @@ function release {
         git commit --quiet -am "Ran git devbliss release hook"
     fi
     unset DEVBLISS_VERSION
+    git diff
     echo "Have these changes been reviewed?"
     echo "[enter / ctrl+c to cancel]"
     read || exit 2
-    if [[ "$branch" = 'master' ]]; then
-        echo "Warning: You are currently on the master branch. Releasing from master branch is discouraged."
-        echo "[enter / ctrl+c to cancel]"
-        read || exit 2
-    fi
     git commit --quiet --allow-empty -m "Release: $1"
     git push origin $branch
     git tag $1
