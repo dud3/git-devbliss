@@ -1,5 +1,15 @@
 # git devbliss changelog
 
+
+## 1.5.0
+
+ - removed master nagging, added diff of release-commit
+
+## 1.4.0
+
+ -  Refactoring of the git-devbliss main: adding parameters to command is 
+    easier now
+
 ## 1.3.0
 
  - Fixed wrongly split repository name
