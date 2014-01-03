@@ -196,7 +196,7 @@ def pull_request(base_branch, maxretries):
                                       repository,
                                       github.get_current_branch(),
                                       base=base_branch,
-                                      body="pull-request description")
+                                      body=description)
             maxretries = 0  # we got an answer so we're happy
         except httplib.HTTPException as e:
             if len(e.args) == 3:
