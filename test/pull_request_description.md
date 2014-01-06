@@ -11,6 +11,7 @@ Let us simply make a new branch, and create a pull request for it. At the end of
     Branch feature/test-show-pull-request-description set up to track remote branch feature/test-show-pull-request-description from origin.
     
 Now we create some dummy file and do a git devbliss finish to generate a pull request
+We should get the message, that a PullRequest.md file is missing.
    >>> sh("echo 'I am some test text' > dummy.txt")
    >>> sh("git add .")
    >>> sh("git commit -m'dummy text file'")
@@ -24,6 +25,7 @@ Now we create some dummy file and do a git devbliss finish to generate a pull re
    >>> print(pull)
    >>> hub = GitHub()
    >>> pull_request = hub.get_pull_request('h-nuschke', 'workflow_test', pull)
-   >>> pprint(pull_request.body)
+   >>> pprint(pull_request['body'])
+   u'No PullRequest.md found'
 
 
