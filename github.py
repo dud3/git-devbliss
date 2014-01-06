@@ -187,7 +187,9 @@ def pull_request(base_branch, maxretries):
     owner, repository = get_repository()
     if os.path.exists('./PullRequest.md'):
         description = open('./PullRequest.md','r')
-        description.read()
+        pull_request_description = description.read()
+    else:
+        pull_request_description  = 'No PullRequest.md found'  
 
     maxretries = 1 if maxretries < 1 else maxretries
     while maxretries:
@@ -196,7 +198,7 @@ def pull_request(base_branch, maxretries):
                                       repository,
                                       github.get_current_branch(),
                                       base=base_branch,
-                                      body=description)
+                                      body=pull_request_description)
             maxretries = 0  # we got an answer so we're happy
         except httplib.HTTPException as e:
             if len(e.args) == 3:
