@@ -40,3 +40,4 @@ def teardown(**globs):
     return
 
 fail.add('./test/commands.md')
+fail.add('./test/pull_request_description.md')
