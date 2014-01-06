@@ -19,10 +19,9 @@ We should get the message, that a PullRequest.md file is missing.
     1 file changed, 1 insertion(+)
     create mode 100644 dummy.txt
    >>> sh("git devbliss finish")
-   914
+   To ...
    >>> with open("/dev/shm/fail_output", "r") as f:
    ...     pull = re.search(r"#(\d+).*test-show-pull-request-description", f.read()).group(1)
-   >>> print(pull)
    >>> hub = GitHub()
    >>> pull_request = hub.get_pull_request('h-nuschke', 'workflow_test', pull)
    >>> pprint(pull_request['body'])
@@ -39,10 +38,9 @@ Now let us create a PullRequest.md file, and expect the correct content to be in
     1 file changed, 1 insertion(+)
     create mode 100644 PullRequest.md
    >>> sh("git devbliss finish")
-   914
+   To ...
    >>> with open("/dev/shm/fail_output", "r") as f:
    ...     pull = re.search(r"#(\d+).*test-show-pull-request-description", f.read()).group(1)
-   >>> print(pull)
    >>> hub = GitHub()
    >>> pull_request = hub.get_pull_request('h-nuschke', 'workflow_test', pull)
    >>> pprint(pull_request['body'])
