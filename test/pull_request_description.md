@@ -22,4 +22,7 @@ Now we create some dummy file and do a git devbliss finish to generate a pull re
    >>> with open("/dev/shm/fail_output", "r") as f:
    ...     pull = re.search(r"#(\d+).*test-show-pull-request-description", f.read()).group(1)
    >>> print(pull)
+   >>> hub = GitHub()
+   >>> print (hub.get_pull_request('devbliss', 'git-devbliss', pull)
+
 

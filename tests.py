@@ -16,6 +16,7 @@ def clean_repository():
     os.system('cd -')
 
 def setup():
+    from github import GitHub 
     import os
     import re
     from pprint import pprint
