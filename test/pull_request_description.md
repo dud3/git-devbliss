@@ -10,3 +10,12 @@ Let us simply make a new branch, and create a pull request for it. At the end of
     To git@github.com:h-nuschke/workflow_test.git
      * [new branch]      feature/test-show-pull-request-description -> feature/test-show-pull-request-description
     Branch feature/test-show-pull-request-description set up to track remote branch feature/test-show-pull-request-description from origin.
+    
+Now we create some dummy file and do a git devbliss finish to generate a pull request
+   >>> sh("I am some test text' > dummy.txt")
+   >>> sh("git add .")
+   >>> sh("git commit -m'dummy text file'")
+   [feature/test-show-pull-request-description ...] dumm test file 
+    1 file changed, 1 insertion(+)
+    create mode 100644 dummy.txt
+   >>> sh("git devbliss finish")
