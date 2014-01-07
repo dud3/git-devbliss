@@ -76,7 +76,7 @@ To implement a new feature, change the git-devbliss code and install it in the v
   - vagrant up
   - vagrant ssh
   - ./configure
-  - sudo make install
+  - sudo make install # optional, is done by make test anyways
   - make test
 
 ## Makefile hooks
