@@ -147,14 +147,14 @@ function release {
     fi
     export DEVBLISS_VERSION="$1"
     makefile_hooks release
-    if ! is_repository_clean; then
-        git commit --quiet -am "Ran git devbliss release hook"
-    fi
-    unset DEVBLISS_VERSION
     git diff
     echo "Have these changes been reviewed?"
     echo "[enter / ctrl+c to cancel]"
     read || exit 2
+    if ! is_repository_clean; then
+        git commit --quiet -am "Ran git devbliss release hook"
+    fi
+    unset DEVBLISS_VERSION
     git commit --quiet --allow-empty -m "Release: $1"
     git push origin $branch
     git tag $1
