@@ -179,7 +179,7 @@ function finish {
             echo "Warning: Master is not merged into the current branch." > /dev/stderr
         else
             echo "Error: Won't finish. Master is not merged into the current branch." > /dev/stderr
-            echo "Please do 'git pull origin master', make sure all conflicts are merged and try again." > /dev/stderr
+            echo "Please do 'git merge master', make sure all conflicts are merged and try again." > /dev/stderr
             exit 1
         fi
     fi
