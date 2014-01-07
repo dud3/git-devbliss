@@ -155,7 +155,7 @@ the feature branch is not containing the current master.
     Switched to branch 'feature/another-feature'
     Your branch is ahead of 'origin/feature/another-feature' by 1 commit.
     >>> sh("git devbliss finish")
-    Please do 'git pull origin master', make sure all conflicts are merged and try again.
+    Please do 'git merge master', make sure all conflicts are merged and try again.
 
 If we now merge the master in our feature branch the finish command will work.
 
