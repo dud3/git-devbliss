@@ -1,5 +1,10 @@
 # git devbliss changelog
 
+## 1.7.0
+
+ - diff of release commit before the actual commit
+ - erraneous error message fixed (pull origin master -> merge master)
+
 ## 1.6.0
 
  - added automatic checklist for pull requests on projects
