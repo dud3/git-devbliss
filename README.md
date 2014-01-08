@@ -70,6 +70,14 @@ The git-extensions are tested using the following github account.
 
 The ssh keys are applied via puppet so github can be accessed.
 
+## Implementing a new feature
+
+To implement a new feature, change the git-devbliss code and install it in the virtual machine:
+  - vagrant up
+  - vagrant ssh
+  - ./configure
+  - sudo make install # optional, is done by make test anyways
+  - make test
 
 ## Makefile hooks
 

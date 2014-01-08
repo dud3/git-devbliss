@@ -1,5 +1,8 @@
 # git devbliss changelog
 
+## 1.6.0
+
+ - added automatic checklist for pull requests on projects
 
 ## 1.5.0
 

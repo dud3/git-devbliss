@@ -10,6 +10,7 @@ import getpass
 import base64
 import subprocess
 import sys
+import os.path
 
 
 class GitHub (object):
@@ -184,13 +185,19 @@ def tags():
 def pull_request(base_branch, maxretries):
     github = GitHub()
     owner, repository = get_repository()
+    try:
+        with open("pull_request.md") as f:
+            pull_request_description = f.read()
+    except (IOError, OSError):
+        pull_request_description = ""
     maxretries = 1 if maxretries < 1 else maxretries
     while maxretries:
         try:
             req = github.pull_request(owner,
                                       repository,
                                       github.get_current_branch(),
-                                      base=base_branch)
+                                      base=base_branch,
+                                      body=pull_request_description)
             maxretries = 0  # we got an answer so we're happy
         except httplib.HTTPException as e:
             if len(e.args) == 3:
