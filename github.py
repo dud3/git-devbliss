@@ -185,12 +185,11 @@ def tags():
 def pull_request(base_branch, maxretries):
     github = GitHub()
     owner, repository = get_repository()
-    if os.path.exists('./PullRequest.md'):
-        description = open('./PullRequest.md','r')
-        pull_request_description = description.read()
-    else:
-        pull_request_description  = 'No PullRequest.md found'  
-
+    try:
+        with open("pull_request.md") as f:
+            pull_request_description = f.read()
+    except (IOError, OSError):
+        pull_request_description = ""
     maxretries = 1 if maxretries < 1 else maxretries
     while maxretries:
         try:
