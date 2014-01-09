@@ -244,8 +244,9 @@ fi
 
 github_functions=( "issue" "merge-button" "status" "review" "close-button" )
 git_devbliss_functions=( "finish" "hotfix" "release" "delete")
-
-if [[ "${github_functions[@]}" =~ $1 ]]; then
+if [ $# == 0 ]; then
+    help
+elif [[  "${github_functions[@]}" =~ $1 ]]; then
     github-devbliss $@
 elif [[ "${git_devbliss_functions[@]}" =~ $1 ]]; then
     $@
