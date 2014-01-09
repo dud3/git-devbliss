@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 1.8.0
+
+ - show help if called without arguments
+
 ## 1.7.0
 
  - diff of release commit before the actual commit
