@@ -36,9 +36,16 @@ class GitHub (object):
             "Authorization": "basic " + base64.encodestring(
                 ":".join((username, password))).strip(), })
         resp = conn.getresponse()
+        body = resp.read()
         if resp.status == 401:
             raise ValueError("Bad credentials")
-        return json.loads(resp.read())["token"]
+        elif resp.status == 200:
+            return json.loads(body)["token"]
+        else:
+            print("Fatal: GitHub returned status " +
+                  repr(resp.status) + ":", file=sys.stderr)
+            print(json.dumps(json.loads(body), indent=4), file=sys.stderr)
+            sys.exit(1)
 
     def _interactive_login(self):
         try:

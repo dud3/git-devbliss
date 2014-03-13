@@ -145,3 +145,23 @@ own snippets for the benefit of others.
 
     clean:
     	mvn clean
+
+## GitHub login
+
+The github api client (`github-devbliss` in your path) will ask you for a username
+and password in order to log in to GitHub. The resulting authorization token is then
+stored at `~/.github_token`.
+
+### Using multiple machines
+
+Because the same application can't create multiple authorization tokens, you need to
+copy your token to all your machines in order to use git-devbliss on them. If you have
+switched machines, you can also delete the `git-devbliss/ng` application in your GitHub
+application settings.
+
+### Two-Factor Authentication
+
+If you use two-factor authentication,
+[create a new access token](https://github.com/settings/tokens/new) in your github
+application settings (enabling only the "repo" scope) and write it to
+`~/.github_token`. You will then be able to log in without a username and password.
