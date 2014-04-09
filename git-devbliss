@@ -233,6 +233,34 @@ function delete {
     fi
 }
 
+function cleanup {
+
+    git fetch
+    echo "Deleting remote tracking branches whose tracked branches on server are gone..."
+    git remote prune origin
+    echo "Searching all remote branches except release that are already merged into master..."
+    get_remote_merged_branches=`git branch -r --merged origin/master | grep -v master | grep -v release`
+    echo "$get_remote_merged_branches" | grep '\w' && read -p "Do you want to delete those branches on the server? [y/N] " -r
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        echo "Deleting..."
+        echo "$get_remote_merged_branches" | sed 's#origin/##' | xargs -I {} git push origin :{}
+        git remote prune origin
+    else
+        if [ "" = "$get_remote_merged_branches" ]
+        then
+            echo "nothing to do."
+        else
+            echo "ok, will not delete anything."
+        fi
+    fi
+    echo "Deleting all local branches (except current) that are already merged into local master..."
+    git branch --merged master | grep -v master | grep -v '\*' | xargs git branch -d
+    echo "Checking for unmerged local branches..."
+    git branch --no-merged master
+
+}
+
 # check whether the pwd is a git repository
 git rev-parse --abbrev-ref HEAD > /dev/null || exit 1
 
@@ -243,7 +271,7 @@ if ! git remote -v | grep "^origin.*github.com:.*(fetch)$" > /dev/null; then
 fi
 
 github_functions=( "issue" "merge-button" "status" "review" "close-button" )
-git_devbliss_functions=( "finish" "hotfix" "release" "delete")
+git_devbliss_functions=( "finish" "hotfix" "release" "delete" "cleanup")
 if [ $# == 0 ]; then
     help
 elif [[  "${github_functions[@]}" =~ $1 ]]; then
