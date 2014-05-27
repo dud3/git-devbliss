@@ -265,7 +265,7 @@ function cleanup {
 git rev-parse --abbrev-ref HEAD > /dev/null || exit 1
 
 # chech whether origin points to github.com
-if ! git remote -v | grep "^origin.*github.com:.*(fetch)$" > /dev/null; then
+if ! git remote -v | grep "^origin.*github.*:.*(fetch)$" > /dev/null; then
     echo "Fatal: origin does not point to a github.com repository" > /dev/stderr
     exit 1
 fi

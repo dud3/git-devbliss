@@ -151,7 +151,7 @@ class GitHub (object):
     def get_current_repo(self):
         owner, repository = subprocess.check_output(
             "git remote -v", shell=True).split(
-            "git@github.com:")[1].split()[0].split("/") or (None, None)
+            ":")[1].split()[0].split("/") or (None, None)
         if owner is None:
             raise ValueError("Not a git repository")
         return owner, repository.split(".git")[0]
