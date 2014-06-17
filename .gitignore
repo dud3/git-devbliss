@@ -3,3 +3,9 @@
 .vagrant
 *.py[cod]
 Makefile
+*.egg-info/
+.coverage
+bin/
+htmlcov/
+lib/
+pyvenv.cfg
