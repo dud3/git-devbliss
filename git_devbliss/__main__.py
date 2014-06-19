@@ -1,8 +1,9 @@
 import sys
+import git_devbliss
 
 
 def main():
-    return 0
+    return git_devbliss.help()
 
 
 if __name__ == '__main__':
