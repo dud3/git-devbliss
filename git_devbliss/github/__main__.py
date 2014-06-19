@@ -1,7 +1,7 @@
 import sys
 import git_devbliss.github
 import time
-import http.client
+import requests
 import subprocess
 import json
 import os
@@ -27,9 +27,9 @@ def tags(repo_path=None):
         owner, repository = get_repository()
     try:
         req = github.tags(owner, repository)
-    except http.client.HTTPException as e:
-        status, reason, body = e.args
-        print("Fatal:", status, reason, file=sys.stderr)
+    except requests.exceptions.RequestException as e:
+        status, body = e.args
+        print("Fatal:", status, body, file=sys.stderr)
         sys.exit(1)
     else:
         print("\n".join(sorted(tag["name"] for tag in req)))
@@ -52,34 +52,30 @@ def pull_request(base_branch, maxretries):
                                       base=base_branch,
                                       body=pull_request_description)
             maxretries = 0  # we got an answer so we're happy
-        except http.client.HTTPException as e:
-            if len(e.args) == 3:
-                status, reason, body = e.args
+        except requests.exceptions.RequestException as e:
+            if len(e.args) == 2:
+                status, body = e.args
                 errors = [j for j in json.loads(body)["errors"]
                           if j.get("message")]
                 # retry in case github needs a few seconds to realize the push
                 retry = [i for i in errors if str(i.get("message")).startswith(
                     "No commits between")]
-            else:
-                status, reason = e.args
-                errors = []
-                retry = []
-            if status == 422:  # means no commits between base and head branch
-                if retry:
-                    maxretries = maxretries - 1
-                    time.sleep(1)
-                    if maxretries:
-                        continue
-                if errors:
-                    for i in errors:
-                        print("Fatal: " + str(i.get("message") or i),
+                if status == 422:  # means no commits between base and head branch
+                    if retry:
+                        maxretries = maxretries - 1
+                        time.sleep(1)
+                        if maxretries:
+                            continue
+                    if errors:
+                        for i in errors:
+                            print("Fatal: " + str(i.get("message") or i),
+                                  file=sys.stderr)
+                    else:
+                        print("Fatal: " + str(body), file=sys.stderr)
+                        print("Either the pull request already exists or there are"
+                              " no commits between the two branches.",
                               file=sys.stderr)
-                else:
-                    print("Fatal: " + str(reason), file=sys.stderr)
-                    print("Either the pull request already exists or there are"
-                          " no commits between the two branches.",
-                          file=sys.stderr)
-                sys.exit(1)
+                    sys.exit(1)
             else:
                 raise e
     print(req["html_url"])
@@ -139,9 +135,9 @@ def issue(title=None):
                 print()
                 sys.exit(2)
         req = github.issue(owner, repository, title, body)
-    except http.client.HTTPException as e:
-        status, reason, body = e.args
-        print("Fatal:", status, reason, file=sys.stderr)
+    except requests.exceptions.RequestException as e:
+        status, body = e.args
+        print("Fatal:", status, body, file=sys.stderr)
         sys.exit(1)
     print()
     print("    " + req["html_url"])
@@ -274,7 +270,7 @@ Options:
         else:
             print(usage, file=sys.stderr)
             sys.exit(2)
-    except http.client.HTTPException as e:
+    except requests.exceptions.RequestException as e:
         if hasattr(e, "body"):
             try:
                 message = json.loads(e.body)['message']

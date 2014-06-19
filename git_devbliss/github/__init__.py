@@ -1,8 +1,5 @@
-#!/usr/bin/env python2.7
-
 import json
 import os
-import http.client
 import getpass
 import subprocess
 import sys
@@ -77,8 +74,8 @@ class GitHub (object):
             path = response.headers['location']
             return self._request(method, path, body, host)
         if response.status_code >= 300:
-            e = http.client.HTTPException(response.status_code,
-                                          response.reason)
+            e = requests.exceptions.RequestException(
+                response.status_code, response.reason)
             e.body = response_body
             raise e
         return response_body

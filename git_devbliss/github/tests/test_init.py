@@ -3,7 +3,7 @@ import unittest.mock
 import git_devbliss.github
 import sys
 from unittest.mock import call
-import http.client
+import requests
 
 
 class GitHubTest(unittest.TestCase):
@@ -184,7 +184,7 @@ class GitHubTest(unittest.TestCase):
                                  read_data='test_token')):
             gh = git_devbliss.github.GitHub()
             self.assertEqual(gh.token, 'test_token')
-            with self.assertRaises(http.client.HTTPException):
+            with self.assertRaises(requests.exceptions.RequestException):
                 gh._request('test_method', 'test_path',
                             'test_body', 'test_host')
         exists.assert_called_with(gh.token_file)

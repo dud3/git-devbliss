@@ -2,7 +2,7 @@ import pkg_resources
 import unittest
 import unittest.mock
 from unittest.mock import call
-import http.client
+import requests
 import sys
 import json
 import subprocess
@@ -194,8 +194,8 @@ class MainTest(unittest.TestCase):
             "my description part 2",
             EOFError,
         ]
-        issue.side_effect = http.client.HTTPException(
-            400, 'test_error', 'test_error_body')
+        issue.side_effect = requests.exceptions.RequestException(
+            400, 'test_error')
         with self.assertRaises(SystemExit):
             main(['issue'])
         init.assert_called_with()
@@ -293,7 +293,8 @@ class MainTest(unittest.TestCase):
     @unittest.mock.patch("git_devbliss.github.GitHub.__init__")
     def test_tags_http_error(self, init, tags, print_function):
         init.return_value = None
-        tags.side_effect = http.client.HTTPException(400, 'Error', 'body')
+        tags.side_effect = requests.exceptions.RequestException(
+            400, 'Error',)
         with self.assertRaises(SystemExit):
             main(['tags', 'test_user/test_repo'])
         init.assert_called_with()
@@ -463,7 +464,7 @@ class MainTest(unittest.TestCase):
                                print_function):
         init.return_value = None
         get_current_repo.return_value = ('test_user', 'test_repo')
-        get_pull_request.side_effect = http.client.HTTPException(
+        get_pull_request.side_effect = requests.exceptions.RequestException(
             400, 'test_error', 'test_error_body'
         )
         get_pull_request.side_effect.body = 'lala'
@@ -482,7 +483,7 @@ class MainTest(unittest.TestCase):
                                          print_function):
         init.return_value = None
         get_current_repo.return_value = ('test_user', 'test_repo')
-        get_pull_request.side_effect = http.client.HTTPException(
+        get_pull_request.side_effect = requests.exceptions.RequestException(
             400, 'test_error', 'test_error_body'
         )
         get_pull_request.side_effect.body = '{"message": "test_message"}'
@@ -530,7 +531,7 @@ class MainTest(unittest.TestCase):
         get_current_repo.return_value = ('test_user', 'test_repo')
         get_current_branch.return_value = 'test_branch'
         pull_request.side_effect = [
-            http.client.HTTPException(400, 'Error'),
+            requests.exceptions.RequestException(400),
             {'html_url': 'test_pull_url'}
         ]
         open_function.side_effect = IOError()
@@ -559,8 +560,8 @@ class MainTest(unittest.TestCase):
         get_current_repo.return_value = ('test_user', 'test_repo')
         get_current_branch.return_value = 'test_branch'
         pull_request.side_effect = [
-            http.client.HTTPException(
-                422, 'Error', json.dumps(
+            requests.exceptions.RequestException(
+                422, json.dumps(
                     {"errors": [{"message": "No commits between"}]})),
             {'html_url': 'test_pull_url'}
         ]
@@ -590,17 +591,17 @@ class MainTest(unittest.TestCase):
         get_current_repo.return_value = ('test_user', 'test_repo')
         get_current_branch.return_value = 'test_branch'
         pull_request.side_effect = [
-            http.client.HTTPException(
-                422, 'Error', json.dumps(
+            requests.exceptions.RequestException(
+                422, json.dumps(
                     {"errors": [{"message": "No commits between"}]})),
-            http.client.HTTPException(
-                422, 'Error', json.dumps(
+            requests.exceptions.RequestException(
+                422, json.dumps(
                     {"errors": [{"message": "No commits between"}]})),
-            http.client.HTTPException(
-                422, 'Error', json.dumps(
+            requests.exceptions.RequestException(
+                422, json.dumps(
                     {"errors": [{"message": "No commits between"}]})),
-            http.client.HTTPException(
-                422, 'Error', json.dumps(
+            requests.exceptions.RequestException(
+                422, json.dumps(
                     {"errors": [{"message": "No commits between"}]})),
             {'html_url': 'test_pull_url'}
         ]
@@ -630,17 +631,17 @@ class MainTest(unittest.TestCase):
         get_current_repo.return_value = ('test_user', 'test_repo')
         get_current_branch.return_value = 'test_branch'
         pull_request.side_effect = [
-            http.client.HTTPException(
-                422, 'Error', json.dumps(
+            requests.exceptions.RequestException(
+                422, json.dumps(
                     {"errors": [{}]})),
-            http.client.HTTPException(
-                422, 'Error', json.dumps(
+            requests.exceptions.RequestException(
+                422, json.dumps(
                     {"errors": [{}]})),
-            http.client.HTTPException(
-                422, 'Error', json.dumps(
+            requests.exceptions.RequestException(
+                422, json.dumps(
                     {"errors": [{}]})),
-            http.client.HTTPException(
-                422, 'Error', json.dumps(
+            requests.exceptions.RequestException(
+                422, json.dumps(
                     {"errors": [{}]})),
             {'html_url': 'test_pull_url'}
         ]
