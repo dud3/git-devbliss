@@ -486,7 +486,26 @@ class MainTest(unittest.TestCase):
         get_pull_request.side_effect = requests.exceptions.RequestException(
             400, 'test_error'
         )
-        get_pull_request.side_effect.body = '{"message": "test_message"}'
+        get_pull_request.side_effect.body = {"message": "test_message"}
+        with self.assertRaises(SystemExit):
+            main(['review', '333'])
+        init.assert_called_with()
+        get_current_repo.assert_called_with()
+        get_pull_request.assert_called_with('test_user', 'test_repo', '333')
+
+    @unittest.mock.patch("os.system")
+    @unittest.mock.patch("git_devbliss.github.GitHub.get_pull_request")
+    @unittest.mock.patch("git_devbliss.github.GitHub.get_current_repo")
+    @unittest.mock.patch("git_devbliss.github.GitHub.__init__")
+    def test_review_http_error_with_body_no_message(
+            self, init, get_current_repo, get_pull_request, system,
+            print_function):
+        init.return_value = None
+        get_current_repo.return_value = ('test_user', 'test_repo')
+        get_pull_request.side_effect = requests.exceptions.RequestException(
+            400, 'test_error'
+        )
+        get_pull_request.side_effect.body = {"nomessage": "test_message"}
         with self.assertRaises(SystemExit):
             main(['review', '333'])
         init.assert_called_with()
