@@ -220,7 +220,7 @@ def release(version):
 
 
 def delete(force=False):
-    branch = git('rev-parse --abrev-rev HEAD', pipe=True)
+    branch = git('rev-parse --abbrev-ref HEAD', pipe=True)
     if branch == 'master':
         print("Won't delete master branch. Aborting.", file=sys.stderr)
         sys.exit(2)
