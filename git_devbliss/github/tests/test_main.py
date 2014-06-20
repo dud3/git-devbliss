@@ -4,7 +4,6 @@ import unittest.mock
 from unittest.mock import call
 import requests
 import sys
-import json
 import subprocess
 
 
@@ -202,6 +201,35 @@ class MainTest(unittest.TestCase):
         get_current_repo.assert_called_with()
         print_function.assert_called_with(
             '[Errno 400] test_error', file=sys.stderr)
+
+    @unittest.mock.patch("git_devbliss.github.GitHub.issue")
+    @unittest.mock.patch("builtins.input")
+    @unittest.mock.patch("git_devbliss.github.GitHub.get_current_repo")
+    @unittest.mock.patch("git_devbliss.github.GitHub.__init__")
+    def test_issue_http_error_with_request(
+            self, init, get_current_repo, input_function, issue,
+            print_function):
+        init.return_value = None
+        get_current_repo.return_value = ('test_user', 'test_repo')
+
+        input.side_effect = [
+            "test_title",
+            "my description part 1",
+            "my description part 2",
+            EOFError,
+        ]
+
+        response = unittest.mock.Mock()
+        body = unittest.mock.Mock()
+        response.json = body
+        response.status_code = 400
+        body.return_value = {'test_error'}
+        issue.side_effect = requests.exceptions.RequestException(
+            400, response=response)
+        with self.assertRaises(SystemExit):
+            main(['issue'])
+        init.assert_called_with()
+        get_current_repo.assert_called_with()
 
     @unittest.mock.patch("git_devbliss.github.GitHub.issue")
     @unittest.mock.patch("builtins.input")
@@ -578,10 +606,14 @@ class MainTest(unittest.TestCase):
         init.return_value = None
         get_current_repo.return_value = ('test_user', 'test_repo')
         get_current_branch.return_value = 'test_branch'
+        response = unittest.mock.Mock()
+        body = unittest.mock.Mock()
+        response.json = body
+        response.status_code = 422
+        body.return_value = {"errors": [{"message": "No commits between"}]}
         pull_request.side_effect = [
             requests.exceptions.RequestException(
-                422, json.dumps(
-                    {"errors": [{"message": "No commits between"}]})),
+                422, response=response),
             {'html_url': 'test_pull_url'}
         ]
         open_function.side_effect = IOError()
@@ -609,20 +641,26 @@ class MainTest(unittest.TestCase):
         init.return_value = None
         get_current_repo.return_value = ('test_user', 'test_repo')
         get_current_branch.return_value = 'test_branch'
+        response = unittest.mock.Mock()
+        body = unittest.mock.Mock()
+        response.json = body
+        response.status_code = 422
+        body.return_value = {"errors": [{"message": "No commits between"}]}
         pull_request.side_effect = [
             requests.exceptions.RequestException(
-                422, json.dumps(
-                    {"errors": [{"message": "No commits between"}]})),
+                422, response=response),
             requests.exceptions.RequestException(
-                422, json.dumps(
-                    {"errors": [{"message": "No commits between"}]})),
+                422, response=response),
             requests.exceptions.RequestException(
-                422, json.dumps(
-                    {"errors": [{"message": "No commits between"}]})),
+                422, response=response),
             requests.exceptions.RequestException(
-                422, json.dumps(
-                    {"errors": [{"message": "No commits between"}]})),
-            {'html_url': 'test_pull_url'}
+                422, response=response),
+            requests.exceptions.RequestException(
+                422, response=response),
+            requests.exceptions.RequestException(
+                422, response=response),
+            requests.exceptions.RequestException(
+                422, response=response),
         ]
         open_function.side_effect = IOError()
         with self.assertRaises(SystemExit):
@@ -649,20 +687,26 @@ class MainTest(unittest.TestCase):
         init.return_value = None
         get_current_repo.return_value = ('test_user', 'test_repo')
         get_current_branch.return_value = 'test_branch'
+        response = unittest.mock.Mock()
+        body = unittest.mock.Mock()
+        response.json = body
+        response.status_code = 422
+        body.return_value = {"errors": []}
         pull_request.side_effect = [
             requests.exceptions.RequestException(
-                422, json.dumps(
-                    {"errors": [{}]})),
+                422, response=response),
             requests.exceptions.RequestException(
-                422, json.dumps(
-                    {"errors": [{}]})),
+                422, response=response),
             requests.exceptions.RequestException(
-                422, json.dumps(
-                    {"errors": [{}]})),
+                422, response=response),
             requests.exceptions.RequestException(
-                422, json.dumps(
-                    {"errors": [{}]})),
-            {'html_url': 'test_pull_url'}
+                422, response=response),
+            requests.exceptions.RequestException(
+                422, response=response),
+            requests.exceptions.RequestException(
+                422, response=response),
+            requests.exceptions.RequestException(
+                422, response=response),
         ]
         open_function.side_effect = IOError()
         with self.assertRaises(SystemExit):
