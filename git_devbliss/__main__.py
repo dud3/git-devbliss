@@ -3,6 +3,7 @@ import pkg_resources
 import subprocess
 import os
 from docopt import docopt
+import re
 
 __version__ = pkg_resources.get_distribution("git_devbliss").version
 
@@ -150,12 +151,12 @@ def check_repo_toplevel():
         sys.exit(2)
 
 
-def call_hook(hook):
+def call_hook(hook, env_vars=''):
     check_repo_toplevel()
     if os.file.exists('Makefile'):
-        os.system('make {} '
+        os.system('{env_vars} make {hook} '
                   '|| echo "Warning: Makefile has no target named {}'.format(
-                      hook, hook))
+                      **locals()))
     else:
         print('Warning: No Makefile found. All make hooks have been skipped.',
               file=sys.stderr)
@@ -180,15 +181,59 @@ def branch(branch_type, branch_name):
         **locals()))
 
 
-def finish(base_branch):
-    pass
-
-
 def release(version):
-    pass
+    if not re.match(r'^\d+\.\d+\.\d+$', version):
+        print('Invalid version number', file=sys.stderr)
+        sys.exit(2)
+
+    git('fetch --quiet origin')
+    branch = git('rev-parse --abrev-rev HEAD', pipe=True)
+
+    if not is_repository_clean():
+        print('Error: Repository is not clean. Aborting.', file=sys.stderr)
+        sys.exit(1)
+    if not is_synced_origin():
+        print('Error: Local branch is not in sync with origin. Aborting.',
+              file=sys.stderr)
+        print('Do "git pull && git push" and try agin.', file=sys.stderr)
+        sys.exit(1)
+
+    call_hook('release', 'DEVBLISS_VERSION="{}"'.format(version))
+    git('diff')
+    print("Have these changes been reviewed?")
+    print("[enter / ctrl+c to cancel]")
+    try:
+        input()
+    except KeyboardInterrupt:
+        sys.exit(2)
+    if not is_repository_clean():
+        git('commit --quiet -am "Ran git devbliss release hook"')
+    git('commit --quiet --allow-empty -m "Release: {version}"'.format(
+        **locals()))
+    git('push origin {branch}'.format(**locals()))
+    git('tag {version}'.format(**locals()))
+    git('push --tags origin')
+    git('push origin {branch}'.format(**locals()))
+    if branch == 'master':
+        print()
+        github_devbliss(['pull-request'])
 
 
 def delete(force=False):
+    branch = git('rev-parse --abrev-rev HEAD', pipe=True)
+    if branch == 'master':
+        print("Won't delete master branch. Aborting.", file=sys.stderr)
+        sys.exit(2)
+    if force or input(
+            'Really delete the remote branch? [y/N] ').capitalize == 'Y':
+        git('push --delete origin {}'.format(branch))
+        print('To restore the remote branch, type')
+        print('    git push --set-upstream origin {}'.format(branch))
+        print('To delete your local branch, type')
+        print('    git checkout master && git branch -d {}'.format(branch))
+
+
+def finish(base_branch):
     pass
 
 
@@ -196,48 +241,6 @@ def cleanup():
     pass
 """
 
-function release {
-
-    # the first parameter is the version and must have the following format: 1.12.0
-    if echo $1 | grep -vE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-        echo "Invalid version number" > /dev/stderr
-        exit 2
-    fi
-
-    echo $1
-
-    check_repo_toplevel # neccessary to run makefile hooks
-    git fetch --quiet origin
-    local branch=`git rev-parse --abbrev-ref HEAD`
-    if ! is_repository_clean; then
-        echo "Error: Repository is not clean. Aborting." >> /dev/stderr
-        exit 1
-    fi
-    if ! is_synced_origin $branch; then
-        echo "Error: Local branch is not in sync with origin. Aborting." >> /dev/stderr
-        echo "Do 'git pull && git push' and try agin." >> /dev/stderr
-        exit 1
-    fi
-    export DEVBLISS_VERSION="$1"
-    makefile_hooks release
-    git diff
-    echo "Have these changes been reviewed?"
-    echo "[enter / ctrl+c to cancel]"
-    read || exit 2
-    if ! is_repository_clean; then
-        git commit --quiet -am "Ran git devbliss release hook"
-    fi
-    unset DEVBLISS_VERSION
-    git commit --quiet --allow-empty -m "Release: $1"
-    git push origin $branch
-    git tag $1
-    git push --tags origin
-    git push origin $branch
-    if [[ "$branch" != 'master' ]]; then
-        echo
-        github-devbliss pull-request
-    fi
-}
 
 function finish {
     local base_branch=${1-}
@@ -274,36 +277,6 @@ function finish {
     github-devbliss pull-request ${base_branch-}
     echo
     github-devbliss open-pulls
-}
-
-function delete {
-
-    # delete function can take one parameter -f
-    if [[ $# -gt 1 || $1 != "-f" ]]; then
-        help
-    fi
-
-    local branch=`git rev-parse --abbrev-ref HEAD`
-    if [[ "$branch" == "master" ]]; then
-        echo "Won't delete master branch. Aborting." > /dev/stderr
-        exit 2
-    fi
-    if [[ $1 = "-f" ]]; then
-        git push --delete origin $branch
-    else
-        echo -n "Really delete the remote branch? [y/N] "
-        read a
-        if [[ $a == "y" || $a == "Y" ]]; then
-            git push --delete origin $branch
-            echo 'To restore the remote branch, type'
-            echo '    git push --set-upstream origin '$branch
-            echo 'To delete your local branch, type'
-            echo '    git checkout master && git branch -d '$branch
-        else
-            echo "Fatal: user interrupt" > /dev/stderr
-            exit 2
-        fi
-    fi
 }
 
 function cleanup {
