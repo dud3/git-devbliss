@@ -23,6 +23,7 @@ Usage:
     git-devbliss review <pull-request-id>
     git-devbliss merge-button <pull-request-id>
     git-devbliss close-button <pull-request-id>
+    git-devbliss cleanup
 
 Options:
     feature, bug, refactor, research
@@ -36,6 +37,7 @@ Options:
     review        Review a pull request with the given id
     merge-button  Merge a pull request with the given id
     close-button  Close a pull request with the given id without merging
+    cleanup       Cleans up the repository
     -v --version  Print version number of git-devbliss
 '''
     try:
@@ -51,13 +53,13 @@ Options:
 
     args = docopt(main.__doc__, version=__version__)
     if(args['feature']):
-        feature()
+        branch('feature', args['DESCRIPTION'])
     elif(args['bug']):
-        bug(args['DESCRIPTION'])
+        branch('bug', args['DESCRIPTION'])
     elif(args['refactor']):
-        refactor(args['DESCRIPTION'])
+        branch('refactor', args['DESCRIPTION'])
     elif(args['research']):
-        research(args['DESCRIPTION'])
+        branch('research', args['DESCRIPTION'])
     elif(args['hotfix']):
         hotfix(args['VERSION'], args['DESCRIPTION'])
     elif(args['finish']):
@@ -76,22 +78,8 @@ Options:
         merge_button(args['<pull-request-id>'])
     elif(args['close-button']):
         close_button(args['<pull-request-id>'])
-
-
-def feature(description):
-    print('feature')
-
-
-def bug(description):
-    print('bug')
-
-
-def research(description):
-    print('research')
-
-
-def refactor(description):
-    print('refactor')
+    elif(args['cleanup']):
+        cleanup()
 
 
 def hotfix(tag, description):
@@ -105,18 +93,6 @@ def hotfix(tag, description):
         print('Available tags:')
         git('tag')
         sys.exit(2)
-
-
-def finish(base_branch):
-    pass
-
-
-def release(version):
-    pass
-
-
-def delete(force=False):
-    pass
 
 
 def status():
@@ -183,19 +159,42 @@ def call_hook(hook):
     else:
         print('Warning: No Makefile found. All make hooks have been skipped.',
               file=sys.stderr)
+
+
+def branch(branch_type, branch_name):
+    if branch_name == 'finish':
+        print('You are creating a branch "{branch_type}/{branch_name}". '
+              'Did you mean to type "git devbliss finish"?'.format(**locals()))
+        print('You can delete this branch with "git devbliss delete'
+              ' {branch_type}/{branch_name}"'.format(**locals()))
+
+    git('checkout --quiet master')
+    git('pull --quiet origin master')
+    try:
+        git('checkout --quiet -b {branch_type}/{branch_name}'.format(
+            **locals()))
+    except subprocess.CalledProcessError:
+        git('checkout --quiet {branch_type}/{branch_name}'.format(
+            **locals()))
+    git('push --set-upstream origin {branch_type}/{branch_name}'.format(
+        **locals()))
+
+
+def finish(base_branch):
+    pass
+
+
+def release(version):
+    pass
+
+
+def delete(force=False):
+    pass
+
+
+def cleanup():
+    pass
 """
-
-function branch {
-
-    if [ $2 = "finish" ]; then
-        echo "You are creating a branch \"$1/$2\", did you mean to type \"git devbliss finish\"?"
-        echo "You can delete this branch with \"git devbliss delete\""
-    fi
-    git checkout --quiet master
-    git pull --quiet origin master
-    git checkout --quiet -b $1/$2 || git checkout --quiet $1/$2
-    git push --set-upstream origin $1/$2
-}
 
 function release {
 
@@ -336,21 +335,8 @@ function cleanup {
 }
 
 
-github_functions=( "issue" "merge-button" "status" "review" "close-button" )
-git_devbliss_functions=( "finish" "hotfix" "release" "delete" "cleanup")
-if [ $# == 0 ]; then
-    help
-elif [[  "${github_functions[@]}" =~ $1 ]]; then
-    github-devbliss $@
-elif [[ "${git_devbliss_functions[@]}" =~ $1 ]]; then
-    $@
-elif [ $1 == "-v" ] || [ $1 == "--version" ]; then
-    version
 elif is_branch_command $1; then
     branch $1 $2
-else
-    help
-fi
 """
 
 if __name__ == '__main__':

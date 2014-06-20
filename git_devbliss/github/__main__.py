@@ -276,6 +276,8 @@ Options:
                 message = e.body['message']
             except (KeyError, ValueError):
                 pass
+            except TypeError:
+                print(e.body)
             else:
                 print("Error: {}".format(message), file=sys.stderr)
                 sys.exit(1)

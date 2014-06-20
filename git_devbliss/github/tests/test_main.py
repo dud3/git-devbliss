@@ -465,7 +465,7 @@ class MainTest(unittest.TestCase):
         init.return_value = None
         get_current_repo.return_value = ('test_user', 'test_repo')
         get_pull_request.side_effect = requests.exceptions.RequestException(
-            400, 'test_error', 'test_error_body'
+            400, 'test_error'
         )
         get_pull_request.side_effect.body = 'lala'
         with self.assertRaises(SystemExit):
@@ -484,7 +484,7 @@ class MainTest(unittest.TestCase):
         init.return_value = None
         get_current_repo.return_value = ('test_user', 'test_repo')
         get_pull_request.side_effect = requests.exceptions.RequestException(
-            400, 'test_error', 'test_error_body'
+            400, 'test_error'
         )
         get_pull_request.side_effect.body = '{"message": "test_message"}'
         with self.assertRaises(SystemExit):
