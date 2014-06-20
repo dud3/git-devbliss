@@ -68,17 +68,17 @@ Options:
     elif(args['release']):
         release(args['VERSION'])
     elif(args['status']):
-        status()
+        github_devbliss(['status'])
     elif(args['delete']):
         delete(args['-f'])
     elif(args['issue']):
-        issue(args['TITLE'])
+        github_devbliss(['issue', args['TITLE']])
     elif(args['review']):
-        review(args['<pull-request-id>'])
+        github_devbliss(['review', args['<pull-request-id>']])
     elif(args['merge-button']):
-        merge_button(args['<pull-request-id>'])
+        github_devbliss(['merge-button', args['<pull-request-id>']])
     elif(args['close-button']):
-        close_button(args['<pull-request-id>'])
+        github_devbliss(['close-button', args['<pull-request-id>']])
     elif(args['cleanup']):
         cleanup()
 
@@ -94,26 +94,6 @@ def hotfix(tag, description):
         print('Available tags:')
         git('tag')
         sys.exit(2)
-
-
-def status():
-    github_devbliss(['status'])
-
-
-def issue(title):
-    github_devbliss(['issue', title])
-
-
-def review(pull_request_id):
-    github_devbliss(['review', 'pull_request_id'])
-
-
-def merge_button(pull_request_id):
-    github_devbliss(['merge-button', 'pull_request_id'])
-
-
-def close_button(pull_request_id):
-    github_devbliss(['close-button', 'pull_request_id'])
 
 
 def git(command, pipe=False):
