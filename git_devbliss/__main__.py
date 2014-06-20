@@ -157,6 +157,10 @@ def call_hook(hook, env_vars=''):
         os.system('{env_vars} make {hook} '
                   '|| echo "Warning: Makefile has no target named {}'.format(
                       **locals()))
+
+        if not is_repository_clean():
+            git('commit --quiet -am "Ran git devbliss {} hook"'.format(
+                **locals()))
     else:
         print('Warning: No Makefile found. All make hooks have been skipped.',
               file=sys.stderr)
@@ -206,8 +210,6 @@ def release(version):
         input()
     except KeyboardInterrupt:
         sys.exit(2)
-    if not is_repository_clean():
-        git('commit --quiet -am "Ran git devbliss release hook"')
     git('commit --quiet --allow-empty -m "Release: {version}"'.format(
         **locals()))
     git('push origin {branch}'.format(**locals()))
@@ -233,84 +235,65 @@ def delete(force=False):
         print('    git checkout master && git branch -d {}'.format(branch))
 
 
-def finish(base_branch):
-    pass
-
-
 def cleanup():
-    pass
-"""
+    git('fetch')
+    print("Deleting remote tracking branches whose "
+          "tracked branches on server are gone...")
+    git('remote prune origin')
+    print("Searching all remote branches except release "
+          "that are already merged into master...")
+    try:
+        get_remote_merged_branches = git('branch -r --merged origin/master'
+                                         ' | grep -v master | grep -v release',
+                                         pipe=True)
+    except subprocess.CalledProcessError:
+        get_remote_merged_branches = 'No remote merged branches found'
+
+    print(get_remote_merged_branches)
+    if input("Do you want to delete those branches on the server? [y/N]"
+             ).capitalize() == 'Y':
+        print("Deleting...")
+        os.system("echo '{}' | sed 's#origin/##' | xargs -I {{}}"
+                  " git push origin :{{}}".format(get_remote_merged_branches))
+        git('remote prune origin')
+    else:
+        if get_remote_merged_branches == '':
+            print("nothing to do.")
+        else:
+            print("ok, will not delete anything.")
+    print("Deleting all local branches (except current)"
+          " that are already merged into local master...")
+    git("branch --merged master | grep -v master "
+        "| grep -v '\*' | xargs git branch -d")
+    print("Checking for unmerged local branches...")
+    git('branch --no-merged master')
 
 
-function finish {
-    local base_branch=${1-}
-    check_repo_toplevel # neccessary to run makefile hooks
-    local branch=`git rev-parse --abbrev-ref HEAD`
-    if ! is_repository_clean; then
-        echo "Error: Repository is not clean. Aborting." >> /dev/stderr
-        exit 1
-    fi
-    if ! git branch --contains master | grep "$branch" > /dev/null; then
-        if [[ $branch = hotfix/* ]]; then
-            echo "Warning: Master is not merged into the current branch." > /dev/stderr
-        else
-            echo "Error: Won't finish. Master is not merged into the current branch." > /dev/stderr
-            echo "Please do 'git merge master', make sure all conflicts are merged and try again." > /dev/stderr
-            exit 1
-        fi
-    fi
-    export DEVBLISS_BRANCH_TYPE=`echo $branch | sed -e 's#\([^/]*\)/.*#\1#g'`
-    makefile_hooks finish
-    if ! is_repository_clean; then
-        git commit --quiet -am "Ran git devbliss finish hook"
-    fi
-    makefile_hooks changelog
-    if ! is_repository_clean; then
-        git commit --quiet -am "Ran git devbliss changelog hook"
-    fi
-    makefile_hooks version
-    if ! is_repository_clean; then
-        git commit --quiet -am "Ran git devbliss version hook"
-    fi
-    git push origin $branch
-    echo
-    github-devbliss pull-request ${base_branch-}
-    echo
-    github-devbliss open-pulls
-}
+def finish(base_branch):
+    branch = git('rev-parse --abbrev-ref HEAD', pipe=True)
+    if not is_repository_clean():
+        print("Error: Repository is not clean. Aborting.", file=sys.stderr)
+        sys.exit(1)
 
-function cleanup {
-
-    git fetch
-    echo "Deleting remote tracking branches whose tracked branches on server are gone..."
-    git remote prune origin
-    echo "Searching all remote branches except release that are already merged into master..."
-    get_remote_merged_branches=`git branch -r --merged origin/master | grep -v master | grep -v release`
-    echo "$get_remote_merged_branches" | grep '\w' && read -p "Do you want to delete those branches on the server? [y/N] " -r
-    if [[ $REPLY =~ ^[Yy]$ ]]
-    then
-        echo "Deleting..."
-        echo "$get_remote_merged_branches" | sed 's#origin/##' | xargs -I {} git push origin :{}
-        git remote prune origin
-    else
-        if [ "" = "$get_remote_merged_branches" ]
-        then
-            echo "nothing to do."
-        else
-            echo "ok, will not delete anything."
-        fi
-    fi
-    echo "Deleting all local branches (except current) that are already merged into local master..."
-    git branch --merged master | grep -v master | grep -v '\*' | xargs git branch -d
-    echo "Checking for unmerged local branches..."
-    git branch --no-merged master
-
-}
-
-
-elif is_branch_command $1; then
-    branch $1 $2
-"""
+    if branch not in git('branch --contains master', pipe=True):
+        if 'hotfix/' in branch:
+            print("Warning: Master is not merged into the current branch.",
+                  file=sys.stderr)
+        else:
+            print("Error: Won't finish. Master is not merged into the"
+                  " current branch.", file=sys.stderr)
+            print("Please do 'git merge master', make sure all conflicts"
+                  " are merged and try again.", file=sys.stderr)
+            sys.exit(1)
+    env_vars = 'DEVBLISS_BRANCH_TYPE=' + branch.split('/')[0]
+    call_hook('finish', env_vars)
+    call_hook('changelog', env_vars)
+    call_hook('version', env_vars)
+    git('push origin {}'.format(branch))
+    print()
+    github_devbliss(['pull-request', base_branch])
+    print()
+    github_devbliss(['open-pulls'])
 
 if __name__ == '__main__':
     sys.exit(main())
