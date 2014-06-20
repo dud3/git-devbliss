@@ -21,9 +21,9 @@ Usage:
     git-devbliss status
     git-devbliss delete [-f]
     git-devbliss issue [TITLE]
-    git-devbliss review <pull-request-id>
-    git-devbliss merge-button <pull-request-id>
-    git-devbliss close-button <pull-request-id>
+    git-devbliss review PULL_REQUEST_ID
+    git-devbliss merge-button PULL_REQUEST_ID
+    git-devbliss close-button PULL_REQUEST_ID
     git-devbliss cleanup
 
 Options:
@@ -74,11 +74,11 @@ Options:
     elif(args['issue']):
         github_devbliss(['issue', args['TITLE']])
     elif(args['review']):
-        github_devbliss(['review', args['<pull-request-id>']])
+        github_devbliss(['review', args['PULL_REQUEST_ID']])
     elif(args['merge-button']):
-        github_devbliss(['merge-button', args['<pull-request-id>']])
+        github_devbliss(['merge-button', args['PULL_REQUEST_ID']])
     elif(args['close-button']):
-        github_devbliss(['close-button', args['<pull-request-id>']])
+        github_devbliss(['close-button', args['PULL_REQUEST_ID']])
     elif(args['cleanup']):
         cleanup()
 
