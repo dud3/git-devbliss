@@ -96,10 +96,10 @@ def refactor(description):
 
 def hotfix(tag, description):
     if [_tag for _tag in git('tag', pipe=True).split('\n') if tag == _tag]:
-        git('fetch origin', pipe=True)
-        git('checkout --quiet {}'.format(tag), pipe=True)
-        git('checkout --quiet -b hotfix/{}'.format(description), pipe=True)
-        git('push --set-upstream origin hotfix/{}'.format(description), pipe=True)
+        git('fetch origin')
+        git('checkout --quiet {}'.format(tag))
+        git('checkout --quiet -b hotfix/{}'.format(description))
+        git('push --set-upstream origin hotfix/{}'.format(description))
     else:
         print('Tag not found: {}'.format(tag), file=sys.stderr)
         print('Available tags:')
