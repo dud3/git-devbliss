@@ -225,7 +225,7 @@ def delete(force=False):
         print("Won't delete master branch. Aborting.", file=sys.stderr)
         sys.exit(2)
     if force or input(
-            'Really delete the remote branch? [y/N] ').capitalize == 'Y':
+            'Really delete the remote branch? [y/N] ').capitalize() == 'Y':
         git('push --delete origin {}'.format(branch))
         print('To restore the remote branch, type')
         print('    git push --set-upstream origin {}'.format(branch))
