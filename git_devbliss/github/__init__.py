@@ -19,14 +19,11 @@ class GitHub (object):
             self.token = f.read().strip()
 
     def _login(self, username, password):
-        body = json.dumps(
-            {"note": "git-devbliss-ng", "scopes": ["repo"]}, indent=0)
         response = requests.post(
             'https://api.github.com/authorizations',
             auth=(username, password), headers={
                 "User-Agent": "git-devbliss/ng",  # TODO
                 "Content-Type": "application/json",
-                "Content-Length": str(len(body))
             }
         )
 
@@ -65,6 +62,7 @@ class GitHub (object):
         response = requests.request(method, host + path, data=body, headers={
             "Authorization": "bearer " + self.token,
             "User-Agent": "git-devbliss/ng",  # TODO
+            "Content-Type": "application/json",
         })
         response_body = response.json()
         if response.status_code == 401:
@@ -89,12 +87,9 @@ class GitHub (object):
                              "{}/{}/issues".format(owner, repository))
 
     def issue(self, owner, repository, title, body):
-        return self._request("POST", "/repos/"
-                             "{}/{}/issues".format(owner, repository),
-                             json.dumps(
-                                 {"title": title,
-                                  "body": body or None,
-                                  }, sort_keys=True))
+        return self._request(
+            "POST", "/repos/{}/{}/issues".format(owner, repository),
+            json.dumps({"title": title, "body": body or None}, sort_keys=True))
 
     def branches(self, owner, repository):
         return self._request("GET", "/repos/"
@@ -120,8 +115,7 @@ class GitHub (object):
             json.dumps({"title": title or head,
                         "body": body or "",
                         "head": head,
-                        "base": base},
-                       indent=0, sort_keys=True))
+                        "base": base}, sort_keys=True))
 
     def get_pull_request(self, owner, repository, pull_request_no):
         return self._request("GET", "/repos/{}/{}/pulls/{}".format(
@@ -129,13 +123,12 @@ class GitHub (object):
 
     def merge_button(self, owner, repository, pull_request_no):
         return self._request("PUT", "/repos/{}/{}/pulls/{}/merge".format(
-            owner, repository, pull_request_no),
-            json.dumps({}))
+            owner, repository, pull_request_no), json.dumps({}))
 
     def update_pull_request(self, owner, repository, pull_request_no, body):
         return self._request("PATCH", "/repos/{}/{}/pulls/{}".format(
-            owner, repository, pull_request_no),
-            json.dumps(body))
+            owner, repository, pull_request_no), json.dumps(
+                body, sort_keys=True))
 
     def get_current_repo(self):
         try:
@@ -147,5 +140,5 @@ class GitHub (object):
         return owner, repository.split(".git")[0]
 
     def get_current_branch(self):
-        return subprocess.check_output("git rev-parse "
-                                       "--abbrev-ref HEAD", shell=True).strip()
+        return subprocess.check_output(
+            "git rev-parse --abbrev-ref HEAD", shell=True).strip().decode()

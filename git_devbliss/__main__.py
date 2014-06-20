@@ -2,6 +2,7 @@ import sys
 import pkg_resources
 import subprocess
 import os
+import os.path
 from docopt import docopt
 import re
 
@@ -105,7 +106,7 @@ def git(command, pipe=False):
 
 
 def is_repository_clean():
-    status = git('status --short --untracked-files=no | wc -l')
+    status = git('status --short --untracked-files=no | wc -l', pipe=True)
     return status.strip() == "0"
 
 
@@ -123,9 +124,8 @@ def is_synced_origin(remote_branch):
 
 def check_repo_toplevel():
     # check if pwd is repository root in order to run makefile hooks properly
-    rev_parse = git('rev-parse --show-toplevel', pipe=True)
-
-    if rev_parse != os.getcwd():
+    rev_parse = git('rev-parse --show-toplevel', pipe=True).strip()
+    if os.path.abspath(rev_parse) != os.path.abspath(os.getcwd()):
         print('You need to run this command from the toplevel'
               ' of the working tree.', file=sys.stderr)
         sys.exit(2)
@@ -133,7 +133,7 @@ def check_repo_toplevel():
 
 def call_hook(hook, env_vars=''):
     check_repo_toplevel()
-    if os.file.exists('Makefile'):
+    if os.path.isfile('Makefile'):
         os.system('{env_vars} make {hook} '
                   '|| echo "Warning: Makefile has no target named {}'.format(
                       **locals()))
@@ -171,12 +171,12 @@ def release(version):
         sys.exit(2)
 
     git('fetch --quiet origin')
-    branch = git('rev-parse --abrev-rev HEAD', pipe=True)
+    branch = git('rev-parse --abbrev-ref HEAD', pipe=True)
 
     if not is_repository_clean():
         print('Error: Repository is not clean. Aborting.', file=sys.stderr)
         sys.exit(1)
-    if not is_synced_origin():
+    if not is_synced_origin('master'):
         print('Error: Local branch is not in sync with origin. Aborting.',
               file=sys.stderr)
         print('Do "git pull && git push" and try agin.', file=sys.stderr)
@@ -271,7 +271,10 @@ def finish(base_branch):
     call_hook('version', env_vars)
     git('push origin {}'.format(branch))
     print()
-    github_devbliss(['pull-request', base_branch])
+    args = ['pull-request']
+    if base_branch:
+        args = args + ['base_branch']
+    github_devbliss(args)
     print()
     github_devbliss(['open-pulls'])
 

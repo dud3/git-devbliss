@@ -53,9 +53,10 @@ def pull_request(base_branch, maxretries):
                                       body=pull_request_description)
             maxretries = 0  # we got an answer so we're happy
         except requests.exceptions.RequestException as e:
-            if len(e.args) == 2:
-                status, body = e.args
-                errors = [j for j in json.loads(body)["errors"]
+            if e.response is not None:
+                status = e.response.status_code
+                body = e.response.json()
+                errors = [j for j in body["errors"]
                           if j.get("message")]
                 # retry in case github needs a few seconds to realize the push
                 retry = [i for i in errors if str(i.get("message")).startswith(
@@ -136,7 +137,11 @@ def issue(title=None):
                 sys.exit(2)
         req = github.issue(owner, repository, title, body)
     except requests.exceptions.RequestException as e:
-        status, body = e.args
+        if e.request:
+            status = e.request.status_code
+            body = e.request.body
+        else:
+            raise e
         print("Fatal:", status, body, file=sys.stderr)
         sys.exit(1)
     print()
@@ -233,7 +238,7 @@ Options:
 
     try:
         if args[:1] == ["pull-request"] and len(args) in (1, 2, 3):
-            defaults = ["master", "3"]
+            defaults = ["master", 3]
             params = (args[1:] + defaults[len(args[1:]):])
             pull_request(base_branch=params[0], maxretries=params[1])
             sys.exit(0)
@@ -277,11 +282,11 @@ Options:
             except (KeyError, ValueError):
                 pass
             except TypeError:
-                print(e.body)
+                print(e.body, file=sys.stderr)
             else:
                 print("Error: {}".format(message), file=sys.stderr)
                 sys.exit(1)
-        print(str(e))
+        print(str(e), file=sys.stderr)
         sys.exit(1)
 
 

@@ -52,9 +52,8 @@ class GitHubTest(unittest.TestCase):
                 git_devbliss.github.GitHub()
         post.assert_has_calls([
             call('https://api.github.com/authorizations',
-                 headers={'Content-Length': '51',
-                          'Content-Type': 'application/json',
-                          'User-Agent': 'git-devbliss/ng'},
+                 headers={'User-Agent': 'git-devbliss/ng',
+                          'Content-Type': 'application/json'},
                  auth=('test_username', 'test_pass')),
             call().json()
         ])
@@ -84,9 +83,8 @@ class GitHubTest(unittest.TestCase):
 
         post.assert_has_calls([
             call('https://api.github.com/authorizations',
-                 headers={'Content-Length': '51',
-                          'Content-Type': 'application/json',
-                          'User-Agent': 'git-devbliss/ng'},
+                 headers={'User-Agent': 'git-devbliss/ng',
+                          'Content-Type': 'application/json'},
                  auth=('test_username', 'test_pass')),
             call().json()
         ])
@@ -118,9 +116,8 @@ class GitHubTest(unittest.TestCase):
 
         post.assert_has_calls([
             call('https://api.github.com/authorizations',
-                 headers={'Content-Length': '51',
-                          'Content-Type': 'application/json',
-                          'User-Agent': 'git-devbliss/ng'},
+                 headers={'User-Agent': 'git-devbliss/ng',
+                          'Content-Type': 'application/json'},
                  auth=('test_username', 'test_pass')),
             call().json()
         ])
@@ -163,9 +160,9 @@ class GitHubTest(unittest.TestCase):
         handle.write.assert_called_once_with('test_token')
 
         post.assert_has_calls([
+
             call('https://api.github.com/authorizations',
-                 headers={'Content-Length': '51',
-                          'Content-Type': 'application/json',
+                 headers={'Content-Type': 'application/json',
                           'User-Agent': 'git-devbliss/ng'},
                  auth=('test_username', 'test_pass')),
             call().json()
@@ -191,6 +188,7 @@ class GitHubTest(unittest.TestCase):
         request.assert_has_calls([
             call('test_method', 'test_hosttest_path',
                  headers={'User-Agent': 'git-devbliss/ng',
+                          'Content-Type': 'application/json',
                           'Authorization': 'bearer test_token'},
                  data='test_body'),
             call().json()
@@ -217,11 +215,13 @@ class GitHubTest(unittest.TestCase):
 
         request.assert_has_calls([
             call('test_method', 'test_hosttest_path',
-                 headers={'User-Agent': 'git-devbliss/ng',
+                 headers={'Content-Type': 'application/json',
+                          'User-Agent': 'git-devbliss/ng',
                           'Authorization': 'bearer test_token'},
                  data='test_body'),
             call('test_method', 'test_hosttest_path',
-                 headers={'User-Agent': 'git-devbliss/ng',
+                 headers={'Content-Type': 'application/json',
+                          'User-Agent': 'git-devbliss/ng',
                           'Authorization': 'bearer test_token'},
                  data='test_body'),
         ])
@@ -246,14 +246,16 @@ class GitHubTest(unittest.TestCase):
             gh._request('test_method', 'test_path',
                         'test_body', 'test_host')
         request.assert_has_calls([
-            call('test_method', 'test_hosttest_path',
-                 headers={'User-Agent': 'git-devbliss/ng',
-                          'Authorization': 'bearer test_token'},
-                 data='test_body'),
-            call('test_method', 'test_hosttest_location',
-                 data='test_body',
-                 headers={'Authorization': 'bearer test_token',
-                          'User-Agent': 'git-devbliss/ng'}),
+            call('test_method', 'test_hosttest_path', headers={
+                'Content-Type': 'application/json',
+                'Authorization': 'bearer test_token',
+                'User-Agent': 'git-devbliss/ng'},
+                data='test_body'),
+            call('test_method', 'test_hosttest_location', headers={
+                'Content-Type': 'application/json',
+                'Authorization': 'bearer test_token',
+                'User-Agent': 'git-devbliss/ng'},
+                data='test_body'),
         ])
         exists.assert_called_with(gh.token_file)
 
@@ -375,8 +377,8 @@ class GitHubTest(unittest.TestCase):
                             'test_base', 'test_title', 'test_body')
             request.assert_called_once_with(
                 'POST', '/repos/test_user/test_repo/pulls',
-                '{\n"base": "test_base",\n"body": "test_body",'
-                '\n"head": "test_head",\n"title": "test_title"\n}')
+                '{"base": "test_base", "body": "test_body", '
+                '"head": "test_head", "title": "test_title"}')
 
     @unittest.mock.patch("git_devbliss.github.GitHub._request")
     @unittest.mock.patch("os.path.exists")

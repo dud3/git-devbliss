@@ -200,8 +200,8 @@ class MainTest(unittest.TestCase):
             main(['issue'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
-        print_function.assert_called_with('Fatal:', 400, 'test_error',
-                                          file=sys.stderr)
+        print_function.assert_called_with(
+            '[Errno 400] test_error', file=sys.stderr)
 
     @unittest.mock.patch("git_devbliss.github.GitHub.issue")
     @unittest.mock.patch("builtins.input")
