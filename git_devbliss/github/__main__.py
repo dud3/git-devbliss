@@ -60,7 +60,7 @@ def pull_request(base_branch, maxretries):
                 # retry in case github needs a few seconds to realize the push
                 retry = [i for i in errors if str(i.get("message")).startswith(
                     "No commits between")]
-                if status == 422:  # means no commits between base and head branch
+                if status == 422:  # no commits between base and head branch
                     if retry:
                         maxretries = maxretries - 1
                         time.sleep(1)
@@ -72,8 +72,8 @@ def pull_request(base_branch, maxretries):
                                   file=sys.stderr)
                     else:
                         print("Fatal: " + str(body), file=sys.stderr)
-                        print("Either the pull request already exists or there are"
-                              " no commits between the two branches.",
+                        print("Either the pull request already exists or there"
+                              " are no commits between the two branches.",
                               file=sys.stderr)
                     sys.exit(1)
             else:
@@ -273,7 +273,7 @@ Options:
     except requests.exceptions.RequestException as e:
         if hasattr(e, "body"):
             try:
-                message = json.loads(e.body)['message']
+                message = e.body['message']
             except (KeyError, ValueError):
                 pass
             else:
