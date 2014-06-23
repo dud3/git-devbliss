@@ -13,7 +13,7 @@ flake8: bin/flake8 all
 coverage: bin/coverage all
 	bin/coverage run --source=git_devbliss,setup.py -m unittest discover -vfb
 	bin/coverage html
-	bin/coverage report --fail-under=100 && ../bin/coverage html
+	bin/coverage report --fail-under=100 && bin/coverage html
 
 bin/coverage: bin/pip
 	bin/pip install coverage
