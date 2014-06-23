@@ -218,3 +218,67 @@ class MainTest(unittest.TestCase):
             call(),
             call()
         ])
+
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_finish_unclean(self, git, print_function):
+        git.side_effect = [
+            '',
+            '',
+            'some_branch',
+            '4',
+        ]
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'finish', 'annegret']):
+            with self.assertRaises(SystemExit):
+                git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('status --short --untracked-files=no | wc -l', pipe=True),
+        ])
+        print_function.assert_has_calls([
+            call('Error: Repository is not clean. Aborting.', file=sys.stderr)
+        ])
+
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_release_invalid_version(self, git, print_function):
+        git.side_effect = [
+            '',
+            '',
+        ]
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'release', 'annegret']):
+            with self.assertRaises(SystemExit):
+                git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+        ])
+        print_function.assert_has_calls([
+            call('Invalid version number', file=sys.stderr)
+        ])
+
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_release_unclean(self, git, print_function):
+        git.side_effect = [
+            '',
+            '',
+            '',
+            'some_branch',
+            '4',
+        ]
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'release', '1.0.0']):
+            with self.assertRaises(SystemExit):
+                git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+        ])
+        print_function.assert_has_calls([
+            call('Error: Repository is not clean. Aborting.', file=sys.stderr)
+        ])
