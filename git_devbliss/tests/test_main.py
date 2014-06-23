@@ -189,9 +189,9 @@ class MainTest(unittest.TestCase):
         git.side_effect = [
             '',
             '',
-            'some_branch',
+            'feature/some_branch',
             '0',
-            'some_branch',
+            'feature/some_branch',
             ''
         ]
         with unittest.mock.patch(
@@ -206,9 +206,9 @@ class MainTest(unittest.TestCase):
             call('branch --contains annegret', pipe=True)
         ])
         call_hook.assert_has_calls([
-            call('finish', 'DEVBLISS_BRANCH_TYPE=some_branch'),
-            call('changelog', 'DEVBLISS_BRANCH_TYPE=some_branch'),
-            call('version', 'DEVBLISS_BRANCH_TYPE=some_branch')
+            call('finish', 'DEVBLISS_BRANCH_TYPE=feature'),
+            call('changelog', 'DEVBLISS_BRANCH_TYPE=feature'),
+            call('version', 'DEVBLISS_BRANCH_TYPE=feature')
         ])
         github.assert_has_calls([
             call(['pull-request', 'annegret']),
