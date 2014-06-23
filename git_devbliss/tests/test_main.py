@@ -347,7 +347,7 @@ class MainTest(unittest.TestCase):
     @unittest.mock.patch('git_devbliss.__main__.call_hook')
     @unittest.mock.patch('git_devbliss.__main__.git')
     def test_release(self, git, call_hook, input_function,
-                            github_devbliss, print_function):
+                     github_devbliss, print_function):
         git.side_effect = [
             '',
             '',
@@ -391,3 +391,141 @@ class MainTest(unittest.TestCase):
             call(['status']),
         ])
         self.assertEqual(print_function.call_count, 0)
+
+    @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
+    def test_issue(self, github, print_function):
+        with unittest.mock.patch('sys.argv', ['git-devbliss', 'issue']):
+            git_devbliss()
+        github.assert_has_calls([
+            call(['issue', None]),
+        ])
+        self.assertEqual(print_function.call_count, 0)
+
+    @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
+    def test_issue_with_title(self, github, print_function):
+        with unittest.mock.patch('sys.argv', ['git-devbliss', 'issue',
+                                 'title']):
+            git_devbliss()
+        github.assert_has_calls([
+            call(['issue', 'title']),
+        ])
+        self.assertEqual(print_function.call_count, 0)
+
+    @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
+    def test_review(self, github, print_function):
+        with unittest.mock.patch('sys.argv', ['git-devbliss', 'review',
+                                 'pull_id']):
+            git_devbliss()
+        github.assert_has_calls([
+            call(['review', 'pull_id']),
+        ])
+        self.assertEqual(print_function.call_count, 0)
+
+    @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
+    def test_merge_button(self, github, print_function):
+        with unittest.mock.patch('sys.argv', ['git-devbliss', 'merge-button',
+                                 'pull_id']):
+            git_devbliss()
+        github.assert_has_calls([
+            call(['merge-button', 'pull_id']),
+        ])
+        self.assertEqual(print_function.call_count, 0)
+
+    @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
+    def test_close_button(self, github, print_function):
+        with unittest.mock.patch('sys.argv', ['git-devbliss', 'close-button',
+                                 'pull_id']):
+            git_devbliss()
+        github.assert_has_calls([
+            call(['close-button', 'pull_id']),
+        ])
+        self.assertEqual(print_function.call_count, 0)
+
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_delete_master(self, git, print_function):
+        git.side_effect = [
+            '',
+            '',
+            'master',
+        ]
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'delete']):
+            with self.assertRaises(SystemExit):
+                git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+        ])
+        print_function.assert_has_calls([
+            call("Won't delete master branch. Aborting.", file=sys.stderr),
+        ])
+
+    @unittest.mock.patch('builtins.input')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_delete_cancel(self, git, input_function, print_function):
+        git.side_effect = [
+            '',
+            '',
+            'test-branch',
+        ]
+        input_function.return_value = ''
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'delete']):
+            git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+        ])
+        self.assertEqual(print_function.call_count, 0)
+
+    @unittest.mock.patch('builtins.input')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_delete_yes(self, git, input_function, print_function):
+        git.side_effect = [
+            '',
+            '',
+            'test-branch',
+            ''
+        ]
+        input_function.return_value = 'y'
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'delete']):
+            git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+        ])
+        print_function.assert_has_calls([
+            call('To restore the remote branch, type'),
+            call('    git push --set-upstream origin test-branch'),
+            call('To delete your local branch, type'),
+            call('    git checkout master && git branch -d test-branch')
+        ])
+
+    @unittest.mock.patch('builtins.input')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_delete_force(self, git, input_function, print_function):
+        git.side_effect = [
+            '',
+            '',
+            'test-branch',
+            ''
+        ]
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'delete', '-f']):
+            git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+        ])
+        self.assertEqual(input_function.call_count, 0)
+        print_function.assert_has_calls([
+            call('To restore the remote branch, type'),
+            call('    git push --set-upstream origin test-branch'),
+            call('To delete your local branch, type'),
+            call('    git checkout master && git branch -d test-branch')
+        ])
