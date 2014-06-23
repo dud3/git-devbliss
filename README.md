@@ -22,6 +22,10 @@ method. Simply type:
 
     python3.4 -m ensurepip --upgrade
     sudo pip-3.4 install --upgrade git+ssh://git@github.com/devbliss/git-devbliss.git
+    
+do not forget to put the python package path into your system's path:
+
+    echo "PATH=\$PATH:$(dirname $(which pip3.4))" >> ~/bash_profile
 
 
 ## Installation via Makefile
