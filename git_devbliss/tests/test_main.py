@@ -384,7 +384,8 @@ class MainTest(unittest.TestCase):
         ])
 
     @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
-    def test_status(self, github, print_function):
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_status(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'status']):
             git_devbliss()
         github.assert_has_calls([
@@ -393,7 +394,8 @@ class MainTest(unittest.TestCase):
         self.assertEqual(print_function.call_count, 0)
 
     @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
-    def test_issue(self, github, print_function):
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_issue(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'issue']):
             git_devbliss()
         github.assert_has_calls([
@@ -402,7 +404,8 @@ class MainTest(unittest.TestCase):
         self.assertEqual(print_function.call_count, 0)
 
     @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
-    def test_issue_with_title(self, github, print_function):
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_issue_with_title(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'issue',
                                  'title']):
             git_devbliss()
@@ -412,7 +415,8 @@ class MainTest(unittest.TestCase):
         self.assertEqual(print_function.call_count, 0)
 
     @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
-    def test_review(self, github, print_function):
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_review(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'review',
                                  'pull_id']):
             git_devbliss()
@@ -422,7 +426,8 @@ class MainTest(unittest.TestCase):
         self.assertEqual(print_function.call_count, 0)
 
     @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
-    def test_merge_button(self, github, print_function):
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_merge_button(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'merge-button',
                                  'pull_id']):
             git_devbliss()
@@ -432,7 +437,8 @@ class MainTest(unittest.TestCase):
         self.assertEqual(print_function.call_count, 0)
 
     @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
-    def test_close_button(self, github, print_function):
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_close_button(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'close-button',
                                  'pull_id']):
             git_devbliss()
