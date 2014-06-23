@@ -10,6 +10,10 @@ mistakes.
 The tool does not replace any existing git commands nor does it
 prevent the developer from using the latter the way he wants to use them.
 
+## Requirements
+
+- python 3.4
+
 ## Installation via GitHub
 
 The installation of git-devbliss via GitHub is the default installation
