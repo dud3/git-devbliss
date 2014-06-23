@@ -4,30 +4,126 @@ import unittest.mock
 from unittest.mock import call
 import subprocess
 import sys
+import git_devbliss
 
-git_devbliss = pkg_resources.load_entry_point(
+git_devbliss_main = pkg_resources.load_entry_point(
     "git_devbliss", "console_scripts", "git-devbliss")
 
 
 @unittest.mock.patch("builtins.print")
 class MainTest(unittest.TestCase):
 
+    @unittest.mock.patch('os.system')
+    def test_git(self, system, print_function):
+        git_devbliss.__main__.git('test cmd')
+        system.assert_has_calls([
+            call('git test cmd')
+        ])
+        self.assertEqual(print_function.call_count, 0)
+
+    @unittest.mock.patch('subprocess.check_output')
+    def test_git_pipe(self, check_output, print_function):
+        git_devbliss.__main__.git('test cmd', pipe=True)
+        check_output.assert_has_calls([
+            call('git test cmd', shell=True),
+            call().decode()
+        ])
+        self.assertEqual(print_function.call_count, 0)
+
     @unittest.mock.patch('git_devbliss.__main__.git')
     def test_main(self, git, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss']):
             with self.assertRaises(SystemExit):
-                git_devbliss()
+                git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
         ])
         self.assertEqual(print_function.call_count, 0)
 
+    @unittest.mock.patch('os.path.abspath')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_toplevel_failure(self, git, abspath, print_function):
+        git.return_value = '/User/test_user/test_repo'
+        abspath.side_effect = [
+            '/User/test_user/test_repo',
+            '/User/test_user/test_repo/subpath'
+        ]
+        with self.assertRaises(SystemExit):
+            git_devbliss.__main__.check_repo_toplevel()
+        git.assert_has_calls([
+            call('rev-parse --show-toplevel', pipe=True),
+        ])
+        print_function.assert_has_calls([
+            call('You need to run this command from the toplevel'
+                 ' of the working tree.', file=sys.stderr)
+        ])
+
+    @unittest.mock.patch('os.path.abspath')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_toplevel(self, git, abspath, print_function):
+        git.return_value = '/User/test_user/test_repo'
+        abspath.side_effect = [
+            '/User/test_user/test_repo',
+            '/User/test_user/test_repo'
+        ]
+        git_devbliss.__main__.check_repo_toplevel()
+        git.assert_has_calls([
+            call('rev-parse --show-toplevel', pipe=True),
+        ])
+        self.assertEqual(print_function.call_count, 0)
+
+    @unittest.mock.patch('os.system')
+    @unittest.mock.patch('os.path.isfile')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    @unittest.mock.patch('git_devbliss.__main__.is_repository_clean')
+    @unittest.mock.patch('git_devbliss.__main__.check_repo_toplevel')
+    def test_hook_no_makefile(self, toplevel, repo_clean, git, isfile,
+                              system_function, print_function):
+        toplevel.return_value = True
+        isfile.return_value = False
+        repo_clean.return_value = False
+        git_devbliss.__main__.call_hook('test_hook', 'test_env')
+        print_function.assert_has_calls([
+            call('Warning: No Makefile found. All make hooks have'
+                 ' been skipped.', file=sys.stderr)
+        ])
+
+    @unittest.mock.patch('os.system')
+    @unittest.mock.patch('os.path.isfile')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    @unittest.mock.patch('git_devbliss.__main__.is_repository_clean')
+    @unittest.mock.patch('git_devbliss.__main__.check_repo_toplevel')
+    def test_hook_unclean(self, toplevel, repo_clean, git, isfile,
+                          system_function, print_function):
+        toplevel.return_value = True
+        isfile.return_value = True
+        repo_clean.return_value = False
+        git_devbliss.__main__.call_hook('test_hook', 'test_env')
+        git.assert_has_calls([
+            call('commit --quiet -am "Ran git devbliss test_hook hook"')
+        ])
+        self.assertEqual(print_function.call_count, 0)
+
+    @unittest.mock.patch('os.system')
+    @unittest.mock.patch('os.path.isfile')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    @unittest.mock.patch('git_devbliss.__main__.is_repository_clean')
+    @unittest.mock.patch('git_devbliss.__main__.check_repo_toplevel')
+    def test_hook_clean(self, toplevel, repo_clean, git, isfile,
+                        system_function, print_function):
+        toplevel.return_value = True
+        isfile.return_value = True
+        repo_clean.return_value = True
+        git_devbliss.__main__.call_hook('test_hook', 'test_env')
+        self.assertEqual(git.call_count, 0)
+        self.assertEqual(print_function.call_count, 0)
+
     @unittest.mock.patch('git_devbliss.__main__.git')
     def test_main_error(self, git, print_function):
         git.side_effect = subprocess.CalledProcessError('3', 'git')
         with self.assertRaises(SystemExit):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
         ])
@@ -40,7 +136,7 @@ class MainTest(unittest.TestCase):
     def test_feature(self, git, print_function):
         with unittest.mock.patch('sys.argv',
                                  ['git-devbliss', 'feature', 'test']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
@@ -64,7 +160,7 @@ class MainTest(unittest.TestCase):
         ]
         with unittest.mock.patch('sys.argv',
                                  ['git-devbliss', 'feature', 'test']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
@@ -80,7 +176,7 @@ class MainTest(unittest.TestCase):
     def test_feature_finish(self, git, print_function):
         with unittest.mock.patch('sys.argv',
                                  ['git-devbliss', 'feature', 'finish']):
-            git_devbliss()
+            git_devbliss_main()
 
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -101,7 +197,7 @@ class MainTest(unittest.TestCase):
     def test_bug(self, git, print_function):
         with unittest.mock.patch('sys.argv',
                                  ['git-devbliss', 'bug', 'test']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
@@ -116,7 +212,7 @@ class MainTest(unittest.TestCase):
     def test_research(self, git, print_function):
         with unittest.mock.patch('sys.argv',
                                  ['git-devbliss', 'research', 'test']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
@@ -131,7 +227,7 @@ class MainTest(unittest.TestCase):
     def test_refactor(self, git, print_function):
         with unittest.mock.patch('sys.argv',
                                  ['git-devbliss', 'refactor', 'test']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
@@ -147,7 +243,7 @@ class MainTest(unittest.TestCase):
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'hotfix', 'test_rev', 'test']):
             with self.assertRaises(SystemExit):
-                git_devbliss()
+                git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
@@ -171,7 +267,7 @@ class MainTest(unittest.TestCase):
         ]
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'hotfix', 'test_rev', 'test']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
@@ -191,7 +287,7 @@ class MainTest(unittest.TestCase):
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'finish', 'annegret']):
             with self.assertRaises(SystemExit):
-                git_devbliss()
+                git_devbliss_main()
         git.assert_has_calls([
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -221,7 +317,7 @@ class MainTest(unittest.TestCase):
         ]
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'finish', 'annegret']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -255,7 +351,7 @@ class MainTest(unittest.TestCase):
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'finish', 'annegret']):
             with self.assertRaises(SystemExit):
-                git_devbliss()
+                git_devbliss_main()
         git.assert_has_calls([
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -276,7 +372,7 @@ class MainTest(unittest.TestCase):
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'release', 'annegret']):
             with self.assertRaises(SystemExit):
-                git_devbliss()
+                git_devbliss_main()
         git.assert_has_calls([
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -298,7 +394,7 @@ class MainTest(unittest.TestCase):
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'release', '1.0.0']):
             with self.assertRaises(SystemExit):
-                git_devbliss()
+                git_devbliss_main()
         git.assert_has_calls([
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -325,7 +421,7 @@ class MainTest(unittest.TestCase):
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'release', '1.0.0']):
             with self.assertRaises(SystemExit):
-                git_devbliss()
+                git_devbliss_main()
         git.assert_has_calls([
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -361,7 +457,7 @@ class MainTest(unittest.TestCase):
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'release', '1.0.0']):
             with self.assertRaises(SystemExit):
-                git_devbliss()
+                git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
@@ -404,7 +500,7 @@ class MainTest(unittest.TestCase):
         input_function.return_value = ''
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'release', '1.0.0']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -436,7 +532,7 @@ class MainTest(unittest.TestCase):
     @unittest.mock.patch('git_devbliss.__main__.git')
     def test_status(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'status']):
-            git_devbliss()
+            git_devbliss_main()
         github.assert_has_calls([
             call(['status']),
         ])
@@ -446,7 +542,7 @@ class MainTest(unittest.TestCase):
     @unittest.mock.patch('git_devbliss.__main__.git')
     def test_issue(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'issue']):
-            git_devbliss()
+            git_devbliss_main()
         github.assert_has_calls([
             call(['issue', None]),
         ])
@@ -457,7 +553,7 @@ class MainTest(unittest.TestCase):
     def test_issue_with_title(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'issue',
                                  'title']):
-            git_devbliss()
+            git_devbliss_main()
         github.assert_has_calls([
             call(['issue', 'title']),
         ])
@@ -468,7 +564,7 @@ class MainTest(unittest.TestCase):
     def test_review(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'review',
                                  'pull_id']):
-            git_devbliss()
+            git_devbliss_main()
         github.assert_has_calls([
             call(['review', 'pull_id']),
         ])
@@ -479,7 +575,7 @@ class MainTest(unittest.TestCase):
     def test_merge_button(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'merge-button',
                                  'pull_id']):
-            git_devbliss()
+            git_devbliss_main()
         github.assert_has_calls([
             call(['merge-button', 'pull_id']),
         ])
@@ -490,7 +586,7 @@ class MainTest(unittest.TestCase):
     def test_close_button(self, git, github, print_function):
         with unittest.mock.patch('sys.argv', ['git-devbliss', 'close-button',
                                  'pull_id']):
-            git_devbliss()
+            git_devbliss_main()
         github.assert_has_calls([
             call(['close-button', 'pull_id']),
         ])
@@ -506,7 +602,7 @@ class MainTest(unittest.TestCase):
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'delete']):
             with self.assertRaises(SystemExit):
-                git_devbliss()
+                git_devbliss_main()
         git.assert_has_calls([
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -528,7 +624,7 @@ class MainTest(unittest.TestCase):
         input_function.return_value = ''
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'delete']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -549,7 +645,7 @@ class MainTest(unittest.TestCase):
         input_function.return_value = 'y'
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'delete']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -575,7 +671,7 @@ class MainTest(unittest.TestCase):
         ]
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'delete', '-f']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
@@ -606,7 +702,7 @@ class MainTest(unittest.TestCase):
         ]
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'cleanup']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
@@ -648,7 +744,7 @@ class MainTest(unittest.TestCase):
         input.return_value = ''
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'cleanup']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
@@ -692,7 +788,7 @@ class MainTest(unittest.TestCase):
         input.return_value = 'y'
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'cleanup']):
-            git_devbliss()
+            git_devbliss_main()
         git.assert_has_calls([
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),

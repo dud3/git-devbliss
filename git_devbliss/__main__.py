@@ -127,12 +127,12 @@ def check_repo_toplevel():
 def call_hook(hook, env_vars=''):
     check_repo_toplevel()
     if os.path.isfile('Makefile'):
-        os.system('{env_vars} make {hook} '
-                  '|| echo "Warning: Makefile has no target named {}'.format(
-                      **locals()))
+        os.system(
+            '{env_vars} make {hook} || echo "Warning: Makefile has no target'
+            ' named {hook}'.format(**locals()))
 
         if not is_repository_clean():
-            git('commit --quiet -am "Ran git devbliss {} hook"'.format(
+            git('commit --quiet -am "Ran git devbliss {hook} hook"'.format(
                 **locals()))
     else:
         print('Warning: No Makefile found. All make hooks have been skipped.',
