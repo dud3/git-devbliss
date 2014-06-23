@@ -14,6 +14,7 @@ prevent the developer from using the latter the way he wants to use them.
 
 - python 3.4
 - make
+- wget
 
 ## Installation via GitHub
 
