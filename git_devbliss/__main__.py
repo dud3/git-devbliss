@@ -241,7 +241,8 @@ def cleanup():
     git('branch --no-merged master')
 
 
-def finish(base_branch='master'):
+def finish(base_branch):
+    base_branch = base_branch or 'master'
     branch = git('rev-parse --abbrev-ref HEAD', pipe=True)
     if not is_repository_clean():
         print("Error: Repository is not clean. Aborting.", file=sys.stderr)
