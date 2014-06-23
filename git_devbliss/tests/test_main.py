@@ -282,3 +282,112 @@ class MainTest(unittest.TestCase):
         print_function.assert_has_calls([
             call('Error: Repository is not clean. Aborting.', file=sys.stderr)
         ])
+
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_release_unmerged(self, git, print_function):
+        git.side_effect = [
+            '',
+            '',
+            '',
+            'some_branch',
+            '0',
+            'sha-1',
+            'sha-2'
+        ]
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'release', '1.0.0']):
+            with self.assertRaises(SystemExit):
+                git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+        ])
+        print_function.assert_has_calls([
+            call('Error: Local branch is not in sync with origin. Aborting.',
+                 file=sys.stderr),
+            call('Do "git pull && git push" and try agin.', file=sys.stderr)
+        ])
+
+    @unittest.mock.patch('builtins.input')
+    @unittest.mock.patch('git_devbliss.__main__.call_hook')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_release_cancel(self, git, call_hook, input_function,
+                            print_function):
+        git.side_effect = [
+            '',
+            '',
+            '',
+            'some_branch',
+            '0',
+            'sha-1',
+            'sha-1',
+            ''
+        ]
+        input_function.side_effect = KeyboardInterrupt()
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'release', '1.0.0']):
+            with self.assertRaises(SystemExit):
+                git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+        ])
+        call_hook.assert_has_calls([
+            call('release', 'DEVBLISS_VERSION="1.0.0"')
+        ])
+        print_function.assert_has_calls([
+            call('Have these changes been reviewed?'),
+            call('[enter / ctrl+c to cancel]')
+        ])
+
+    @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
+    @unittest.mock.patch('builtins.input')
+    @unittest.mock.patch('git_devbliss.__main__.call_hook')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_release(self, git, call_hook, input_function,
+                            github_devbliss, print_function):
+        git.side_effect = [
+            '',
+            '',
+            '',
+            'master',
+            '0',
+            'sha-1',
+            'sha-1',
+            '',
+            '',
+            '',
+            '',
+            '',
+            ''
+        ]
+        input_function.return_value = ''
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'release', '1.0.0']):
+            git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+        ])
+        call_hook.assert_has_calls([
+            call('release', 'DEVBLISS_VERSION="1.0.0"')
+        ])
+        github_devbliss.assert_has_calls([
+            call(['pull-request'])
+        ])
+        print_function.assert_has_calls([
+            call('Have these changes been reviewed?'),
+            call('[enter / ctrl+c to cancel]')
+        ])
+
+    @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
+    def test_status(self, github, print_function):
+        with unittest.mock.patch('sys.argv', ['git-devbliss', 'status']):
+            git_devbliss()
+        github.assert_has_calls([
+            call(['status']),
+        ])
+        self.assertEqual(print_function.call_count, 0)
