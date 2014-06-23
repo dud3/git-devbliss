@@ -15,7 +15,7 @@ prevent the developer from using the latter the way he wants to use them.
 The installation of git-devbliss via GitHub is the default installation
 method. Simply type:
 
-    sudo pip install git+git://github.com/devbliss/git-devbliss.git
+    sudo pip-3.4 install git+git://github.com/devbliss/git-devbliss.git
 
 
 ## Installation via Makefile
