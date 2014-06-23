@@ -583,7 +583,6 @@ class MainTest(unittest.TestCase):
                 'sys.argv', ['git-devbliss', 'cleanup']):
             git_devbliss()
         git.assert_has_calls([
-
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
             call('fetch'),
@@ -605,10 +604,12 @@ class MainTest(unittest.TestCase):
                  ' that are already merged into local master...'),
             call('Checking for unmerged local branches...')
         ])
-"""
+
+    @unittest.mock.patch('os.system')
     @unittest.mock.patch('builtins.input')
     @unittest.mock.patch('git_devbliss.__main__.git')
-    def test_cleanup_canceled(self, git, input_function, print_function):
+    def test_cleanup_canceled(self, git, input_function, system,
+                              print_function):
         git.side_effect = [
             '',
             '',
@@ -619,21 +620,31 @@ class MainTest(unittest.TestCase):
             '',
             '',
         ]
-        input.side_effect = ''
+        input.return_value = ''
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'cleanup']):
             git_devbliss()
         git.assert_has_calls([
-
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
-            call()
+            call('fetch'),
+            call('remote prune origin'),
+            call('branch -r --merged origin/master | grep -v master'
+                 ' | grep -v release', pipe=True),
+            call("branch --merged master | grep -v master | grep -v "
+                 "'\\*' | xargs git branch -d"),
+            call('branch --no-merged master')
         ])
-        self.assertEqual(input_function.call_count, 0)
+        input_function.assert_called_with(
+            'Do you want to delete those branches on the server? [y/N]')
         print_function.assert_has_calls([
-            call('To restore the remote branch, type'),
-            call('    git push --set-upstream origin test-branch'),
-            call('To delete your local branch, type'),
-            call('    git checkout master && git branch -d test-branch')
+            call('Deleting remote tracking branches whose tracked branches'
+                 ' on server are gone...'),
+            call('Searching all remote branches except release that are'
+                 ' already merged into master...'),
+            call('remote_merged_branch'),
+            call('ok, will not delete anything.'),
+            call('Deleting all local branches (except current) that are'
+                 ' already merged into local master...'),
+            call('Checking for unmerged local branches...')
         ])
-        """
