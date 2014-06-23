@@ -773,7 +773,7 @@ class MainTest(unittest.TestCase):
     @unittest.mock.patch('os.system')
     @unittest.mock.patch('builtins.input')
     @unittest.mock.patch('git_devbliss.__main__.git')
-    def test_cleanup(self, git, input_function, system,
+    def test_cleanup(self, git, input_function, os_system,
                      print_function):
         git.side_effect = [
             '',
@@ -803,6 +803,9 @@ class MainTest(unittest.TestCase):
         ])
         input_function.assert_called_with(
             'Do you want to delete those branches on the server? [y/N]')
+        os_system.assert_called_with(
+            "echo 'remote_merged_branch' | sed 's#origin/##' | xargs -I {}"
+            " git push origin :{}")
         print_function.assert_has_calls([
             call('Deleting remote tracking branches whose tracked branches'
                  ' on server are gone...'),
