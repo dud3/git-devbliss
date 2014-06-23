@@ -785,7 +785,7 @@ class MainTest(unittest.TestCase):
             '',
             '',
         ]
-        input.return_value = 'y'
+        input_function.return_value = 'y'
         with unittest.mock.patch(
                 'sys.argv', ['git-devbliss', 'cleanup']):
             git_devbliss_main()
