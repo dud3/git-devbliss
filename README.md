@@ -20,7 +20,7 @@ prevent the developer from using the latter the way he wants to use them.
 The installation of git-devbliss via GitHub is the default installation
 method. Simply type:
 
-    python3.4 -m ensurepip --upgrade
+    python3.4 -m ensurepip --upgrade # on debian please use `sudo apt-get install python3-pip`
     sudo pip-3.4 install --upgrade git+ssh://git@github.com/devbliss/git-devbliss.git
     
 do not forget to put the python package path into your system's path:
