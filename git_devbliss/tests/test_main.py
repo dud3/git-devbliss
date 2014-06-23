@@ -154,7 +154,6 @@ class MainTest(unittest.TestCase):
         ])
         self.assertEqual(print_function.call_count, 0)
 
-
     @unittest.mock.patch('git_devbliss.__main__.git')
     def test_finish_not_merged(self, git, print_function):
         git.side_effect = [
@@ -177,6 +176,8 @@ class MainTest(unittest.TestCase):
             call('branch --contains annegret', pipe=True)
         ])
         print_function.assert_has_calls([
-            call("Error: Won't finish. annegret is not merged into the current branch.", file=sys.stderr),
-            call("Please do 'git merge annegret', make sure all conflicts are merged and try again.", file=sys.stderr)
+            call("Error: Won't finish. annegret is not merged into the"
+                 " current branch.", file=sys.stderr),
+            call("Please do 'git merge annegret', make sure all conflicts"
+                 " are merged and try again.", file=sys.stderr)
         ])
