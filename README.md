@@ -10,87 +10,50 @@ mistakes.
 The tool does not replace any existing git commands nor does it
 prevent the developer from using the latter the way he wants to use them.
 
-## Installation via MacPorts
+## Installation via GitHub
 
-The installation of git-devbliss via MacPorts is the default installation
-method. If you havn't already enabled the devbliss MacPorts repository on you
-Mac follow [this howto](https://github.com/devbliss/macports/blob/master/README.md).
+The installation of git-devbliss via GitHub is the default installation
+method. Simply type:
 
-and then type:
+    sudo pip install git+git://github.com/devbliss/git-devbliss.git
 
-    sudo port selfupdate
-    sudo port install git-devbliss
 
-To enable BASH completion you have to source the file
-`/opt/local/etc/bash_completion.d/git-devbliss`. To permanently enable the
-completion add the following line to your `~/.profile`.
-
-    source /opt/local/etc/bash_completion.d/git-devbliss
-
-## Installation via Makefile (discouraged)
+## Installation via Makefile
 
     git clone git@github.com:devbliss/git-devbliss.git
     cd git-devbliss
-    ./configure sudo make install
+    sudo make
+    bin/pip install .
 
-Note: the Makefile run by the install script will write a file at
-`/etc/bash_completion.d/git-devbliss`, which may or may not be sourced on your
-system. If bash completion doesn't work, append the following line to your
-`.profile` (or `.bashrc`) file:
+## Enabling bash completion
+
+To enable BASH completion you have to copy the file from bash_completion to
+/etc/bash_completion.d/ and source that file in your bash profile:
 
     source /etc/bash_completion.d/git-devbliss
 
-### Zsh Completion (you don't need that if you are using BASH)
-
-Just put the following in your .zshrc:
-
-    fpath=(<path-to-workflow>/zsh_completion $fpath) zstyle
-    ':completion:*:*:git:*' user-commands \    devbliss:'devbliss git workflow'
-    \
-
-
-To make completion work at all you have to load zsh's completion module like
-this:
-
-    autoload -Uz compinit compinit
-
-The fpath should be set before the compinit.
-
-## Overview
-
-See: git help devbliss or if not installed see:
-[manpage](https://github.com/devbliss/git-devbliss/blob/master/man1/git-devbliss.1)
 
 ## Testing
 
-The git-extensions are tested using the following github account.
+Simply run:
 
-    Horst Nuschke user: h-nuschke email: h-nuschke1@trash-mail.com password:
-    h-nuschke1 repo: git@github.com:h-nuschke/workflow_test.git
+    make test
 
-The ssh keys are applied via puppet so github can be accessed.
+This will run all checks and generate a coverage report
 
-## Implementing a new feature
-
-To implement a new feature, change the git-devbliss code and install it in the virtual machine:
-  - vagrant up
-  - vagrant ssh
-  - ./configure
-  - sudo make install # optional, is done by make test anyways
-  - make test
 
 ## Makefile hooks
 
 You need to include a Makefile in your project, which defines entry points for
-common tasks. The Makefile works like an abstraktion layer which has mainly
-four advantages:
+common tasks. The Makefile works like an abstraction layer which has
+four main advantages:
 
  1. Your daily work becomes easier because you won't have to adjust your habits
     depending on the project.
  2. If a project is reactivated after a certain amount of time it eases the
     pain of continuing.
  3. New developers have an easier start.
- 4. (This is of interest here) Conventonally defined make targets make it
+ 4. Conventionally defined make targets make it
     possible to integrate hooks in our git devbliss toolset which makes your
     daily work easier and more failsafe.
 
