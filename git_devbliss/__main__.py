@@ -129,7 +129,7 @@ def call_hook(hook, env_vars=''):
     if os.path.isfile('Makefile'):
         os.system(
             '{env_vars} make {hook} || echo "Warning: Makefile has no target'
-            ' named {hook}'.format(**locals()))
+            ' named {hook}"'.format(**locals()))
 
         if not is_repository_clean():
             git('commit --quiet -am "Ran git devbliss {hook} hook"'.format(
