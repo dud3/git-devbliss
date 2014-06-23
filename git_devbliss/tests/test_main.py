@@ -52,6 +52,31 @@ class MainTest(unittest.TestCase):
         self.assertEqual(print_function.call_count, 0)
 
     @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_feature_branch_exists(self, git, print_function):
+        git.side_effect = [
+            '',
+            '',
+            '',
+            '',
+            subprocess.CalledProcessError(2, 'git'),
+            '',
+            '',
+        ]
+        with unittest.mock.patch('sys.argv',
+                                 ['git-devbliss', 'feature', 'test']):
+            git_devbliss()
+        git.assert_has_calls([
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('checkout --quiet master'),
+            call('pull --quiet origin master'),
+            call('checkout --quiet -b feature/test'),
+            call('checkout --quiet feature/test'),
+            call('push --set-upstream origin feature/test')
+        ])
+        self.assertEqual(print_function.call_count, 0)
+
+    @unittest.mock.patch('git_devbliss.__main__.git')
     def test_feature_finish(self, git, print_function):
         with unittest.mock.patch('sys.argv',
                                  ['git-devbliss', 'feature', 'finish']):
