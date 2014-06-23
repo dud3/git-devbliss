@@ -15,8 +15,5 @@ setuptools.setup(
             "git-devbliss = git_devbliss.__main__:main",
             "github-devbliss = git_devbliss.github.__main__:main",
         ],
-    },
-    #  data_files=[
-    #      ("share/man/man1", ["debian/git-devbliss.1"]),
-    #  ],
+    }
 )

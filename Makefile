@@ -1,4 +1,4 @@
-python ?= python3.4
+python ?= python3
 
 all: git_devbliss.egg_info/
 
