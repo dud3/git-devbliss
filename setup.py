@@ -1,5 +1,9 @@
 import setuptools
+import sys
 
+if sys.version_info < (3, 4):
+    print('Python 3.4 or above is required for git-devbliss')
+    sys.exit(1)
 
 setuptools.setup(
     name="git_devbliss",
