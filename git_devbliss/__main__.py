@@ -111,15 +111,8 @@ def is_repository_clean():
 
 
 def is_synced_origin(remote_branch):
-    diff = git('diff origin/{remote_branch} | wc -l'.format(
-        remote_branch=remote_branch), pipe=True)
-    if diff.strip() != "0":
-        return False
-    log = git('log origin/{remote_branch}..HEAD -- | wc -l'.format(
-        remote_branch=remote_branch), pipe=True)
-    if log.strip() != "0":
-        return False
-    return True
+    return git('rev-parse HEAD', pipe=True) == git(
+        'rev-parse origin/{}'.format(remote_branch), pipe=True)
 
 
 def check_repo_toplevel():
@@ -255,16 +248,14 @@ def finish(base_branch):
         print("Error: Repository is not clean. Aborting.", file=sys.stderr)
         sys.exit(1)
 
-    if branch not in git('branch --contains master', pipe=True):
-        if 'hotfix/' in branch:
-            print("Warning: Master is not merged into the current branch.",
-                  file=sys.stderr)
-        else:
-            print("Error: Won't finish. Master is not merged into the"
-                  " current branch.", file=sys.stderr)
-            print("Please do 'git merge master', make sure all conflicts"
-                  " are merged and try again.", file=sys.stderr)
-            sys.exit(1)
+    if branch not in git('branch --contains {}'.format(base_branch),
+                         pipe=True):
+        print("Error: Won't finish. {} is not merged into the"
+              " current branch.".format(base_branch), file=sys.stderr)
+        print("Please do 'git merge {}', make sure all conflicts"
+              " are merged and try again.".format(base_branch),
+              file=sys.stderr)
+        sys.exit(1)
     env_vars = 'DEVBLISS_BRANCH_TYPE=' + branch.split('/')[0]
     call_hook('finish', env_vars)
     call_hook('changelog', env_vars)
