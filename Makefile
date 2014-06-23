@@ -20,7 +20,7 @@ bin/coverage: bin/pip
 bin/flake8: bin/pip
 	bin/pip install flake8
 bin/pip: bin/python
-	wget --no-check-certificate -O - https://bootstrap.pypa.io/get-pip.py | bin/python
+	bin/python -m ensurepip --upgrade
 bin/python:
 	$(python) -m venv --without-pip .
 
