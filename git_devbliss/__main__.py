@@ -215,23 +215,22 @@ def cleanup():
     git('remote prune origin')
     print("Searching all remote branches except release "
           "that are already merged into master...")
+    get_remote_merged_branches = None
     try:
         get_remote_merged_branches = git('branch -r --merged origin/master'
                                          ' | grep -v master | grep -v release',
                                          pipe=True)
     except subprocess.CalledProcessError:
-        get_remote_merged_branches = 'No remote merged branches found'
-
-    print(get_remote_merged_branches)
-    if input("Do you want to delete those branches on the server? [y/N]"
-             ).capitalize() == 'Y':
-        print("Deleting...")
-        os.system("echo '{}' | sed 's#origin/##' | xargs -I {{}}"
-                  " git push origin :{{}}".format(get_remote_merged_branches))
-        git('remote prune origin')
-    else:
-        if get_remote_merged_branches == '':
-            print("nothing to do.")
+        print('No remote merged branches found')
+    if get_remote_merged_branches:
+        print(get_remote_merged_branches)
+        if input("Do you want to delete those branches on the server? [y/N]"
+                 ).capitalize() == 'Y':
+            print("Deleting...")
+            os.system("echo '{}' | sed 's#origin/##' | xargs -I {{}}"
+                      " git push origin :{{}}".format(
+                          get_remote_merged_branches))
+            git('remote prune origin')
         else:
             print("ok, will not delete anything.")
     print("Deleting all local branches (except current)"

@@ -278,6 +278,9 @@ class MainTest(unittest.TestCase):
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('fetch --quiet origin'),
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('status --short --untracked-files=no | wc -l', pipe=True)
         ])
         print_function.assert_has_calls([
             call('Error: Repository is not clean. Aborting.', file=sys.stderr)
@@ -302,6 +305,11 @@ class MainTest(unittest.TestCase):
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('fetch --quiet origin'),
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('status --short --untracked-files=no | wc -l', pipe=True),
+            call('rev-parse HEAD', pipe=True),
+            call('rev-parse origin/master', pipe=True)
         ])
         print_function.assert_has_calls([
             call('Error: Local branch is not in sync with origin. Aborting.',
@@ -330,9 +338,14 @@ class MainTest(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 git_devbliss()
         git.assert_has_calls([
-
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('fetch --quiet origin'),
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('status --short --untracked-files=no | wc -l', pipe=True),
+            call('rev-parse HEAD', pipe=True),
+            call('rev-parse origin/master', pipe=True),
+            call('diff')
         ])
         call_hook.assert_has_calls([
             call('release', 'DEVBLISS_VERSION="1.0.0"')
@@ -371,6 +384,17 @@ class MainTest(unittest.TestCase):
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('fetch --quiet origin'),
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('status --short --untracked-files=no | wc -l', pipe=True),
+            call('rev-parse HEAD', pipe=True),
+            call('rev-parse origin/master', pipe=True),
+            call('diff'),
+            call('commit --quiet --allow-empty -m "Release: 1.0.0"'),
+            call('push origin master'),
+            call('tag 1.0.0'),
+            call('push --tags origin'),
+            call('push origin master')
         ])
         call_hook.assert_has_calls([
             call('release', 'DEVBLISS_VERSION="1.0.0"')
@@ -462,6 +486,7 @@ class MainTest(unittest.TestCase):
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('rev-parse --abbrev-ref HEAD', pipe=True)
         ])
         print_function.assert_has_calls([
             call("Won't delete master branch. Aborting.", file=sys.stderr),
@@ -483,6 +508,7 @@ class MainTest(unittest.TestCase):
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('rev-parse --abbrev-ref HEAD', pipe=True)
         ])
         self.assertEqual(print_function.call_count, 0)
 
@@ -503,6 +529,8 @@ class MainTest(unittest.TestCase):
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('push --delete origin test-branch')
         ])
         print_function.assert_has_calls([
             call('To restore the remote branch, type'),
@@ -527,6 +555,8 @@ class MainTest(unittest.TestCase):
 
             call('rev-parse --abbrev-ref HEAD', pipe=True),
             call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('push --delete origin test-branch')
         ])
         self.assertEqual(input_function.call_count, 0)
         print_function.assert_has_calls([
@@ -535,3 +565,75 @@ class MainTest(unittest.TestCase):
             call('To delete your local branch, type'),
             call('    git checkout master && git branch -d test-branch')
         ])
+
+    @unittest.mock.patch('builtins.input')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_cleanup_no_remote_merged(self, git, input_function,
+                                      print_function):
+        git.side_effect = [
+            '',
+            '',
+            '',
+            '',
+            subprocess.CalledProcessError(2, 'git'),
+            '',
+            '',
+        ]
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'cleanup']):
+            git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('fetch'),
+            call('remote prune origin'),
+            call('branch -r --merged origin/master | grep -v master'
+                 ' | grep -v release', pipe=True),
+            call("branch --merged master | grep -v master | grep -v "
+                 "'\\*' | xargs git branch -d"),
+            call('branch --no-merged master')
+        ])
+        self.assertEqual(input_function.call_count, 0)
+        print_function.assert_has_calls([
+            call('Deleting remote tracking branches whose tracked'
+                 ' branches on server are gone...'),
+            call('Searching all remote branches except release'
+                 ' that are already merged into master...'),
+            call('No remote merged branches found'),
+            call('Deleting all local branches (except current)'
+                 ' that are already merged into local master...'),
+            call('Checking for unmerged local branches...')
+        ])
+"""
+    @unittest.mock.patch('builtins.input')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_cleanup_canceled(self, git, input_function, print_function):
+        git.side_effect = [
+            '',
+            '',
+            '',
+            '',
+            'remote_merged_branch',
+            '',
+            '',
+            '',
+        ]
+        input.side_effect = ''
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'cleanup']):
+            git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call()
+        ])
+        self.assertEqual(input_function.call_count, 0)
+        print_function.assert_has_calls([
+            call('To restore the remote branch, type'),
+            call('    git push --set-upstream origin test-branch'),
+            call('To delete your local branch, type'),
+            call('    git checkout master && git branch -d test-branch')
+        ])
+        """
