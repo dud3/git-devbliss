@@ -13,6 +13,7 @@ prevent the developer from using the latter the way he wants to use them.
 ## Requirements
 
 - python 3.4
+- make
 
 ## Installation via GitHub
 
