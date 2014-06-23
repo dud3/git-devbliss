@@ -264,7 +264,7 @@ def finish(base_branch):
     print()
     args = ['pull-request']
     if base_branch:
-        args = args + ['base_branch']
+        args = args + [base_branch]
     github_devbliss(args)
     print()
     github_devbliss(['open-pulls'])

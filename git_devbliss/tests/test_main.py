@@ -181,3 +181,40 @@ class MainTest(unittest.TestCase):
             call("Please do 'git merge annegret', make sure all conflicts"
                  " are merged and try again.", file=sys.stderr)
         ])
+
+    @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
+    @unittest.mock.patch('git_devbliss.__main__.call_hook')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_finish(self, git, call_hook, github, print_function):
+        git.side_effect = [
+            '',
+            '',
+            'some_branch',
+            '0',
+            'some_branch',
+            ''
+        ]
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'finish', 'annegret']):
+            git_devbliss()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('status --short --untracked-files=no | wc -l', pipe=True),
+            call('branch --contains annegret', pipe=True)
+        ])
+        call_hook.assert_has_calls([
+            call('finish', 'DEVBLISS_BRANCH_TYPE=some_branch'),
+            call('changelog', 'DEVBLISS_BRANCH_TYPE=some_branch'),
+            call('version', 'DEVBLISS_BRANCH_TYPE=some_branch')
+        ])
+        github.assert_has_calls([
+            call(['pull-request', 'annegret']),
+            call(['open-pulls'])
+        ])
+        print_function.assert_has_calls([
+            call(),
+            call()
+        ])
