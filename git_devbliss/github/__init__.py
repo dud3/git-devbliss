@@ -36,11 +36,13 @@ class GitHub (object):
         if response.status_code == 401:
             raise ValueError("Bad credentials")
         elif response.status_code == 422:
-            print('Fatal: GitHub retured your git-devbliss token '
-                  'already exists.', file=sys.stderr)
-            print('Login to your github account and delete the old token.',
+            print('There is already a token with the name git-devbliss_ng.',
                   file=sys.stderr)
-            print('  https://github.com/settings/applications',
+            print('If you are using git-devbliss on another computer, '
+                  'please copy the ~/.github_token found on that machine'
+                  ' to this one.', file=sys.stderr)
+            print('If not, please log into your github account and delete'
+                  ' the old token at https://github.com/settings/applications',
                   file=sys.stderr)
             sys.exit(1)
         elif response.status_code in (200, 201):

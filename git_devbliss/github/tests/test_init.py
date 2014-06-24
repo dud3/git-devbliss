@@ -91,11 +91,15 @@ class GitHubTest(unittest.TestCase):
         ])
 
         print_function.assert_has_calls([
-            call('Fatal: GitHub retured your git-devbliss token '
-                 'already exists.', file=sys.stderr),
-            call('Login to your github account and delete the old token.',
+            call('GitHub username: ', file=sys.stderr, end=''),
+            call('There is already a token with the name git-devbliss_ng.',
                  file=sys.stderr),
-            call('  https://github.com/settings/applications', file=sys.stderr)
+            call('If you are using git-devbliss on another computer, please '
+                 'copy the ~/.github_token found on that machine to this one.',
+                 file=sys.stderr),
+            call('If not, please log into your github account and delete the'
+                 ' old token at https://github.com/settings/applications',
+                 file=sys.stderr)
         ])
 
     @unittest.mock.patch("builtins.print")
