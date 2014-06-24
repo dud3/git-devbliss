@@ -50,10 +50,9 @@ To enable BASH completion you have to copy the file from https://github.com/devb
 
 ## Creating a shorter command for git-devbliss
 
-put the following in your ~/.gitconfig if you want a shorter command for git devbliss:
+run the following command if you want a shorter command for git devbliss:
     
-    [alias]
-	de = devbliss
+    git config --global alias.de devbliss
 
 ## Testing
 
