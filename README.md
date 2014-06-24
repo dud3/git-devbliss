@@ -20,9 +20,9 @@ you also need pip3.4, which is included in python 3.4:
 
     python3.4 -m ensurepip --upgrade # on debian please use `sudo apt-get install python3-pip`
 
-do not forget to put the python package path into your system's path:
+do not forget to put the python package path into your system's path if it is not there yet:
 
-    echo "PATH=\$PATH:$(dirname $(which pip3.4))" >> ~/bash_profile
+    export PYTHONPATH=/opt/local/Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4 # OSX
 
 ## Installation via GitHub
 
