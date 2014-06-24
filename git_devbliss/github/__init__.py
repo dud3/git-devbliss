@@ -19,18 +19,23 @@ class GitHub (object):
             self.token = f.read().strip()
 
     def _login(self, username, password):
+        body = {
+            "scopes": ["repo"],
+            "note": "devbliss"
+        }
         response = requests.post(
             'https://api.github.com/authorizations',
             auth=(username, password), headers={
                 "User-Agent": "git-devbliss/ng",  # TODO
                 "Content-Type": "application/json",
-            }
+            },
+            data=json.dumps(body)
         )
 
         body = response.json()
         if response.status_code == 401:
             raise ValueError("Bad credentials")
-        elif response.status_code == 200:
+        elif response.status_code in (200, 201):
             return body["token"]
         else:
             print("Fatal: GitHub returned status " +
