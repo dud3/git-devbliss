@@ -22,7 +22,7 @@ you also need pip3.4, which is included in python 3.4 (of course you can also in
 
 do not forget to put the python package path into your system's path if it is not there yet:
 
-    export PATH=/opt/local/Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4:$PATH # OSX
+    export PATH=/opt/local/Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4/bin:$PATH # OSX
     
 If you have an old version of git-devbliss that was installed with Makefile or macports, please uninstall that version first. Remember that bash_completion will be uninstalled as well - please refer to the 'Enabling bash completion' section below for how to restore it.
 
