@@ -54,12 +54,49 @@ class GitHubTest(unittest.TestCase):
             call('https://api.github.com/authorizations',
                  headers={'User-Agent': 'git-devbliss/ng',
                           'Content-Type': 'application/json'},
-                 auth=('test_username', 'test_pass')),
+                 auth=('test_username', 'test_pass'),
+                 data='{"note": "devbliss", "scopes": ["repo"]}'),
             call().json()
         ])
 
         print_function.assert_called_with('Fatal: Bad credentials',
                                           file=sys.stderr)
+
+    @unittest.mock.patch("builtins.print")
+    @unittest.mock.patch("requests.post")
+    @unittest.mock.patch("getpass.getpass")
+    @unittest.mock.patch("builtins.input")
+    @unittest.mock.patch("os.path.exists")
+    def test_init_422(self, exists, input_function, getpass, post,
+                      print_function):
+        exists.return_value = False
+        input_function.return_value = 'test_username'
+        getpass.return_value = 'test_pass'
+        json_function = unittest.mock.Mock()
+        json_function.return_value = '{"test_json": "blub"}'
+        post.return_value = unittest.mock.Mock()
+        post.return_value.json = json_function
+        post.return_value.status_code = 422
+        m = unittest.mock.mock_open()
+        with unittest.mock.patch('__main__.open', m, create=True):
+            with self.assertRaises(SystemExit):
+                git_devbliss.github.GitHub()
+        post.assert_has_calls([
+            call('https://api.github.com/authorizations',
+                 headers={'User-Agent': 'git-devbliss/ng',
+                          'Content-Type': 'application/json'},
+                 auth=('test_username', 'test_pass'),
+                 data='{"note": "devbliss", "scopes": ["repo"]}'),
+            call().json()
+        ])
+
+        print_function.assert_has_calls([
+            call('Fatal: GitHub retured your git-devbliss token '
+                 'already exists.', file=sys.stderr),
+            call('Login to your github account and delete the old token.',
+                 file=sys.stderr),
+            call('  https://github.com/settings/applications', file=sys.stderr)
+        ])
 
     @unittest.mock.patch("builtins.print")
     @unittest.mock.patch("requests.post")
@@ -85,7 +122,8 @@ class GitHubTest(unittest.TestCase):
             call('https://api.github.com/authorizations',
                  headers={'User-Agent': 'git-devbliss/ng',
                           'Content-Type': 'application/json'},
-                 auth=('test_username', 'test_pass')),
+                 auth=('test_username', 'test_pass'),
+                 data='{"note": "devbliss", "scopes": ["repo"]}'),
             call().json()
         ])
         print_function.assert_has_calls([
@@ -118,7 +156,8 @@ class GitHubTest(unittest.TestCase):
             call('https://api.github.com/authorizations',
                  headers={'User-Agent': 'git-devbliss/ng',
                           'Content-Type': 'application/json'},
-                 auth=('test_username', 'test_pass')),
+                 auth=('test_username', 'test_pass'),
+                 data='{"note": "devbliss", "scopes": ["repo"]}'),
             call().json()
         ])
         print_function.assert_has_calls([
@@ -164,7 +203,8 @@ class GitHubTest(unittest.TestCase):
             call('https://api.github.com/authorizations',
                  headers={'Content-Type': 'application/json',
                           'User-Agent': 'git-devbliss/ng'},
-                 auth=('test_username', 'test_pass')),
+                 auth=('test_username', 'test_pass'),
+                 data='{"note": "devbliss", "scopes": ["repo"]}'),
             call().json()
         ])
         print_function.assert_has_calls([

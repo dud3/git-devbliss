@@ -29,12 +29,20 @@ class GitHub (object):
                 "User-Agent": "git-devbliss/ng",  # TODO
                 "Content-Type": "application/json",
             },
-            data=json.dumps(body)
+            data=json.dumps(body, sort_keys=True)
         )
 
         body = response.json()
         if response.status_code == 401:
             raise ValueError("Bad credentials")
+        elif response.status_code == 422:
+            print('Fatal: GitHub retured your git-devbliss token '
+                  'already exists.', file=sys.stderr)
+            print('Login to your github account and delete the old token.',
+                  file=sys.stderr)
+            print('  https://github.com/settings/applications',
+                  file=sys.stderr)
+            sys.exit(1)
         elif response.status_code in (200, 201):
             return body["token"]
         else:
