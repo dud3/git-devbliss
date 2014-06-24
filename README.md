@@ -48,6 +48,13 @@ To enable BASH completion you have to copy the file from https://github.com/devb
     source /etc/bash_completion.d/git-devbliss
 
 
+## Creating a shorter command for git-devbliss
+
+put the following in your ~/.gitconfig if you want a shorter command for git devbliss:
+    
+    [alias]
+	de = devbliss
+
 ## Testing
 
 Simply run:
