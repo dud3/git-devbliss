@@ -42,8 +42,8 @@ method. Simply type:
 
 ## Enabling bash completion
 
-To enable BASH completion you have to copy the file from bash_completion to
-/etc/bash_completion.d/ and source that file in your bash profile:
+To enable BASH completion you have to copy the file from https://github.com/devbliss/git-devbliss/raw/master/bash_completion/git-devbliss to
+/etc/bash_completion.d/ (maybe you have to create that folder) and source that file in your bash profile:
 
     source /etc/bash_completion.d/git-devbliss
 
