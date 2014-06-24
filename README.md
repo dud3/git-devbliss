@@ -54,7 +54,7 @@ Simply run:
 
     make test
 
-This will run all checks and generate a coverage report
+This will create a python virtual environment, run all checks and tests there and generate a coverage report
 
 
 ## Makefile hooks
