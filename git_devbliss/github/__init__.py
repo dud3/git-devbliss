@@ -19,18 +19,33 @@ class GitHub (object):
             self.token = f.read().strip()
 
     def _login(self, username, password):
+        body = {
+            "scopes": ["repo"],
+            "note": "devbliss"
+        }
         response = requests.post(
             'https://api.github.com/authorizations',
             auth=(username, password), headers={
                 "User-Agent": "git-devbliss/ng",  # TODO
                 "Content-Type": "application/json",
-            }
+            },
+            data=json.dumps(body, sort_keys=True)
         )
 
         body = response.json()
         if response.status_code == 401:
             raise ValueError("Bad credentials")
-        elif response.status_code == 200:
+        elif response.status_code == 422:
+            print('There is already a token with the name git-devbliss_ng.',
+                  file=sys.stderr)
+            print('If you are using git-devbliss on another computer, '
+                  'please copy the ~/.github_token found on that machine'
+                  ' to this one.', file=sys.stderr)
+            print('If not, please log into your github account and delete'
+                  ' the old token at https://github.com/settings/applications',
+                  file=sys.stderr)
+            sys.exit(1)
+        elif response.status_code in (200, 201):
             return body["token"]
         else:
             print("Fatal: GitHub returned status " +
