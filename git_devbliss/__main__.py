@@ -188,7 +188,6 @@ def release(version):
     git('push origin {branch}'.format(**locals()))
     git('tag {version}'.format(**locals()))
     git('push --tags origin')
-    git('push origin {branch}'.format(**locals()))
     if branch == 'master':
         print()
         github_devbliss(['pull-request'])
