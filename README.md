@@ -22,7 +22,7 @@ you also need pip3.4, which is included in python 3.4:
 
 do not forget to put the python package path into your system's path if it is not there yet:
 
-    export PYTHONPATH=/opt/local/Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4 # OSX
+    export PATH=/opt/local/Library/Frameworks/Python.framework/Versions/3.4/lib/python3.4:$PATH # OSX
 
 ## Installation via GitHub
 
