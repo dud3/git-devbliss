@@ -16,7 +16,7 @@ prevent the developer from using the latter the way he wants to use them.
 - make
 
 
-you also need pip3.4, which is included in python 3.4:
+you also need pip3.4, which is included in python 3.4 (of course you can also install with your systems package manager):
 
     python3.4 -m ensurepip --upgrade # on debian please use `sudo apt-get install python3-pip`
 
