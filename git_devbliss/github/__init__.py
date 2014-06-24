@@ -18,22 +18,29 @@ class GitHub (object):
         with open(self.token_file) as f:
             self.token = f.read().strip()
 
-    def _login(self, username, password):
+    def _login(self, username, password, two_factor=None):
         body = {
             "scopes": ["repo"],
-            "note": "devbliss"
+            "note": "git-devbliss-ng"
         }
+        headers = {
+            "User-Agent": "git-devbliss/ng",  # TODO
+            "Content-Type": "application/json",
+        }
+        if two_factor:
+            headers["X-GitHub-OTP"] = two_factor
+
         response = requests.post(
             'https://api.github.com/authorizations',
-            auth=(username, password), headers={
-                "User-Agent": "git-devbliss/ng",  # TODO
-                "Content-Type": "application/json",
-            },
+            auth=(username, password), headers=headers,
             data=json.dumps(body, sort_keys=True)
         )
 
         body = response.json()
         if response.status_code == 401:
+            if 'message' in body and 'two-factor' in body['message']:
+                return self._login(username, password, input(
+                                   'Please input your two_factor code: '))
             raise ValueError("Bad credentials")
         elif response.status_code == 422:
             print('There is already a token with the name git-devbliss_ng.',
@@ -50,14 +57,12 @@ class GitHub (object):
         else:
             print("Fatal: GitHub returned status " +
                   repr(response.status_code) + ":", file=sys.stderr)
-            print(json.dumps(body, indent=4), file=sys.stderr)
+            print(body, file=sys.stderr)
             sys.exit(1)
 
     def _interactive_login(self):
         try:
-            print("GitHub username: ", file=sys.stderr, end='')
-            sys.stderr.flush()
-            username = input("")
+            username = input("GitHub username: ")
         except KeyboardInterrupt:
             print()
             sys.exit(1)
