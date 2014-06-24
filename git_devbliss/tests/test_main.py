@@ -515,7 +515,6 @@ class MainTest(unittest.TestCase):
             call('push origin master'),
             call('tag 1.0.0'),
             call('push --tags origin'),
-            call('push origin master')
         ])
         call_hook.assert_has_calls([
             call('release', 'DEVBLISS_VERSION="1.0.0"')
