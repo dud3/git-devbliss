@@ -243,7 +243,7 @@ Options:
         args = docopt(github_runner.__doc__, version=__version__, argv=args)
         if(args['pull-request']):
             pull_request(base_branch=args['BASE_BRANCH'] or 'master',
-                         maxretries=int(args['MAXRETRIES']) or 3)
+                         maxretries=int(args['MAXRETRIES'] or 3))
         elif(args['open-pulls']):
             pulls()
         elif(args['review']):

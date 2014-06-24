@@ -30,6 +30,55 @@ class GitHubTest(unittest.TestCase):
             git_devbliss.github.GitHub()
 
         print_function.assert_called_with()
+        input_function.assert_has_calls([
+            call('GitHub username: '),
+        ])
+
+    @unittest.mock.patch("builtins.print")
+    @unittest.mock.patch("requests.post")
+    @unittest.mock.patch("getpass.getpass")
+    @unittest.mock.patch("builtins.input")
+    @unittest.mock.patch("os.path.exists")
+    def test_init_two_factor(self, exists, input_function, getpass, post,
+                             print_function):
+        exists.return_value = False
+        input_function.side_effect = ['test_username', 'two_factor_code']
+        getpass.return_value = 'test_pass'
+        json_function1 = unittest.mock.Mock()
+        json_function2 = unittest.mock.Mock()
+        json_function1.return_value = {
+            "documentation_url": "https://developer.github.com/v3/auth"
+            "#working-with-two-factor-authentication",
+            "message": "Must specify two-factor authentication OTP code."}
+        json_function2.return_value = {'token': 'test_token'}
+        post1 = unittest.mock.Mock()
+        post2 = unittest.mock.Mock()
+        post.side_effect = [post1, post2]
+        post1.json = json_function1
+        post2.json = json_function2
+        post1.status_code = 401
+        post2.status_code = 201
+        m = unittest.mock.mock_open()
+        with unittest.mock.patch('__main__.open', m, create=True):
+            git_devbliss.github.GitHub()
+        post.assert_has_calls([
+            call('https://api.github.com/authorizations',
+                 data='{"note": "git-devbliss-ng", "scopes": ["repo"]}',
+                 headers={'User-Agent': 'git-devbliss/ng',
+                          'Content-Type': 'application/json'},
+                 auth=('test_username', 'test_pass')),
+            call('https://api.github.com/authorizations',
+                 data='{"note": "git-devbliss-ng", "scopes": ["repo"]}',
+                 headers={'User-Agent': 'git-devbliss/ng',
+                          'X-GitHub-OTP': 'two_factor_code',
+                          'Content-Type': 'application/json'},
+                 auth=('test_username', 'test_pass'))
+        ])
+        input_function.assert_has_calls([
+            call('GitHub username: '),
+            call('Please input your two_factor code: ')
+        ])
+        self.assertEqual(print_function.call_count, 0)
 
     @unittest.mock.patch("builtins.print")
     @unittest.mock.patch("requests.post")
@@ -55,10 +104,13 @@ class GitHubTest(unittest.TestCase):
                  headers={'User-Agent': 'git-devbliss/ng',
                           'Content-Type': 'application/json'},
                  auth=('test_username', 'test_pass'),
-                 data='{"note": "devbliss", "scopes": ["repo"]}'),
+                 data='{"note": "git-devbliss-ng", "scopes": ["repo"]}'),
             call().json()
         ])
 
+        input_function.assert_has_calls([
+            call('GitHub username: '),
+        ])
         print_function.assert_called_with('Fatal: Bad credentials',
                                           file=sys.stderr)
 
@@ -86,12 +138,14 @@ class GitHubTest(unittest.TestCase):
                  headers={'User-Agent': 'git-devbliss/ng',
                           'Content-Type': 'application/json'},
                  auth=('test_username', 'test_pass'),
-                 data='{"note": "devbliss", "scopes": ["repo"]}'),
+                 data='{"note": "git-devbliss-ng", "scopes": ["repo"]}'),
             call().json()
+        ])
+        input_function.assert_has_calls([
+            call('GitHub username: '),
         ])
 
         print_function.assert_has_calls([
-            call('GitHub username: ', file=sys.stderr, end=''),
             call('There is already a token with the name git-devbliss_ng.',
                  file=sys.stderr),
             call('If you are using git-devbliss on another computer, please '
@@ -127,13 +181,15 @@ class GitHubTest(unittest.TestCase):
                  headers={'User-Agent': 'git-devbliss/ng',
                           'Content-Type': 'application/json'},
                  auth=('test_username', 'test_pass'),
-                 data='{"note": "devbliss", "scopes": ["repo"]}'),
+                 data='{"note": "git-devbliss-ng", "scopes": ["repo"]}'),
             call().json()
         ])
+        input_function.assert_has_calls([
+            call('GitHub username: '),
+        ])
         print_function.assert_has_calls([
-            call('GitHub username: ', end='', file=sys.stderr),
             call('Fatal: GitHub returned status 404:', file=sys.stderr),
-            call('"{\\"test_json\\": \\"blub\\"}"', file=sys.stderr)
+            call('{"test_json": "blub"}', file=sys.stderr)
         ])
 
     @unittest.mock.patch("builtins.print")
@@ -161,11 +217,13 @@ class GitHubTest(unittest.TestCase):
                  headers={'User-Agent': 'git-devbliss/ng',
                           'Content-Type': 'application/json'},
                  auth=('test_username', 'test_pass'),
-                 data='{"note": "devbliss", "scopes": ["repo"]}'),
+                 data='{"note": "git-devbliss-ng", "scopes": ["repo"]}'),
             call().json()
         ])
+        input_function.assert_has_calls([
+            call('GitHub username: '),
+        ])
         print_function.assert_has_calls([
-            call('GitHub username: ', file=sys.stderr, end=''),
             call('Fatal: Bad credentials', file=sys.stderr)
         ])
 
@@ -208,12 +266,10 @@ class GitHubTest(unittest.TestCase):
                  headers={'Content-Type': 'application/json',
                           'User-Agent': 'git-devbliss/ng'},
                  auth=('test_username', 'test_pass'),
-                 data='{"note": "devbliss", "scopes": ["repo"]}'),
+                 data='{"note": "git-devbliss-ng", "scopes": ["repo"]}'),
             call().json()
         ])
-        print_function.assert_has_calls([
-            call('GitHub username: ', file=sys.stderr, end=''),
-        ])
+        self.assertEqual(print_function.call_count, 0)
 
     @unittest.mock.patch("requests.request")
     @unittest.mock.patch("os.path.exists")
