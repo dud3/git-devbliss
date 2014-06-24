@@ -41,8 +41,7 @@ class MainTest(unittest.TestCase):
                 "pull_request": {"diff_url": "test_diff_url"}
             },
         ]
-        with self.assertRaises(SystemExit):
-            main(['status'])
+        main(['status'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         branches.assert_called_with('test_user', 'test_repo')
@@ -78,8 +77,7 @@ class MainTest(unittest.TestCase):
         pulls.return_value = [
             {"number": 0, "title": "test_pull", "html_url": "test_pull_url"}
         ]
-        with self.assertRaises(SystemExit):
-            main(['open-pulls'])
+        main(['open-pulls'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         pulls.assert_called_with('test_user', 'test_repo')
@@ -138,8 +136,7 @@ class MainTest(unittest.TestCase):
             EOFError,
         ]
         issue.return_value = {'html_url': 'test_issue_url'}
-        with self.assertRaises(SystemExit):
-            main(['issue'])
+        main(['issue'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         issue.assert_called_with(
@@ -245,8 +242,7 @@ class MainTest(unittest.TestCase):
             EOFError,
         ]
         issue.return_value = {'html_url': 'test_issue_url'}
-        with self.assertRaises(SystemExit):
-            main(['issue', 'test_issue_by_parameter'])
+        main(['issue', 'test_issue_by_parameter'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         issue.assert_called_with(
@@ -269,8 +265,7 @@ class MainTest(unittest.TestCase):
         pulls.return_value = [
             {"number": 0, "title": "test_pull", "html_url": "test_pull_url"}
         ]
-        with self.assertRaises(SystemExit):
-            main(['overview', 'test_user'])
+        main(['overview', 'test_user'])
         init.assert_called_with()
         repos.assert_called_with('test_user')
         pulls.assert_has_calls([
@@ -295,8 +290,7 @@ class MainTest(unittest.TestCase):
         init.return_value = None
         get_current_repo.return_value = ('test_user', 'test_repo')
         tags.return_value = [{'name': 'tag1'}, {'name': 'tag2'}]
-        with self.assertRaises(SystemExit):
-            main(['tags'])
+        main(['tags'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         tags.assert_called_with('test_user', 'test_repo')
@@ -309,8 +303,7 @@ class MainTest(unittest.TestCase):
     def test_tags_with_repository(self, init, tags, print_function):
         init.return_value = None
         tags.return_value = [{'name': 'tag1'}, {'name': 'tag2'}]
-        with self.assertRaises(SystemExit):
-            main(['tags', 'test_user/test_repo'])
+        main(['tags', 'test_user/test_repo'])
         init.assert_called_with()
         tags.assert_called_with('test_user', 'test_repo')
         print_function.assert_has_calls([
@@ -344,8 +337,7 @@ class MainTest(unittest.TestCase):
         merge_button.return_value = {'merged': True, 'message': 'test_message'}
         check_output.return_value = 'test_git_output_deleted_remote_ref'
 
-        with self.assertRaises(SystemExit):
-            main(['merge-button', '333'])
+        main(['merge-button', '333'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         get_pull_request.assert_called_with('test_user', 'test_repo', '333')
@@ -372,8 +364,7 @@ class MainTest(unittest.TestCase):
         get_pull_request.return_value = {'head': {'ref': 'test_ref'}}
         merge_button.return_value = {'message': 'test_message'}
 
-        with self.assertRaises(SystemExit):
-            main(['merge-button', '333'])
+        main(['merge-button', '333'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         get_pull_request.assert_called_with('test_user', 'test_repo', '333')
@@ -397,8 +388,7 @@ class MainTest(unittest.TestCase):
                                             'message': 'test_message'}
         check_output.return_value = 'test_git_output_deleted_remote_ref'
 
-        with self.assertRaises(SystemExit):
-            main(['close-button', '333'])
+        main(['close-button', '333'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         update_pull_request.assert_called_with('test_user', 'test_repo', '333',
@@ -422,8 +412,7 @@ class MainTest(unittest.TestCase):
                                             'message': 'test_message'}
         check_output.return_value = 'test_git_output_deleted_remote_ref'
 
-        with self.assertRaises(SystemExit):
-            main(['close-button', '333'])
+        main(['close-button', '333'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         update_pull_request.assert_called_with('test_user', 'test_repo', '333',
@@ -445,8 +434,7 @@ class MainTest(unittest.TestCase):
         update_pull_request.return_value = {'message': 'test_message'}
         check_output.return_value = 'test_git_output_deleted_remote_ref'
 
-        with self.assertRaises(SystemExit):
-            main(['close-button', '333'])
+        main(['close-button', '333'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         update_pull_request.assert_called_with('test_user', 'test_repo', '333',
@@ -473,8 +461,7 @@ class MainTest(unittest.TestCase):
             'test_git_diff_output'
         ]
 
-        with self.assertRaises(SystemExit):
-            main(['review', '333'])
+        main(['review', '333'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         get_pull_request.assert_called_with('test_user', 'test_repo', '333')
@@ -554,8 +541,7 @@ class MainTest(unittest.TestCase):
         pull_request.return_value = {'html_url': 'test_pull_url'}
         with unittest.mock.patch('builtins.open', unittest.mock.mock_open(
                                  read_data='test_data_from_markdown')):
-            with self.assertRaises(SystemExit):
-                main(['pull-request', 'test-mainline-branch', 3])
+            main(['pull-request', 'test-mainline-branch', '3'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         get_current_branch.assert_called_with()
@@ -583,7 +569,7 @@ class MainTest(unittest.TestCase):
         ]
         open_function.side_effect = IOError()
         with self.assertRaises(SystemExit):
-            main(['pull-request', 'test-mainline-branch', 3])
+            main(['pull-request', 'test-mainline-branch', '3'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         get_current_branch.assert_called_with()
@@ -617,8 +603,7 @@ class MainTest(unittest.TestCase):
             {'html_url': 'test_pull_url'}
         ]
         open_function.side_effect = IOError()
-        with self.assertRaises(SystemExit):
-            main(['pull-request', 'test-mainline-branch', 3])
+        main(['pull-request', 'test-mainline-branch', '3'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         get_current_branch.assert_called_with()
@@ -664,7 +649,7 @@ class MainTest(unittest.TestCase):
         ]
         open_function.side_effect = IOError()
         with self.assertRaises(SystemExit):
-            main(['pull-request', 'test-mainline-branch', 3])
+            main(['pull-request', 'test-mainline-branch', '3'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         get_current_branch.assert_called_with()
@@ -710,7 +695,7 @@ class MainTest(unittest.TestCase):
         ]
         open_function.side_effect = IOError()
         with self.assertRaises(SystemExit):
-            main(['pull-request', 'test-mainline-branch', 3])
+            main(['pull-request', 'test-mainline-branch', '3'])
         init.assert_called_with()
         get_current_repo.assert_called_with()
         get_current_branch.assert_called_with()
@@ -720,7 +705,3 @@ class MainTest(unittest.TestCase):
                                         'test_branch',
                                         base='test-mainline-branch',
                                         body='')
-
-    def test_help(self, print_function):
-        with self.assertRaises(SystemExit):
-            main()

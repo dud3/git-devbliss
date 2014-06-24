@@ -4,6 +4,10 @@ import time
 import requests
 import subprocess
 import os
+from docopt import docopt
+import pkg_resources
+
+__version__ = pkg_resources.get_distribution("git_devbliss").version
 
 
 def get_repository():
@@ -209,7 +213,7 @@ def close_pull_request(pull_request_no):
 
 
 def github_runner(args):
-    usage = """Devbliss Github Client
+    """Devbliss Github Client
 
 Usage:
     github-devbliss pull-request [BASE_BRANCH] [MAXRETRIES]
@@ -233,47 +237,29 @@ Options:
     issue           Quickly post a new issue
     tags            List the current repository's tags
     overview        Show outstanding pull requests for an
-                    entire organisation"""
-
+                    entire organisation
+"""
     try:
-        if args[:1] == ["pull-request"] and len(args) in (1, 2, 3):
-            defaults = ["master", 3]
-            params = (args[1:] + defaults[len(args[1:]):])
-            pull_request(base_branch=params[0], maxretries=params[1])
-            sys.exit(0)
-        elif args[:1] == ["open-pulls"] and len(args) == 1:
+        args = docopt(github_runner.__doc__, version=__version__, argv=args)
+        if(args['pull-request']):
+            pull_request(base_branch=args['BASE_BRANCH'] or
+                         'master', maxretries=int(args['MAXRETRIES']) or 3)
+        elif(args['open-pulls']):
             pulls()
-            sys.exit(0)
-        elif args[:1] == ["review"] and len(args) == 2:
-            review(args[1])
-            sys.exit(0)
-        elif args[:1] == ["merge-button"] and len(args) == 2:
-            merge_button(args[1])
-            sys.exit(0)
-        elif args[:1] == ["close-button"] and len(args) == 2:
-            close_pull_request(args[1])
-            sys.exit(0)
-        elif args[:1] == ["tags"] and len(args) == 1:
-            tags()
-            sys.exit(0)
-        elif args[:1] == ["tags"] and len(args) == 2 and "/" in args[-1]:
-            tags(args[-1])
-            sys.exit(0)
-        elif args[:1] == ["status"] and len(args) == 1:
+        elif(args['review']):
+            review(args['PULLNUMBER'])
+        elif(args['merge-button']):
+            merge_button(args['PULLNUMBER'])
+        elif(args['close-button']):
+            close_pull_request(args['PULLNUMBER'])
+        elif(args['tags']):
+            tags(args['REPOSITORY'])
+        elif(args['status']):
             status()
-            sys.exit(0)
-        elif args[:1] == ["issue"] and len(args) == 1:
-            issue()
-            sys.exit(0)
-        elif args[:1] == ["issue"] and len(args) == 2:
-            issue(args[1])
-            sys.exit(0)
-        elif args[:1] == ["overview"] and len(args) == 2:
-            overview(args[1])
-            sys.exit(0)
-        else:
-            print(usage, file=sys.stderr)
-            sys.exit(2)
+        elif(args['issue']):
+            issue(args['TITLE'])
+        elif(args['overview']):
+            overview(args['ORG'])
     except requests.exceptions.RequestException as e:
         if hasattr(e, "body"):
             try:
