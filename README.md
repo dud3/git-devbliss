@@ -98,7 +98,7 @@ You are encouraged to implement the following targets in your Makefile:
 
 Depending on the git-devbliss command used, there is one of two bash variables
 available:
-- **finish**:  `DEVBLISS_BRANCH_TYPE` is available that holds the branch type
+- **finish**, **version**, **changelog**:  `DEVBLISS_BRANCH_TYPE` is available that holds the branch type
   value (`feature`, `bug`, `hotfix`, `research` or `refactor`)
 - **release**: `DEVBLISS_VERSION` is available that carries the version number
   used with the release command
