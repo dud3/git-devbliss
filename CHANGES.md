@@ -8,6 +8,8 @@
  - added git-devbliss hooks in makefile
  - two-factor auth works now
  - use python-package instead of macports
+ - licensed under apache2 license
+ - prepared for pypi
 
 ## 1.8.0
 
