@@ -143,9 +143,3 @@ copy your token to all your machines in order to use git-devbliss on them. If yo
 switched machines, you can also delete the `git-devbliss/ng` application in your GitHub
 application settings.
 
-### Two-Factor Authentication
-
-If you use two-factor authentication,
-[create a new access token](https://github.com/settings/tokens/new) in your github
-application settings (enabling only the "repo" scope) and write it to
-`~/.github_token`. You will then be able to log in without a username and password.
