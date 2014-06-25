@@ -143,3 +143,13 @@ copy your token to all your machines in order to use git-devbliss on them. If yo
 switched machines, you can also delete the `git-devbliss/ng` application in your GitHub
 application settings.
 
+
+## External Dependencies
+
+Git-Devbliss includes, depends on, or uses the following free software components:
+
+Python3 (http://python.org, Python Software Foundation License)
+Setuptools (https://pypi.python.org/pypi/setuptools, Python Software Foundation License)
+Docopt (https://github.com/docopt/docopt, MIT License)
+Flake8 (https://bitbucket.org/tarek/flake8/wiki/Home, MIT License)
+Python Coverage (https://bitbucket.org/ned/coveragepy, BSD License)
