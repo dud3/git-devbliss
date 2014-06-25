@@ -1,5 +1,14 @@
 # git devbliss changelog
 
+## 2.0.0
+
+ - rewrite git-devbliss in python
+ - unittests for git-devbliss and github-devbliss
+ - use python 3.4 virtual environment instead of vagrant
+ - added git-devbliss hooks in makefile
+ - two-factor auth works now
+ - use python-package instead of macports
+
 ## 1.8.0
 
  - show help if called without arguments
