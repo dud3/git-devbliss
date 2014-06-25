@@ -31,3 +31,23 @@ clean-dist:
 	find . -name __pycache__ -type d | xargs rm -rf
 clean: clean-dist
 	rm -rf bin/ lib/ include/ pyvenv.cfg
+
+.PHONY: changelog
+changelog:
+	@$${EDITOR:-"vi"} CHANGES.md
+
+.PHONY: version
+version:
+	@changelog_version=`sed -n 's/## \(.*\)/\1/p' CHANGES.md | head -n 1`; \
+	echo "setting setup.py version to $$changelog_version" found in CHANGES.md; \
+	sed -i '' "/git_devbliss/,/install_requires/s/version.*/version=\"$$changelog_version\",/" setup.py
+
+.PHONY: release
+release:
+	@if [ -z $$DEVBLISS_VERSION ] ; then read -p 'DEVBLISS_VERSION not found. Please specify the release version: ' DEVBLISS_VERSION; fi; \
+	echo "setting setup.py version to DEVBLISS_VERSION ($$DEVBLISS_VERSION)"; \
+	sed -i '' "/git_devbliss/,/install_requires/s/version.*/version=\"$$DEVBLISS_VERSION\",/" setup.py
+
+.PHONY: finish
+finish:
+	make test

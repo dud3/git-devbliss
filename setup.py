@@ -7,7 +7,7 @@ if sys.version_info < (3, 4):
 
 setuptools.setup(
     name="git_devbliss",
-    version="1.8.0",
+    version="2.0.0",
     packages=setuptools.find_packages(),
     test_suite="git_devbliss",
     install_requires=[
