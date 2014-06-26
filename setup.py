@@ -5,6 +5,27 @@ import os
 if sys.version_info < (3, 4):
     print('Python 3.4 or above is required for git-devbliss')
     sys.exit(1)
+data_files = []
+if os.path.exists('/usr/share/man'):
+    print('Installing man page to /usr/share/man')
+    data_files = data_files + [(
+        '/usr/share/man/man1',
+        ['man1/git-devbliss.1']
+    )]
+
+if os.path.exists('/etc'):
+    if not os.path.exists('/etc/bash_completion.d/'):
+        os.mkdir('/etc/bash_completion.d/')
+    data_files = data_files + [(
+        '/etc/bash_completion.d/',
+        ['bash_completion/git-devbliss']
+    )]
+    bash_completion_help = (
+        'Please source "etc/bash_completion.d/git-devbliss"'
+        ' in your profile to enable bash completion')
+    print('*' * len(bash_completion_help))
+    print(bash_completion_help)
+    print('*' * len(bash_completion_help))
 
 
 def read(fname):
@@ -12,7 +33,7 @@ def read(fname):
 
 setuptools.setup(
     author="devbliss GmbH",
-    email="python_maintainer@devbliss.com",
+    author_email="python_maintainer@devbliss.com",
     url="http://www.devbliss.com",
     description="Tool supporting the devbliss Git/GitHub Workflow",
     long_description=read('README.md'),
@@ -30,6 +51,7 @@ setuptools.setup(
             "github-devbliss = git_devbliss.github.__main__:main",
         ],
     },
+    data_files=data_files,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
