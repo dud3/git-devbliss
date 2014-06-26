@@ -22,10 +22,19 @@ if os.path.exists('/etc'):
     )]
     bash_completion_help = (
         'Please copy "source /etc/bash_completion.d/git-devbliss"'
-        'in your profile to enable bash completion')
+        'into your profile to enable bash completion')
     print('*' * len(bash_completion_help))
     print(bash_completion_help)
     print('*' * len(bash_completion_help))
+
+if sys.platform == 'darwin':
+    python_path_help = (
+        'Please ensure you have set your PATH to include python3.4 packages:'
+        ' "export PATH=$PATH:/opt/local/Library/Frameworks/Python.framework/'
+        'Versions/3.4/bin"')
+    print('*' * len(python_path_help))
+    print(python_path_help)
+    print('*' * len(python_path_help))
 
 
 def read(fname):
