@@ -57,10 +57,6 @@ if (sys.platform == 'darwin'
         ' packages: "export PATH=$PATH:{}"'.format(python_path))
 
 
-def preinst():
-    global data_files
-
-
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
