@@ -1,18 +1,41 @@
 import setuptools
+import setuptools.command.install
 import sys
 import os
+
+
+class GitDevblissInstallCommand(setuptools.command.install.install):
+    """Customized setuptools install command - prints a friendly greeting."""
+    def run(self):
+        notify(bash_completion_notice)
+        notify(python_path_notice)
+        setuptools.command.install.install.run(self)
+
+
+def notify(message):
+    if not message:
+        return
+    print()
+    print('*' * len(message))
+    print(message)
+    print('*' * len(message))
+    print()
+
 
 if sys.version_info < (3, 4):
     print('Python 3.4 or above is required for git-devbliss')
     sys.exit(1)
+
+python_path_notice = ''
+installed_man_notice = ''
+bash_completion_notice = ''
 data_files = []
+
 if os.path.exists('/usr/share/man'):
-    print('Installing man page to /usr/share/man')
     data_files = data_files + [(
         '/usr/share/man/man1',
         ['man1/git-devbliss.1']
     )]
-
 if os.path.exists('/etc'):
     if not os.path.exists('/etc/bash_completion.d/'):
         os.mkdir('/etc/bash_completion.d/')
@@ -20,21 +43,22 @@ if os.path.exists('/etc'):
         '/etc/bash_completion.d/',
         ['bash_completion/git-devbliss']
     )]
-    bash_completion_help = (
+    bash_completion_notice = (
         'Please copy "source /etc/bash_completion.d/git-devbliss"'
         'into your profile to enable bash completion')
-    print('*' * len(bash_completion_help))
-    print(bash_completion_help)
-    print('*' * len(bash_completion_help))
 
-if sys.platform == 'darwin':
-    python_path_help = (
-        'Please ensure you have set your PATH to include python3.4 packages:'
-        ' "export PATH=$PATH:/opt/local/Library/Frameworks/Python.framework/'
-        'Versions/3.4/bin"')
-    print('*' * len(python_path_help))
-    print(python_path_help)
-    print('*' * len(python_path_help))
+
+python_path = '/opt/local/Library/Frameworks/Python.framework/Versions/3.4/bin'
+if (sys.platform == 'darwin'
+        and os.path.exists(python_path)
+        and python_path not in os.environ.get('PATH')):
+    python_path_notice = (
+        'Please ensure you have set your PATH to include python3.4'
+        ' packages: "export PATH=$PATH:{}"'.format(python_path))
+
+
+def preinst():
+    global data_files
 
 
 def read(fname):
@@ -61,6 +85,9 @@ setuptools.setup(
         ],
     },
     data_files=data_files,
+    cmdclass={
+        'install': GitDevblissInstallCommand,
+    },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
