@@ -21,8 +21,8 @@ if os.path.exists('/etc'):
         ['bash_completion/git-devbliss']
     )]
     bash_completion_help = (
-        'Please source "etc/bash_completion.d/git-devbliss"'
-        ' in your profile to enable bash completion')
+        'Please copy "source /etc/bash_completion.d/git-devbliss"'
+        'in your profile to enable bash completion')
     print('*' * len(bash_completion_help))
     print(bash_completion_help)
     print('*' * len(bash_completion_help))
