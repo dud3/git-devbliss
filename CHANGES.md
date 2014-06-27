@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 2.0.3
+
+ - added MANIFEST.in
+
 ## 2.0.2
 
  - use README symlink instead of README.md to fix installation bug

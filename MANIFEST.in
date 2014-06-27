@@ -1,0 +1,2 @@
+include man1/git-devbliss.1
+include bash_completion/git-devbliss
