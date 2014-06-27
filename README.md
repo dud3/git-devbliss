@@ -27,10 +27,14 @@ do not forget to put the python package path into your system's path if it is no
     
 If you have an old version of git-devbliss that was installed with Makefile or macports, please uninstall that version first. Remember that bash_completion will be uninstalled as well - please refer to the 'Enabling bash completion' section below for how to restore it.
 
-## Installation via GitHub (recommended)
+## Installation via pypi (recommended)
 
-The installation of git-devbliss via GitHub is the default installation
+The installation of git-devbliss via pypi is the default installation
 method. Simply type:
+
+    sudo pip-3.4 install --upgrade git-devbliss
+
+## Installation via GitHub
 
     sudo pip-3.4 install --upgrade git+ssh://git@github.com/devbliss/git-devbliss.git
 

@@ -66,6 +66,7 @@ setuptools.setup(
     url="http://www.devbliss.com",
     download_url="https://github.com/devbliss/git-devbliss",
     description="Tool supporting the devbliss Git/GitHub Workflow",
+    license="Apache2",
     long_description=read('README.md'),
     name="git_devbliss",
     version="2.0.0",
