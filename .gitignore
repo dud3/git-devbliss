@@ -3,6 +3,7 @@
 .vagrant
 *.py[cod]
 *.egg-info/
+/dist/
 .coverage
 bin/
 htmlcov/
