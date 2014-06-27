@@ -153,3 +153,4 @@ Git-Devbliss includes, depends on, or uses the following free software component
 - Docopt (https://github.com/docopt/docopt, MIT License)
 - Flake8 (https://bitbucket.org/tarek/flake8/wiki/Home, MIT License)
 - Python Coverage (https://bitbucket.org/ned/coveragepy, BSD License)
+- Requests (https://github.com/kennethreitz/requests, Apache2 License)
