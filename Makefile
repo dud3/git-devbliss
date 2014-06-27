@@ -1,15 +1,19 @@
 python ?= python3.4
 
+.PHONY: all
 all: git_devbliss.egg_info/
 
 git_devbliss.egg_info/: bin/pip
 	bin/pip install --editable .
 
+.PHONY: test
 test: flake8 coverage all
 
+.PHONY: flake8
 flake8: bin/flake8 all
 	bin/flake8 setup.py git_devbliss
 
+.PHONY: coverage
 coverage: bin/coverage all
 	bin/coverage run --source=git_devbliss,setup.py -m unittest discover -vfb
 	bin/coverage html
@@ -25,10 +29,13 @@ bin/pip: bin/python
 bin/python:
 	$(python) -m venv --without-pip .
 
+.PHONY: clean-dist
 clean-dist:
 	rm -rf htmlcov/ .coverage
 	rm -rf *.egg-info/ *.egg build/ dist/
 	find . -name __pycache__ -type d | xargs rm -rf
+
+.PHONY: clean
 clean: clean-dist
 	rm -rf bin/ lib/ include/ pyvenv.cfg
 
@@ -51,3 +58,7 @@ release:
 .PHONY: finish
 finish:
 	make test
+
+.PHONY: upload
+upload:
+	bin/python setup.py register sdist upload
