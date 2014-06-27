@@ -148,8 +148,8 @@ application settings.
 
 Git-Devbliss includes, depends on, or uses the following free software components:
 
-Python3 (http://python.org, Python Software Foundation License)
-Setuptools (https://pypi.python.org/pypi/setuptools, Python Software Foundation License)
-Docopt (https://github.com/docopt/docopt, MIT License)
-Flake8 (https://bitbucket.org/tarek/flake8/wiki/Home, MIT License)
-Python Coverage (https://bitbucket.org/ned/coveragepy, BSD License)
+- Python3 (http://python.org, Python Software Foundation License)
+- Setuptools (https://pypi.python.org/pypi/setuptools, Python Software Foundation License)
+- Docopt (https://github.com/docopt/docopt, MIT License)
+- Flake8 (https://bitbucket.org/tarek/flake8/wiki/Home, MIT License)
+- Python Coverage (https://bitbucket.org/ned/coveragepy, BSD License)
