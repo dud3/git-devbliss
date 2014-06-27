@@ -61,4 +61,4 @@ finish:
 
 .PHONY: upload
 upload:
-    bin/python setup.py register sdist upload
+	bin/python setup.py register sdist upload
