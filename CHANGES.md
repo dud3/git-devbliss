@@ -1,5 +1,15 @@
 # git devbliss changelog
 
+## 2.0.2
+
+ - use README symlink instead of README.md to fix installation bug
+
+## 2.0.1
+
+ - fixed pypi upload
+ - default installation method: pypi
+ - added license to setup.py (in addition to trove classifiers)
+
 ## 2.0.0
 
  - rewrite git-devbliss in python
