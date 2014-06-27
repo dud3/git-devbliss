@@ -69,7 +69,7 @@ setuptools.setup(
     license="Apache2",
     long_description=read('README'),
     name="git_devbliss",
-    version="2.0.1",
+    version="2.0.2",
     packages=setuptools.find_packages(),
     test_suite="git_devbliss",
     install_requires=[
