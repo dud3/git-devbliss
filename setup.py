@@ -64,6 +64,7 @@ setuptools.setup(
     author="devbliss GmbH",
     author_email="python_maintainer@devbliss.com",
     url="http://www.devbliss.com",
+    download_url="https://github.com/devbliss/git-devbliss",
     description="Tool supporting the devbliss Git/GitHub Workflow",
     long_description=read('README.md'),
     name="git_devbliss",
