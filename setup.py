@@ -45,7 +45,7 @@ if os.path.exists('/etc'):
     )]
     bash_completion_notice = (
         'Please copy "source /etc/bash_completion.d/git-devbliss"'
-        'into your profile to enable bash completion')
+        ' into your profile to enable bash completion')
 
 
 python_path = '/opt/local/Library/Frameworks/Python.framework/Versions/3.4/bin'
