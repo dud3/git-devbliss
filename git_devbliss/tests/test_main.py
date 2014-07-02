@@ -317,6 +317,74 @@ class MainTest(unittest.TestCase):
                  " are merged and try again.", file=sys.stderr)
         ])
 
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_finish_not_merged_hotfix_with_target(self, git, print_function):
+        git.side_effect = [
+            '',
+            '',
+            'hotfix/somehotfix',
+            '0',
+            '',
+        ]
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'finish', 'annegret']):
+            with self.assertRaises(SystemExit):
+                git_devbliss_main()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('status --short --untracked-files=no | wc -l', pipe=True),
+            call('branch --contains annegret', pipe=True)
+        ])
+        print_function.assert_has_calls([
+            call("Error: Won't finish. annegret is not merged into the"
+                 " current branch.", file=sys.stderr),
+            call("Please do 'git merge annegret', make sure all conflicts"
+                 " are merged and try again.", file=sys.stderr)
+        ])
+
+    @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
+    @unittest.mock.patch('git_devbliss.__main__.call_hook')
+    @unittest.mock.patch('git_devbliss.__main__.git')
+    def test_finish_not_merged_hotfix(self, git, call_hook, github,
+                                      print_function):
+        git.side_effect = [
+            '',
+            '',
+            'hotfix/somehotfix',
+            '0',
+            '',
+            ''
+        ]
+        with unittest.mock.patch(
+                'sys.argv', ['git-devbliss', 'finish']):
+            git_devbliss_main()
+        git.assert_has_calls([
+
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('remote -v | grep "^origin.*github.*:.*(fetch)$"', pipe=True),
+            call('rev-parse --abbrev-ref HEAD', pipe=True),
+            call('status --short --untracked-files=no | wc -l', pipe=True),
+            call('branch --contains master', pipe=True)
+
+        ])
+        call_hook.assert_has_calls([
+            call('finish', 'DEVBLISS_BRANCH_TYPE=hotfix'),
+            call('changelog', 'DEVBLISS_BRANCH_TYPE=hotfix'),
+            call('version', 'DEVBLISS_BRANCH_TYPE=hotfix')
+        ])
+        github.assert_has_calls([
+            call(['pull-request', 'master']),
+            call(['open-pulls'])
+        ])
+        print_function.assert_has_calls([
+            call('Warning: Master is not merged into the current branch.'),
+            call(),
+            call()
+        ])
+
     @unittest.mock.patch('git_devbliss.__main__.github_devbliss')
     @unittest.mock.patch('git_devbliss.__main__.call_hook')
     @unittest.mock.patch('git_devbliss.__main__.git')
