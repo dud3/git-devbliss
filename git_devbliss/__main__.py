@@ -255,6 +255,7 @@ def cleanup():
 
 
 def finish(base_branch):
+    base_branch_used = bool(base_branch)
     base_branch = base_branch or 'master'
     branch = git('rev-parse --abbrev-ref HEAD', pipe=True)
     if not is_repository_clean():
@@ -263,12 +264,15 @@ def finish(base_branch):
 
     if branch not in git('branch --contains {}'.format(base_branch),
                          pipe=True):
-        print("Error: Won't finish. {} is not merged into the"
-              " current branch.".format(base_branch), file=sys.stderr)
-        print("Please do 'git merge {}', make sure all conflicts"
-              " are merged and try again.".format(base_branch),
-              file=sys.stderr)
-        sys.exit(1)
+        if 'hotfix/' in branch and not base_branch_used:
+            print("Warning: Master is not merged into the current branch.")
+        else:
+            print("Error: Won't finish. {} is not merged into the"
+                  " current branch.".format(base_branch), file=sys.stderr)
+            print("Please do 'git merge {}', make sure all conflicts"
+                  " are merged and try again.".format(base_branch),
+                  file=sys.stderr)
+            sys.exit(1)
     env_vars = 'DEVBLISS_BRANCH_TYPE=' + branch.split('/')[0]
     call_hook('finish', env_vars)
     call_hook('changelog', env_vars)

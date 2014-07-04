@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 2.0.4
+
+ - Finish allows for unmerged master on hotfix branches if no base_branch is supplied
+
 ## 2.0.3
 
  - added MANIFEST.in
