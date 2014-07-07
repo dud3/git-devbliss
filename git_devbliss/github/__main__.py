@@ -127,7 +127,7 @@ def status():
         print("    {} <{}>".format(i["name"], url))
     pulls()
     issues = [i for i in github.issues(owner, repository)
-              if not i["pull_request"]["diff_url"]]
+              if "pull_request" not in i]
     if issues:
         print()
         print("Issues:")
