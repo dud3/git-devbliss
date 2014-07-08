@@ -46,7 +46,6 @@ class MainTest(unittest.TestCase):
                 "number": 0,
                 "title": "test_issue",
                 "html_url": "test_issue_url",
-                "pull_request": {"diff_url": ""}
             },
             {
                 "number": 0,

@@ -1,5 +1,9 @@
 # git devbliss changelog
 
+## 2.0.5
+
+ - Fixed bug with issues that have no pull-request attached
+
 ## 2.0.4
 
  - Finish allows for unmerged master on hotfix branches if no base_branch is supplied
