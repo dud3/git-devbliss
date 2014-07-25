@@ -32,11 +32,11 @@ If you have an old version of git-devbliss that was installed with Makefile or m
 The installation of git-devbliss via pypi is the default installation
 method. Simply type:
 
-    sudo pip-3.4 install --upgrade git-devbliss
+    sudo pip3.4 install --upgrade git-devbliss
 
 ## Installation via GitHub
 
-    sudo pip-3.4 install --upgrade git+ssh://git@github.com/devbliss/git-devbliss.git
+    sudo pip3.4 install --upgrade git+ssh://git@github.com/devbliss/git-devbliss.git
 
 ## Installation via Makefile
 
