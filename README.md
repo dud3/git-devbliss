@@ -10,6 +10,8 @@ mistakes.
 The tool does not replace any existing git commands nor does it
 prevent the developer from using the latter the way he wants to use them.
 
+To see what's new in the current version, please refer to the [CHANGELOG](https://github.com/devbliss/git-devbliss/blob/master/CHANGES.md)
+
 ## Requirements
 
 - git 2.0
