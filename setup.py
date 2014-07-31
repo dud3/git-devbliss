@@ -74,7 +74,7 @@ setuptools.setup(
     test_suite="git_devbliss",
     install_requires=[
         "docopt >=0.6.1",
-        "requests ==2.3.0",
+        "requests >=2.3.0",
     ],
     entry_points={
         "console_scripts": [

@@ -1,14 +1,16 @@
 # devbliss git extensions
 
 git-devbliss is a command line tool which guides the developer along the
-encouraged workflow used for feature development, bug fixing and hotfixing at
-devbliss.
+[encouraged workflow](https://github.com/devbliss/git-devbliss/blob/master/workflow.md) used for feature development, bug fixing
+and hotfixing at devbliss.
 
 The goal of git-devbliss is to summarize certain single git operations into
 semantically meaningful commands and doing sanity checks to prevent frequent
 mistakes.
 The tool does not replace any existing git commands nor does it
 prevent the developer from using the latter the way he wants to use them.
+
+To see what's new in the current version, please refer to the [CHANGELOG](https://github.com/devbliss/git-devbliss/blob/master/CHANGES.md)
 
 ## Requirements
 
