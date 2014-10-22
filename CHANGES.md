@@ -1,5 +1,10 @@
 # git devbliss changelog
 
+## 2.0.6
+
+ - use requests >= 2.3.0
+ - added links to workflow.md and changes.md
+
 ## 2.0.5
 
  - Fixed bug with issues that have no pull-request attached
