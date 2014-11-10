@@ -183,7 +183,9 @@ def release(version):
     if not is_repository_clean():
         print('Error: Repository is not clean. Aborting.', file=sys.stderr)
         sys.exit(1)
-    if not is_synced_origin('master'):
+
+    branch = git('rev-parse --abbrev-ref HEAD', pipe=True)
+    if not is_synced_origin('master') and 'hotfix/' not in branch:
         print('Error: Local branch is not in sync with origin. Aborting.',
               file=sys.stderr)
         print('Do "git pull && git push" and try agin.', file=sys.stderr)
